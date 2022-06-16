@@ -1,0 +1,53 @@
+.toc-hidden {
+    display: none;
+}
+
+#toc-links-print {
+    margin-bottom: 60px;
+}
+
+.section {
+    margin-bottom: 60px;
+}
+
+.content {
+    margin-bottom: 20px;
+    margin-left: 25px;
+}
+
+.toc-title,
+.toc-title:hover,
+.toc-title:active,
+.toc-title:focus {
+    font-weight: bold;
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+}
+
+.toc-sub-title,
+.toc-sub-title:hover,
+.toc-sub-title:active,
+.toc-sub-title:focus {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar {
+    overflow-y: scroll;
+    height: 100vh;
+    /* position:relative; */
+}
+
+@media print {
+    .toc-hidden {
+        display: block;
+    }
+
+    .toc-show {
+        display: none;
+    }
+}
