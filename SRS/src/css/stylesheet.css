@@ -47,6 +47,13 @@
     height: 100vh;
 }
 
+.center-item {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
 @media print {
     .screen-hidden {
         display: block;
@@ -56,8 +63,9 @@
     .screen-show {
         display: none;
     }
-
+    
     .section {
         page-break-before: always;
     }
 }
+
