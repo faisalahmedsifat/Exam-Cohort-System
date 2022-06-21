@@ -317,7 +317,7 @@
                         <h3 class="section-title">System Features</h3>
                         <div class="content">
                             <h4 class="content-title">Login</h4>
-                            <div class="description">
+                            <div class="description ms-5 me-5">
                                 <div class="user-case-expanded">
                                     <table class="table table-bordered">
                                         <tr>
@@ -429,6 +429,85 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="content">
+                            <h4 class="content-title">Create Exam-Cohort</h4>
+                            <div class="description ms-5 me-5">
+                                <div class="user-case-expanded">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Use Case</th>
+                                            <td>Create Exam-Cohort</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Actors</th>
+                                            <td>User</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <td>Users start creating exam-cohort after logging into the software.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Overview</th>
+                                            <td>After authenticating to the software, the user can create an exam cohort
+                                                from their dashboard. The user will click the add exam-cohort button,
+                                                and the system will present a form to the user that needs to be filled.
+                                                The user will fill out the form and submit it. The system will process
+                                                and validate that form and create a new exam cohort with that user as an
+                                                evaluator.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>Primary</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cross References</th>
+                                            <td>Functions: Section 4.1</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Typical Course of Events</th>
+                                        </tr>
+                                        <tr class="text-center">
+                                            <th>Actor Action</th>
+                                            <th>System Response</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1. This use case begins when the logged-in user chooses to create an exam cohort from their dashboard.</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. The user clicks the "Add New Exam-Cohort" Button.</td>
+                                            <td>3. The system presents a form/dialogue to the user via the user interface that asks for necessary details of the exam cohort.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. User fills in necessary details of the exam cohort and submits.</td>
+                                            <td>5. The system validates the form data and processes. It creates a new exam cohort in the database, with the actor of this use case as the evaluator of the exam cohort.</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>6. The system relays the message "Successfully created a new exam-cohort!" in the user interface. Also, it shows the new exam cohort in the dashboard with other cohorts.</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Alternative Courses</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul class="squared-ul">
+                                                    <li>Section 1: If the user is not logged into the software or their token is expired, the system must redirect the user to the login page.</li>
+                                                    <li>Section 4: If the user does not fill in all the required details and submits the form, the system prompts necessary errors and requests the user to fill those details gracefully.</li>
+                                                    <li>Section 5: If the database is offline or has an outage, the system prompts the user to "Try again later!".</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="content">
                             <h4 class="content-title">System Feature 2</h4>
                             <div class="description">
