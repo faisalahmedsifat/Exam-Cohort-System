@@ -54,6 +54,10 @@
     width: 50%;
 }
 
+.squared-ul{
+    list-style-type:square;
+}
+
 @media print {
     .screen-hidden {
         display: block;

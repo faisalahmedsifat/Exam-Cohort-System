@@ -316,9 +316,117 @@
                     <div class="section">
                         <h3 class="section-title">System Features</h3>
                         <div class="content">
-                            <h4 class="content-title">System Feature 1</h4>
+                            <h4 class="content-title">Login</h4>
                             <div class="description">
-                                TODO
+                                <div class="user-case-expanded">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Use Case</th>
+                                            <td>Login using Google Account</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Actors</th>
+                                            <td>User</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <td>Authenticate the user to the exam-cohort system using a google account.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Overview</th>
+                                            <td>The individual decides to log into the software using the user
+                                                interface. To
+                                                do that, they click the "Sign in with Google," and a Google login page
+                                                is
+                                                presented to the user. When the user successfully logs into their Google
+                                                account, they are redirected to the software's user interface, and a
+                                                message
+                                                is relayed. The system will notify the user if the logging event is a
+                                                success or failure. Upon successful authentication, if the user was new
+                                                to
+                                                the system (i.e., they never logged into it), the system will create a
+                                                brand
+                                                new account in the database. However, suppose the user has an existing
+                                                account. In that case, the software will load that particular account's
+                                                details (such as saved exam-cohorts, assessments, etc.) into the
+                                                software
+                                                for the user.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>Primary</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cross References</th>
+                                            <td>Not Applicable.</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Typical Course of Events</th>
+                                        </tr>
+                                        <tr class="text-center">
+                                            <th>Actor Action</th>
+                                            <th>System Response</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1. This use case begins when the user chooses to log into the system.
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. The user clicks/touches the "Sign in with Google" button from the
+                                                user
+                                                interface.</td>
+                                            <td>3. The system responds by throwing a google login form as a pop-up
+                                                window in
+                                                the web app or a dialogue box in the android app.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. The user fills/selects their necessary details and logs into their
+                                                correct google account using the google OAuth login form.</td>
+                                            <td>5. The awaits for the OAuth form and detects if the OAuth was
+                                                successful.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>6. After successful authentication, if it is a returning user, the
+                                                system
+                                                will use previous user profile data(such as exam-cohorts, assessments,
+                                                etc.)
+                                                However, the system will generate a new profile if it is a new user.
+                                                Then
+                                                the system will generate the "token authentication" token and
+                                                communicate
+                                                this token with the user interface.</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>7. After getting the necessary tokens, the system will redirect the user
+                                                to
+                                                their dashboard, where they can see all their data (such as exam-cohorts
+                                                and
+                                                others) and relay the message "Successfully logged in."</td>
+                                        </tr>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Alternative Courses</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul class="squared-ul">
+                                                    <li>Section 4: If the Google OAuth login form is closed without
+                                                        completing the authentication, the message "Login failed!" is
+                                                        relayed to the user interface.</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                         <div class="content">
