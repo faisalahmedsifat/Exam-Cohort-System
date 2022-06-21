@@ -474,20 +474,26 @@
                                             <th>System Response</th>
                                         </tr>
                                         <tr>
-                                            <td>1. This use case begins when the logged-in user chooses to create an exam cohort from their dashboard.</td>
+                                            <td>1. This use case begins when the logged-in user chooses to create an
+                                                exam cohort from their dashboard.</td>
                                             <td></td>
                                         </tr>
                                         <tr>
                                             <td>2. The user clicks the "Add New Exam-Cohort" Button.</td>
-                                            <td>3. The system presents a form/dialogue to the user via the user interface that asks for necessary details of the exam cohort.</td>
+                                            <td>3. The system presents a form/dialogue to the user via the user
+                                                interface that asks for necessary details of the exam cohort.</td>
                                         </tr>
                                         <tr>
                                             <td>4. User fills in necessary details of the exam cohort and submits.</td>
-                                            <td>5. The system validates the form data and processes. It creates a new exam cohort in the database, with the actor of this use case as the evaluator of the exam cohort.</td>
+                                            <td>5. The system validates the form data and processes. It creates a new
+                                                exam cohort in the database, with the actor of this use case as the
+                                                evaluator of the exam cohort.</td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td>6. The system relays the message "Successfully created a new exam-cohort!" in the user interface. Also, it shows the new exam cohort in the dashboard with other cohorts.</td>
+                                            <td>6. The system relays the message "Successfully created a new
+                                                exam-cohort!" in the user interface. Also, it shows the new exam cohort
+                                                in the dashboard with other cohorts.</td>
                                         </tr>
                                     </table>
                                     <table class="table table-borderless">
@@ -497,9 +503,14 @@
                                         <tr>
                                             <td>
                                                 <ul class="squared-ul">
-                                                    <li>Section 1: If the user is not logged into the software or their token is expired, the system must redirect the user to the login page.</li>
-                                                    <li>Section 4: If the user does not fill in all the required details and submits the form, the system prompts necessary errors and requests the user to fill those details gracefully.</li>
-                                                    <li>Section 5: If the database is offline or has an outage, the system prompts the user to "Try again later!".</li>
+                                                    <li>Section 1: If the user is not logged into the software or their
+                                                        token is expired, the system must redirect the user to the login
+                                                        page.</li>
+                                                    <li>Section 4: If the user does not fill in all the required details
+                                                        and submits the form, the system prompts necessary errors and
+                                                        requests the user to fill those details gracefully.</li>
+                                                    <li>Section 5: If the database is offline or has an outage, the
+                                                        system prompts the user to "Try again later!".</li>
                                                 </ul>
                                             </td>
                                         </tr>
@@ -579,22 +590,144 @@
                                         <tr>
                                             <td>
                                                 <ul class="squared-ul">
-                                                    <li>Section 1: If the user(evaluator) is not logged into the software or
-                                                    their token is expired, the system must redirect the user to the
-                                                    login page.</li>
-                                                    <li>Section 1: If the user(evaluator) is trying to manipulate a cohort
-                                                    or cohort settings that they are not an evaluator, then the system
-                                                    will redirect to the dashboard and relay a message "Access Denied!"
-                                                    in the user interface.</li>
-                                                    <li>Section 4: If the user(evaluator) does not fill in all the required
-                                                    details and submits the form, the system prompts necessary errors
-                                                    and requests the user(evaluator) to fill those details gracefully.</li>
-                                                    <li>Section 5: If the given email address(of the intended candidate) is
-                                                    not in the software system, a message "User does not exist in the
-                                                    system!" is relayed in the user interface.</li>
+                                                    <li>Section 1: If the user(evaluator) is not logged into the
+                                                        software or
+                                                        their token is expired, the system must redirect the user to the
+                                                        login page.</li>
+                                                    <li>Section 1: If the user(evaluator) is trying to manipulate a
+                                                        cohort
+                                                        or cohort settings that they are not an evaluator, then the
+                                                        system
+                                                        will redirect to the dashboard and relay a message "Access
+                                                        Denied!"
+                                                        in the user interface.</li>
+                                                    <li>Section 4: If the user(evaluator) does not fill in all the
+                                                        required
+                                                        details and submits the form, the system prompts necessary
+                                                        errors
+                                                        and requests the user(evaluator) to fill those details
+                                                        gracefully.</li>
+                                                    <li>Section 5: If the given email address(of the intended candidate)
+                                                        is
+                                                        not in the software system, a message "User does not exist in
+                                                        the
+                                                        system!" is relayed in the user interface.</li>
                                                     <li>Section 5: If the given email address is already added as a
-                                                    candidate in this cohort, the message "Already added!" is relayed in
-                                                    the user interface.</li>
+                                                        candidate in this cohort, the message "Already added!" is
+                                                        relayed in
+                                                        the user interface.</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content">
+                            <h4 class="content-title">Add Assessments</h4>
+                            <div class="description ms-5 me-5">
+                                <div class="user-case-expanded">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Use Case</th>
+                                            <td>Add Assessments</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Actors</th>
+                                            <td>User</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <td>Users who are evaluator of cohorts adds an assessment into their cohort.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Overview</th>
+                                            <td>After the user is authenticated and has created their exam cohort, they
+                                                now have the rights of an evaluator in their cohort(s). They can add
+                                                assesments into their cohorts. When creating a new assessment, the
+                                                user(evaluator) will provide
+                                                the available date-time, due date-time of the assessment, and specify
+                                                each questions. Each
+                                                cohort contains multiple mcqs and micro-vivas. The user(evaluator) can
+                                                add as many mcq and as
+                                                many micro-vivas into an assessment. When adding an mcq, the
+                                                user(evaluator) will add question
+                                                statment text, all the answer options texts, chose which options are
+                                                correct answers, time limit
+                                                of that question, and marks assigned to that question. When adding an
+                                                micro-viva, the
+                                                user(evaluator) will add question statment as a voice recording, also
+                                                the correct answer as a
+                                                voice recording, time limit of that question, and marks assigned to that
+                                                question. </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>Primary</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cross References</th>
+                                            <td>Functions: Section 4.1, 4.2</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Typical Course of Events</th>
+                                        </tr>
+                                        <tr class="text-center">
+                                            <th>Actor Action</th>
+                                            <th>System Response</th>
+                                        </tr>
+                                        <tr>
+                                        <tr>
+                                            <td>1. This use case begins when the user wants to add an assessment to a
+                                                cohort.</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. The user clicks the "Add a new Assessment" Button in the cohort
+                                                panel.</td>
+                                            <td>3. The system prompts the user with a form.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. The user fills in the form where he: provides the available date-time
+                                                and due date-time and
+                                                specifies each detail of each question.</td>
+                                            <td>5. The system adds a new assessment to that cohort and a message
+                                                "Successfully added a new
+                                                assessment!" is relayed in the user interface.</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Alternative Courses</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul class="squared-ul">
+                                                    <li>Section 1: If the user is not logged in, the system redirects
+                                                        them to the login page and relays a message "You must be logged
+                                                        in!" in the user interface.</li>
+                                                    <li>Section 1: If the user is not an evaluator of the cohort, then
+                                                        the system will redirect the user to the dashboard and relay a
+                                                        message "Access Denied! You are not the evaluator of that
+                                                        cohort!" in the user interface.</li>
+                                                    <li>Section 4: If the due date-time is before the available
+                                                        date-time, the system will inform the user by showing the error
+                                                        message: "Incorrect due date-time! The due date-time must be
+                                                        after the available date-time!"</li>
+                                                    <li>Section 4: If the range between the available and due date-time
+                                                        is less than all the question's time limits combined, the system
+                                                        will inform the user by showing the error message: "Incorrect
+                                                        range of date-times! The availability time of the assessment
+                                                        must be greater than all the time-limit of the questions
+                                                        accumulated!"</li>
+                                                    <li>Section 4: If the user does not define any question(s) mark,
+                                                        time limit, textual detail of MCQs, or micro-vivas recordings,
+                                                        the system will inform the user of the error message: "Some of
+                                                        the details of the question(s) are incomplete!"</li>
                                                 </ul>
                                             </td>
                                         </tr>
