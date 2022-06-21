@@ -741,6 +741,135 @@
                         </div>
 
                         <div class="content">
+                            <h4 class="content-title">Appear in Assessments</h4>
+                            <div class="description ms-5 me-5">
+                                <div class="user-case-expanded">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Use Case</th>
+                                            <td>Appear in Assessments</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Actors</th>
+                                            <td>User</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <td>Users who are candidates of cohorts appears in the assessments of that
+                                                cohort.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Overview</th>
+                                            <td>When a user is added as a candidate in a cohort, they can appear/sit for
+                                                the assessment. The system provides an interface for an online exam with
+                                                strict time limits. The system also provides all the necessary user
+                                                interfaces to the candidates for the exam, such as voice recording and a
+                                                listening mechanism in the user interface for the micro-vivas. If the
+                                                time limit exceeds, the user can no longer access that question and is
+                                                forced to move to the next question or end the assessment if no other
+                                                question remains. The system presents all the answers and options in
+                                                randomized order.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>Primary</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cross References</th>
+                                            <td>Functions: Section 4.1, 4.3, 4.4, 4.9</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Typical Course of Events</th>
+                                        </tr>
+                                        <tr class="text-center">
+                                            <th>Actor Action</th>
+                                            <th>System Response</th>
+                                        </tr>
+                                        <tr>
+                                        <tr>
+                                            <td>1. This use case begins when the user wants to appear for an assessment
+                                                of a cohort.</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. The user clicks the "Take Assessment Now" Button in the assessments
+                                                panel.</td>
+                                            <td>3. The system takes the user to the exam-taking user interface that
+                                                shows a random question from
+                                                the assessment with randomized options if that is an MCQ question. The
+                                                system provides a user
+                                                interface with a playback player and a voice recorder if it is a
+                                                micro-viva-type question. The
+                                                system also shows the current question's time limit counter.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. The user answers the question; if it is MCQ, they select option(s).
+                                                If it is a micro-viva,
+                                                they listen to the question's recording and answer with a recording via
+                                                the interface. The user
+                                                clicks the "Next" button when the answering is completed.</td>
+                                            <td>5. The system saves the candidate's answers in the database, presents
+                                                the next random unanswered
+                                                question from the assessment's questions list, and repeats from Section
+                                                4 until no unanswered
+                                                questions are left.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>6. The system prompts the user with a message: "Congratulations, you
+                                                have completed the
+                                                assessment!" and redirect the candidate to their dashboard.
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Alternative Courses</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul class="squared-ul">
+                                                    <li>Section 1: If the user is not logged in, the system redirects
+                                                        them to the login page and
+                                                        relays a message "You must be logged in!" in the user interface.
+                                                    </li>
+                                                    <li>Section 2: If the user is not a cohort candidate, then the
+                                                        system will redirect the user
+                                                        to
+                                                        the dashboard and relay a message "Access Denied! You are not
+                                                        the candidate of that
+                                                        cohort!"
+                                                        in the user interface.</li>
+                                                    <li>Section 4: If the time limit is exceeded for that question, the
+                                                        system detects that. The
+                                                        system then forces the user to move to the next question, and
+                                                        access to the previous
+                                                        question is withdrawn from the user interface.</li>
+                                                    <li>Section 4: If the user does not answer a question and tries to
+                                                        go to the next question,
+                                                        the
+                                                        system prompts the user of possible danger: "Are you sure you
+                                                        want to skip this
+                                                        question?"
+                                                        and receive a yes or no response from the user and act so.</li>
+                                                    <li>Section 5: If the current system time is not between the range
+                                                        of
+                                                        available date-time, and due date-time, the system will not save
+                                                        the answers in the database and prompt with "Time Exceeded for
+                                                        the Assessment!"
+                                                        and redirect the user to the dashboard.</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content">
                             <h4 class="content-title">System Feature 2</h4>
                             <div class="description">
                                 TODO
