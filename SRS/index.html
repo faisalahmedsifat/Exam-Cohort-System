@@ -509,6 +509,101 @@
                         </div>
 
                         <div class="content">
+                            <h4 class="content-title">Add Candidates</h4>
+                            <div class="description ms-5 me-5">
+                                <div class="user-case-expanded">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Use Case</th>
+                                            <td>Add Candidates</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Actors</th>
+                                            <td>User</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <td>Users who are evaluator of cohorts adds another user of the system into
+                                                one of the cohorts as a candidate.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Overview</th>
+                                            <td>After the user is authenticated and has created their exam cohort, they
+                                                now have the rights of an evaluator in their cohort(s). They can add
+                                                other users of the system into this cohort as candidates by simply
+                                                typing their email addresses into a form and clicking the "Add this
+                                                user" button.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type</th>
+                                            <td>Primary</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Cross References</th>
+                                            <td>Functions: Section 4.1, 4.2</td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Typical Course of Events</th>
+                                        </tr>
+                                        <tr class="text-center">
+                                            <th>Actor Action</th>
+                                            <th>System Response</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1. This use case begins when the logged-in user who is an evaluator
+                                                chooses to add candidate(s) to their cohort from the cohort's panel.
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. The user clicks on the "Add Candidate" button from the cohort's
+                                                panel.</td>
+                                            <td>3. The system prompts evaluators with a dialogue form that presents an
+                                                email address input.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. The user(evaluator) fills the email address input and clicks the
+                                                "Add" button. </td>
+                                            <td>5. System adds that user with an email address as a candidate to the
+                                                cohort, and the message "Successfully added candidate" is relayed in the
+                                                user interface.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th>Alternative Courses</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul class="squared-ul">
+                                                    <li>Section 1: If the user(evaluator) is not logged into the software or
+                                                    their token is expired, the system must redirect the user to the
+                                                    login page.</li>
+                                                    <li>Section 1: If the user(evaluator) is trying to manipulate a cohort
+                                                    or cohort settings that they are not an evaluator, then the system
+                                                    will redirect to the dashboard and relay a message "Access Denied!"
+                                                    in the user interface.</li>
+                                                    <li>Section 4: If the user(evaluator) does not fill in all the required
+                                                    details and submits the form, the system prompts necessary errors
+                                                    and requests the user(evaluator) to fill those details gracefully.</li>
+                                                    <li>Section 5: If the given email address(of the intended candidate) is
+                                                    not in the software system, a message "User does not exist in the
+                                                    system!" is relayed in the user interface.</li>
+                                                    <li>Section 5: If the given email address is already added as a
+                                                    candidate in this cohort, the message "Already added!" is relayed in
+                                                    the user interface.</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content">
                             <h4 class="content-title">System Feature 2</h4>
                             <div class="description">
                                 TODO
