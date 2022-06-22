@@ -1073,13 +1073,13 @@
 
 
                         <div class="content">
-                            <h4 class="content-title">TODO</h4>
+                            <h4 class="content-title">Automatic marking</h4>
                             <div class="description ms-5 me-5">
                                 <div class="user-case-expanded">
                                     <table class="table table-bordered">
                                         <tr>
                                             <th>Use Case</th>
-                                            <td></td>
+                                            <td>Automatic marking</td>
                                         </tr>
                                         <tr>
                                             <th>Actors</th>
@@ -1088,12 +1088,16 @@
                                         <tr>
                                             <th>Purpose</th>
                                             <td>
-                                                TODO
+                                                The system evaluates the assessment based on the answers provided by the
+                                                evaluator upon finishing an exam by the candidate.
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Overview</th>
-                                            <td>TODO</td>
+                                            <td>When the candidate finishes an assessment, or the given time limit has
+                                                exceeded, and the system forcefully submits the answer script of a
+                                                candidate, the system does the marking automatically based on
+                                                prespecified answers provided by the evaluator.</td>
                                         </tr>
                                         <tr>
                                             <th>Type</th>
@@ -1101,7 +1105,7 @@
                                         </tr>
                                         <tr>
                                             <th>Cross References</th>
-                                            <td>TODO</td>
+                                            <td>Functions: Section 4.3, 4.4, 4.5, 4.9</td>
                                         </tr>
                                     </table>
                                     <table class="table table-borderless">
@@ -1114,12 +1118,19 @@
                                         </tr>
                                         <tr>
                                         <tr>
-                                            <td>TODO</td>
+                                            <td>1.This use case begins when the candidate finishes the assessment or
+                                                exceeds the time limit.</td>
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            <td>TODO</td>
-                                            <td>TODO</td>
+                                            <td>2.The system submits the answer script based on user response or time
+                                                limit exceeding the assessment.</td>
+                                            <td>3.The system checks if the given answer of the candidate matches that of
+                                                the one provided by the evaluator. In the case of the micro viva, the
+                                                system checks if the audio given by the candidate matches the one given
+                                                by the evaluator by running speech-to-text on both. If the answers
+                                                match, the system marks them with the number predefined by the
+                                                evaluator.</td>
                                         </tr>
 
 
@@ -1132,7 +1143,7 @@
                                             <td>
                                                 <ul class="squared-ul">
                                                     <li>
-                                                        TODO
+                                                        Not Applicable.
                                                     </li>
 
 
