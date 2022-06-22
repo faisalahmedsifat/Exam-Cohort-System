@@ -1156,13 +1156,13 @@
                         </div>
 
                         <div class="content">
-                            <h4 class="content-title">TODO</h4>
+                            <h4 class="content-title">Detect time limit exceed</h4>
                             <div class="description ms-5 me-5">
                                 <div class="user-case-expanded">
                                     <table class="table table-bordered">
                                         <tr>
                                             <th>Use Case</th>
-                                            <td></td>
+                                            <td>Date time limit exceed</td>
                                         </tr>
                                         <tr>
                                             <th>Actors</th>
@@ -1171,12 +1171,18 @@
                                         <tr>
                                             <th>Purpose</th>
                                             <td>
-                                                TODO
+                                                The system constantly checks if the time limit has been exceeded for the
+                                                question or the assessment and doesn't allow the candidate to continue
+                                                if the time limit has been exceeded.
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Overview</th>
-                                            <td>TODO</td>
+                                            <td>When the time limit for a specific question exceeds, the system
+                                                forcefully submits the answer. If the "Current Date-Time" has surpassed
+                                                "Due Date-Time," the system won't allow a candidate to appear in the
+                                                assessment.
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Type</th>
@@ -1184,7 +1190,7 @@
                                         </tr>
                                         <tr>
                                             <th>Cross References</th>
-                                            <td>TODO</td>
+                                            <td>Functions: Section 4.4, 4.5</td>
                                         </tr>
                                     </table>
                                     <table class="table table-borderless">
@@ -1197,12 +1203,21 @@
                                         </tr>
                                         <tr>
                                         <tr>
-                                            <td>TODO</td>
-                                            <td></td>
+                                            <td>1.This use case begins when the candidate has exceeded the time limit
+                                                for
+                                                a specific question or exceeded the "Due Date-Time."</td>
+
                                         </tr>
                                         <tr>
-                                            <td>TODO</td>
-                                            <td>TODO</td>
+                                            <td>2. The system detects that the time limit for the question is exceeded.</td>
+                                            <td>3. The system submits the answer and forces the user to move to the next
+                                                question or ends the assessment if there are no other questions.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4. The system detects that the "Due Date-time" is exceeded.</td>
+                                            <td>5. The system withdraws any access to the assessment. If the candidate
+                                                is still giving the assessment, the system forcefully submits the answer
+                                                script and exits the assessment.</td>
                                         </tr>
 
 
@@ -1215,7 +1230,7 @@
                                             <td>
                                                 <ul class="squared-ul">
                                                     <li>
-                                                        TODO
+                                                        Not Applicable
                                                     </li>
 
 
@@ -1300,69 +1315,70 @@
                         </div>
 
 
-                        <div class="section">
-                            <h3 class="section-title">Other Nonfunctional Requirements</h3>
-                            <div class="content">
-                                <h4 class="content-title">Performance Requirements</h4>
-                                <div class="description">
-                                    TODO
-                                </div>
-                            </div>
-                            <div class="content">
-                                <h4 class="content-title">Safety Requirements</h4>
-                                <div class="description">
-                                    TODO
-                                </div>
-                            </div>
-                            <div class="content">
-                                <h4 class="content-title">Security Requirements</h4>
-                                <div class="description">
-                                    TODO
-                                </div>
-                            </div>
-                            <div class="content">
-                                <h4 class="content-title">Software Quality Attributes</h4>
-                                <div class="description">
-                                    TODO
-                                </div>
-                            </div>
-                            <div class="content">
-                                <h4 class="content-title">Business Rules</h4>
-                                <div class="description">
-                                    TODO
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="section">
-                            <h3 class="section-title">Other Requirements</h3>
-                            <div class="description">
-                                TODO
-                            </div>
-                        </div>
-
-                        <div class="section">
-                            <h3 class="section-title">Appendix A: Glossary</h3>
-                            <div class="description">
-                                TODO
-                            </div>
-                        </div>
-
-                        <div class="section">
-                            <h3 class="section-title">Appendix B: Analysis Models</h3>
-                            <div class="description">
-                                TODO
-                            </div>
-                        </div>
-
-                        <div class="section">
-                            <h3 class="section-title">Appendix C: To Be Determined List</h3>
-                            <div class="description">
-                                TODO
-                            </div>
-                        </div>
 
                     </div>
+                    <div class="section">
+                        <h3 class="section-title">Other Nonfunctional Requirements</h3>
+                        <div class="content">
+                            <h4 class="content-title">Performance Requirements</h4>
+                            <div class="description">
+                                TODO
+                            </div>
+                        </div>
+                        <div class="content">
+                            <h4 class="content-title">Safety Requirements</h4>
+                            <div class="description">
+                                TODO
+                            </div>
+                        </div>
+                        <div class="content">
+                            <h4 class="content-title">Security Requirements</h4>
+                            <div class="description">
+                                TODO
+                            </div>
+                        </div>
+                        <div class="content">
+                            <h4 class="content-title">Software Quality Attributes</h4>
+                            <div class="description">
+                                TODO
+                            </div>
+                        </div>
+                        <div class="content">
+                            <h4 class="content-title">Business Rules</h4>
+                            <div class="description">
+                                TODO
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Other Requirements</h3>
+                        <div class="description">
+                            TODO
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Appendix A: Glossary</h3>
+                        <div class="description">
+                            TODO
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Appendix B: Analysis Models</h3>
+                        <div class="description">
+                            TODO
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Appendix C: To Be Determined List</h3>
+                        <div class="description">
+                            TODO
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
