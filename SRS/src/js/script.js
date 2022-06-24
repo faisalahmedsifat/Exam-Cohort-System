@@ -9,7 +9,7 @@ function toSnakeCase(str) {
 // Add Numbering in Titles 
 (function () {
   document.querySelectorAll('.section-title').forEach(function (data, index) {
-    if (data.innerText.split(" ")[0] === "Appendix") return data
+    if (data.innerText.split(" ")[0] === "Appendix") data.innerText = data.innerText
     else data.innerText = index + 1 + ". " + data.innerText
     data.setAttribute("id", toSnakeCase(data.innerText))
     tocItems.push([data.innerText])
@@ -21,7 +21,7 @@ function toSnakeCase(str) {
   var allSection = document.querySelectorAll('.section')
   for (var index = 0; index < allSection.length; index++) {
     allSection[index].querySelectorAll(".content-title").forEach(function (data, subindex) {
-      if (data.innerText.split(" ")[0] === "Appendix") return data
+      if (data.innerText.split(" ")[0] === "Appendix") data.innerText = data.innerText
       else {
         data.innerText = (index + 1) + "." + (subindex + 1) + ". " + data.innerText
         data.setAttribute("id", toSnakeCase(data.innerText))
