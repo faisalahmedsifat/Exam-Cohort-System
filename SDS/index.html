@@ -76,7 +76,40 @@
                         <h3 class="section-title">Description of Design Components</h3>
                         <div class="content">
                             <div class="description">
-                                <p>TODO</p>
+                                <p>There are multiple design components of the system design: server-side "backend,"
+                                    client-side "frontend" (web app and mobile app), and third-party services.</p>
+
+                                <p><b>Backend:</b> The backend is the core brain of the software where all the business
+                                    logic resides. Only the server-side "backend" can interact with the database using
+                                    an Object Relational Mapper. All non-third-party software services will be exposed
+                                    using RESTFul APIs. Web and mobile app frontends will use those APIs to interact
+                                    with the software's backend. For the backend solution, NodeJS with ExpressJS has
+                                    been selected.</p>
+
+                                <p><b>Frontend:</b> The end-user interfaces, or the client-side "frontend," are divided
+                                    into web application frontend and android applications frontend. Although there are
+                                    restrictions on the android app's use-cases within the software, both frontend will
+                                    use the exposed APIs from the backend to give the end-users a modern frontend
+                                    experience. Using the same backend server will lead to data sync among interfaces.
+                                    For the frontend solution, ReactJS is selected for the web application. For the
+                                    android application, official Android Native with Kotlin will be used.</p>
+
+                                <p><b>Database:</b> Because the data in the software is relational, this system
+                                    designer(s) has decided to use a Relational Database. This software will use an
+                                    ORM(Object Relational Mapper) for best practices. For the ORM solution, Sequelize
+                                    has been chosen. Because Sequelize allows different dialects(Postgres, MySQL,
+                                    MariaDB, SQLite, etc.) in different environments, the design doesn't depend on any
+                                    single database solution.</p>
+
+                                <p><b>Third-Party Services:</b> The Google Cloud's APIs have been chosen for the OAuth
+                                    solution within the software. Furthermore, for a text-to-speech solution, AssemblyAI
+                                    has been selected. The backend will connect to these Third-Party Services through
+                                    API calls.</p>
+
+                                <p>
+                                    <img src="src/images/deisgn_components_v1_0_0.png" alt="Design Components Photo"
+                                        class="center-item" style="width: 65%!important;">
+                                </p>
                             </div>
                         </div>
                     </div>
