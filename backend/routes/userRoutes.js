@@ -4,20 +4,22 @@ const middleware = require('../utils/middleware')
 
 // Controllers
 const UserController = require('../controllers/user')
-const User = require('../controllers/user')
 
 /** 
  * Routes
  * 
- * prefix: /user
+ * prefix: api/user
  */
 
 // Read
 router.post('/signin', async (request, response) => {
-    const {
-        code
-    } = request.body
-    response.send(middleware.generateApiOutput("OK", UserController.signIn));
+  try {
+    const { code } = request.body
+    const token = await new UserController().signIn(code);
+    return response.status(200).send(middleware.generateApiOutput("OK", { token }))
+  } catch (error) {
+    return response.status(500).json(middleware.generateApiOutput("FAILED", {error}))
+  }
 })
 
 

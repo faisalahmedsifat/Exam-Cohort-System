@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom'
 
+// Redux
+import { useDispatch } from 'react-redux';
+import { login } from '../features/currentUserSlice';
+import { useSelector } from 'react-redux';
+
 // Services
 import notification from '../services/notificationService'
+import oAuthService from "../services/oAuthService"
 
 // Material UI
 import Avatar from '@mui/material/Avatar';
@@ -17,22 +23,20 @@ import Container from '@mui/material/Container';
 import { useGoogleLogin } from '@react-oauth/google';
 
 const Signin = () => {
-  const defaultLoginFormState = { emailField: "", passwordField: "", rememberMeField: false }
-  const [formValues, setFormValues] = useState(defaultLoginFormState);
-  const handleEmailChange = ({ target }) => setFormValues({ ...formValues, emailField: target.value })
-  const handlePasswordChange = ({ target }) => setFormValues({ ...formValues, passwordField: target.value })
-  const handleRememberChange = ({ target }) => setFormValues({ ...formValues, rememberMeField: !formValues.rememberMeField })
-
-  const currentUser = null
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setFormValues(defaultLoginFormState)
-  }
+  const dispatch = useDispatch()
+  const currentUser = useSelector(store => store.currentUser.value)
 
   const oauthSuccess = async (response) => {
-    console.log(response);
-    notification.success('Signed in Successfully!', 2000);
+    try {
+      const result = await oAuthService.getToken(response.code)
+      if (result.status === "OK") {
+        dispatch(login(result.response))
+        window.localStorage.setItem('currentUser', JSON.stringify(result.response))
+        notification.success('Successfully Logged In!', 2000);
+      } else notification.error(result.response, 2000);
+    } catch (error) {
+      notification.error(error, 2000);
+    }
   };
 
   const oauthFailed = (error) => {
@@ -63,7 +67,7 @@ const Signin = () => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
             <Button
               onClick={handleOAuth}
               fullWidth

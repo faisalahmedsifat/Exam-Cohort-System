@@ -50,7 +50,7 @@ app.use(express.json())
  * Use the Routes
  */
 app.use('/', mainRoutes)
-app.use('/user', userRoutes)
+app.use('/api/user/', userRoutes)
 /**
  * Handle the unknown endpoint, if no controller is defined for requested endpoint
  * Which is a 404 Error Code

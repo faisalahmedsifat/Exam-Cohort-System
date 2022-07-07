@@ -1,58 +1,46 @@
+// Core Packages
+const config = require('../utils/config')
 const axios = require('axios')
+const jwt = require('jsonwebtoken')
 
 // Models
 const Models = require('../models')
 
 // OAuth Helpers
-const {
-    OAuth2Client
-} = require('google-auth-library');
+const { OAuth2Client } = require('google-auth-library');
 const oAuth2Client = new OAuth2Client(
-    process.env.OAUTH_GOOGLE_CLIENT_ID,
-    process.env.OAUTH_GOOGLE_CLIENT_SECRET,
-    'postmessage',
+  process.env.OAUTH_GOOGLE_CLIENT_ID,
+  process.env.OAUTH_GOOGLE_CLIENT_SECRET,
+  'postmessage',
 );
 
 class User {
 
-    getGoogleUserDataFromCode(code) {
-        const {
-            tokens
-        } = await oAuth2Client.getToken(code);
-        const {
-            data
-        } = await axios.get('https://w...content-available-to-author-only...s.com/oauth2/v3/userinfo', {
-            headers: {
-                Authorization: `Bearer ${tokens.access_token}`
-            }
-        })
-        return data
-    }
+  async getGoogleUserDataFromCode(code) {
+    const { tokens } = await oAuth2Client.getToken(code);
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${tokens.access_token}` } })
+    return data
+  }
 
-    generateTokenFromData(data) {
-        const detailsForToken = {
-            userID: uuid(),
-            emailID: data.email,
-            firstName: targetUser.given_name,
-            lastName: targetUser.family_name
-        }
-        return jwt.sign(detailsForToken, config.SECRET, {
-            expiresIn: '1h'
-        });
-    }
+  async generateTokenForUser(emailID) {
+    const userDetails = await Models.User.findOne({ where: { emailID: emailID } })
+    const detailsForToken = { userID: userDetails.userID, emailID: userDetails.emailID, firstName: userDetails.firstName, lastName: userDetails.lastName }
+    const token = jwt.sign(detailsForToken, config.SECRET, { expiresIn: '1h' });
+    return token
+  }
 
-    signIn(code) {
-        try {
-            const data = this.getGoogleUserDataFromCode(code);
-            const token = generateTokenFromData(data);
-            return response
-                .status(200)
-                .send(middleware.generateApiOutput("OK", token))
-        } catch (error) {
-            return response.status(500).json(middleware.generateApiOutput("FAILED", "Internal Server Error!"))
-        }
-    }
+  async checkIfUserExists(emailID) {
+    let searchUser = await Models.User.findOne({ where: { emailID: emailID } });
+    return (searchUser != null)
+  }
+
+  async signIn(code) {
+    const data = await this.getGoogleUserDataFromCode(code);
+    if (!(await this.checkIfUserExists(data.email))) await Models.User.create({ firstName: data.given_name, lastName: data.family_name, emailID: data.email })
+    const token = await this.generateTokenForUser(data.email);
+    return token
+  }
+
 }
-
 
 module.exports = User
