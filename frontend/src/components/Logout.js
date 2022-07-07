@@ -17,9 +17,9 @@ function Logout() {
   }, [])
 
   return (
-    <React.Fragment>
+    <div>
       Logging you out, please wait...
-    </React.Fragment>
+    </div>
   )
 }
 

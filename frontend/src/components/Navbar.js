@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+// JWT
+import decode from 'jwt-decode'
+
 // Material UI
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,6 +18,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import styled from '@emotion/styled';
+
+// Stylesheet
+import "./Navbar.css"
 
 const StyledTypography = styled(Typography)`
     text-decoration: none;
@@ -51,7 +57,8 @@ const Navbar = ({ currentUser }) => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src="/linkto" />
+                {!currentUser && <Avatar/>} 
+                {currentUser && <img className="round-avatar" alt="profile-pic" src={decode(currentUser.token).picture} referrerPolicy="no-referrer" ></img>} 
               </IconButton>
             </Tooltip>
             <Menu
@@ -70,10 +77,10 @@ const Navbar = ({ currentUser }) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {!currentUser && <MenuItem component={RouterLink} to="/signin" onClick={handleCloseUserMenu}> <Typography textAlign="center">Sign In</Typography></MenuItem>}
               {currentUser && <MenuItem component={RouterLink} to="/dashboard" onClick={handleCloseUserMenu}> <Typography textAlign="center">Dashboard</Typography></MenuItem>} 
               {currentUser && <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu}> <Typography textAlign="center">Profile</Typography></MenuItem>} 
               {currentUser && <MenuItem component={RouterLink} to="/logout" onClick={handleCloseUserMenu}> <Typography textAlign="center">Logout</Typography></MenuItem>} 
+              {!currentUser && <MenuItem component={RouterLink} to="/signin" onClick={handleCloseUserMenu}> <Typography textAlign="center">Sign In</Typography></MenuItem>}
             </Menu>
           </Box>
         </Toolbar>

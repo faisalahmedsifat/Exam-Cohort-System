@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom'
+import React from 'react';
+import { Navigate } from 'react-router-dom'
 
 // Redux
 import { useDispatch } from 'react-redux';
@@ -33,9 +33,9 @@ const Signin = () => {
         dispatch(login(result.response))
         window.localStorage.setItem('currentUser', JSON.stringify(result.response))
         notification.success('Successfully Logged In!', 2000);
-      } else notification.error(result.response, 2000);
+      } else notification.error("Internal Server Error!", 2000);
     } catch (error) {
-      notification.error(error, 2000);
+      notification.error("Internal Server Error!", 2000);
     }
   };
 
