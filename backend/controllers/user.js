@@ -22,9 +22,9 @@ class User {
     return data
   }
 
-  async generateTokenForUser(emailID) {
-    const userDetails = await Models.User.findOne({ where: { emailID: emailID } })
-    const detailsForToken = { userID: userDetails.userID, emailID: userDetails.emailID, firstName: userDetails.firstName, lastName: userDetails.lastName }
+  async generateTokenForUser(data) {
+    const userDetails = await Models.User.findOne({ where: { emailID: data.email } })
+    const detailsForToken = { userID: userDetails.userID, emailID: userDetails.emailID, firstName: userDetails.firstName, lastName: userDetails.lastName, picture: data.picture }
     const token = jwt.sign(detailsForToken, config.SECRET, { expiresIn: '1h' });
     return token
   }
@@ -37,7 +37,7 @@ class User {
   async signIn(code) {
     const data = await this.getGoogleUserDataFromCode(code);
     if (!(await this.checkIfUserExists(data.email))) await Models.User.create({ firstName: data.given_name, lastName: data.family_name, emailID: data.email })
-    const token = await this.generateTokenForUser(data.email);
+    const token = await this.generateTokenForUser(data);
     return token
   }
 
