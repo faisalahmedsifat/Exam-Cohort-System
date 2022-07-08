@@ -2,6 +2,9 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom'
 
+// Utils
+import config from './utils/config'
+
 // Redux 
 import store from './redux/store'
 import { Provider } from 'react-redux'
@@ -27,7 +30,7 @@ import App from './App';
 ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={config.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}>
         <App />
       </GoogleOAuthProvider>
     </Provider>
