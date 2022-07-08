@@ -1,9 +1,0 @@
-const REACT_APP_GOOGLE_OAUTH_CLIENT_ID = process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID || ""
-const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
-
-const exports = {
-  REACT_APP_GOOGLE_OAUTH_CLIENT_ID,
-  REACT_APP_BACKEND_URL
-}
-
-export default exports
