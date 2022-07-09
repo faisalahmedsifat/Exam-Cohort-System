@@ -3,14 +3,14 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class ExamCohort extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.ExamCohort, { 
+      this.belongsTo(models.User, { 
         as: {
           singular: 'evaluatorcohort',
           plural: 'evaluatorcohorts'
@@ -18,37 +18,32 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {name: 'evaluatorID', allowNull:false} 
       });
 
-      this.belongsToMany(models.ExamCohort, { 
-        as: 'assignedcohort',
+      this.belongsToMany(models.User, { 
+        as: 'candidate',
         through: models.Candidatelist,
-        foreignKey: 'CandidateID',
-        otherKey: "CohortID"
+        foreignKey: 'CohortID',
+        otherKey: "CandidateID"
+      });
+
+      this.hasMany(models.Assessment, { 
+        foreignKey: {name: 'cohortID', allowNull:false} 
       });
     }
   }
-  User.init({
-    userID: {
+  ExamCohort.init({
+    cohortID: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    firstName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    emailID: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
     }
   }, {
     sequelize,
-    modelName: 'User',
-    tableName: 'users'
+    modelName: 'ExamCohort',
+    tableName: 'examcohorts'
   });
-  return User;
+  return ExamCohort;
 };
