@@ -24,6 +24,7 @@ pipelines:
                 HEROKU_API_KEY: $HEROKU_API_KEY
                 HEROKU_APP_NAME: $HEROKU_APP_NAME_BACKEND
                 ZIP_FILE: backend.tar.gz
+                WAIT: "true"
             - pipe: atlassian/heroku-deploy:2.0.0
               variables:
                 HEROKU_API_KEY: $HEROKU_API_KEY
