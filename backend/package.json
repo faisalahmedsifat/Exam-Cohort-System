@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development nodemon --legacy-watch ./",
-    "build:ui": "rm -rf build && cd ../frontend/ && npm run build && cp -r build ../backend",
-    "deploy": "git push heroku HEAD:master",
-    "deploy:backend": "git add . && git commit -m bebuild && npm run deploy",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy",
-    "logs:prod": "heroku logs --tail",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit"
+    "start": "cross-env NODE_ENV=production node build/index.js",
+    "dev": "cross-env NODE_ENV=development ts-node-dev index.ts",
+    "build": "tsc",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit",
+    "tsc": "tsc"
   },
   "author": "Md Sahadul Hasan Arian, Faisal Ahmed Sifat",
   "license": "ISC",
@@ -31,8 +28,15 @@
     "sequelize": "^6.20.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^28.1.4",
     "jest": "^28.1.0",
     "nodemon": "^2.0.16",
-    "supertest": "^6.2.3"
+    "supertest": "^6.2.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.4"
+  },
+  "jest": {
+    "testPathIgnorePatterns": ["build"]
   }
 }
