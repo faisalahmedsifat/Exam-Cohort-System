@@ -2,6 +2,7 @@
 
 const logger = require('./logger')
 const config = require('./config')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {
   logger.info('---')
@@ -23,8 +24,21 @@ const generateApiOutput = (type, message) => {
   }
 }
 
+const authBarrier = (request, response, next) => {
+  try {
+    let token;
+    const authorization = request.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) token = authorization.substring(7)
+    const tokenData = jwt.verify(token, config.SECRET)
+    request.userID = tokenData.userID 
+    next()
+  } catch (error) {
+    return response.status(400).json(generateApiOutput("FAILED", "Authentication Failed!"))
+  }
+}
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  generateApiOutput
+  generateApiOutput,
+  authBarrier
 }
