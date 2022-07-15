@@ -53,4 +53,28 @@ router.post('/examcohort', middleware.authBarrier, async (request, response) => 
 })
 
 
+router.post('/examcohort/:id/candidate', middleware.authBarrier, async (request, response) => {
+  const {userId} = request.body
+  const examcohortId = request.params.id
+  try {
+    const user = await User.findByPk(userId);
+    const cohort = await ExamCohort.findByPk(examcohortId)
+    cohort.addCandidate(user)
+    return response.status(201).json(middleware.generateApiOutput("OK", user))
+  } catch (error) {
+    return response.status(500).json(middleware.generateApiOutput("FAILED", {error}))
+  }
+})
+router.get('/examcohort/:id/candidate', middleware.authBarrier, async (request, response) => {
+  const examcohortId = request.params.id
+  try {
+    const cohort = await ExamCohort.findByPk(examcohortId)
+    const candidates = await cohort.getCandidate()
+    return response.status(201).json(middleware.generateApiOutput("OK", candidates))
+  } catch (error) {
+    return response.status(500).json(middleware.generateApiOutput("FAILED", {error}))
+  }
+})
+
+
 module.exports = router
