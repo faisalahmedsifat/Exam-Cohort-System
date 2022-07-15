@@ -5,9 +5,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 // Redux
 import { useSelector } from 'react-redux';
 
-// Stylesheet
-import "./App.css"
-
 // Components
 import Header from './components/Header'
 import Home from './components/Home'

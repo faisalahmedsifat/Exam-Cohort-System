@@ -1,91 +1,80 @@
 // Core Packages
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // JWT
 import decode from 'jwt-decode'
 
-// Material UI
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
-import styled from '@emotion/styled';
+// UI 
+import { Menu, Transition } from '@headlessui/react'
+import { AcademicCapIcon, LogoutIcon, UserIcon, CollectionIcon, LoginIcon, UserCircleIcon } from '@heroicons/react/outline'
 
-// Stylesheet
-import "./Navbar.css"
+const MenuItem = (props) => {
+  return (
+    <Menu.Item>
+      {({ active }) => (
+        <RouterLink to={props.link}>
+          <button
+            component={RouterLink}
+            to={props.link}
+            className={`${active ? 'bg-flat_white2' : ''
+              } group flex w-full items-center rounded-md px-2 py-2 text-md`}
+          >
+            {props.children}
+            {props.title}
+          </button>
+        </RouterLink>
+      )}
+    </Menu.Item>
+  )
+}
 
-const StyledTypography = styled(Typography)`
-    text-decoration: none;
-    &:focus, &:hover, &:visited, &:link, &:active {
-        text-decoration: none;
-        color: inherit;
-    }
-`;
+const UserMenu = ({ currentUser }) => {
+  return (
+    <Menu as="div" className='relative inline-block text-left'>
+      <Menu.Button className='inline-flex justify-center w-full focus:outline-none'>
+        {!currentUser && <UserCircleIcon className='h-10 w-10 rounded-full'/>}
+        {currentUser && <img className="h-10 w-10 rounded-full" alt="profile-pic" src={decode(currentUser.token).picture} referrerPolicy="no-referrer"></img>} 
+      </Menu.Button>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="origin-top-right absolute right-0 mt-0 w-36 rounded-md shadow-lg bg-flat_white1 ring-1 ring-flat_blue2 ring-opacity-5 focus:outline-none">
+          <div className='py-1'>
+            {currentUser && <MenuItem title="Dashboard" link="/dashboard"> <CollectionIcon className="mr-2 h-5 w-5" /> </MenuItem>}
+            {currentUser && <MenuItem title="Profile" link="/profile"> <UserIcon className="mr-2 h-5 w-5" /> </MenuItem>}
+            {currentUser && <MenuItem title="Logout" link="/logout"> <LogoutIcon className="mr-2 h-5 w-5" /> </MenuItem>}
+            {!currentUser && <MenuItem title="Sign In" link="/signin"> <LoginIcon className="mr-2 h-5 w-5" /> </MenuItem>}
+          </div>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  )
+}
 
 const Navbar = ({ currentUser }) => {
-  const [anchorElUser, setAnchorElUser] = useState(null);
-  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
-  const handleCloseUserMenu = () => setAnchorElUser(null);
-
   return (
-    <AppBar position="static" sx={{ background: '#516365' }}>
-      <Container maxWidth="xl">
-        <Toolbar>
-          <IconButton
-            component={RouterLink}
-            to="/"
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <ReceiptIcon />
-          </IconButton>
-          <StyledTypography component={RouterLink} to="/" variant="h6" color="inherit" sx={{ flexGrow: 1, }}>
+    <div className='flex justify-between items-center py-5 px-10'>
+      <RouterLink to="/home">
+        <div className='text-xl text-gray-600 flex justify-center items-center'>
+          <div className='h-8 w-8'>
+            <AcademicCapIcon />
+          </div>
+          <div className='pl-5 font-bold'>
             Exam Cohort App
-          </StyledTypography>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {!currentUser && <Avatar/>} 
-                {currentUser && <img className="round-avatar" alt="profile-pic" src={decode(currentUser.token).picture} referrerPolicy="no-referrer" ></img>} 
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {currentUser && <MenuItem component={RouterLink} to="/dashboard" onClick={handleCloseUserMenu}> <Typography textAlign="center">Dashboard</Typography></MenuItem>} 
-              {currentUser && <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu}> <Typography textAlign="center">Profile</Typography></MenuItem>} 
-              {currentUser && <MenuItem component={RouterLink} to="/logout" onClick={handleCloseUserMenu}> <Typography textAlign="center">Logout</Typography></MenuItem>} 
-              {!currentUser && <MenuItem component={RouterLink} to="/signin" onClick={handleCloseUserMenu}> <Typography textAlign="center">Sign In</Typography></MenuItem>}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          </div>
+        </div>
+      </RouterLink>
+      <div>
+        <UserMenu currentUser={currentUser} />
+      </div>
+    </div>
   )
 }
 
