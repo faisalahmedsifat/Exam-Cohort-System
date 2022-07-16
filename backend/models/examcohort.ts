@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Assessment, { 
+        as: 'assessment',
         foreignKey: {name: 'cohortID', allowNull:false} 
       });
     }
