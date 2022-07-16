@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link as RouterLink } from 'react-router-dom'
 
 // Redux
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,9 @@ import oAuthService from "../services/oAuthService"
 
 // Google Login
 import { useGoogleLogin } from '@react-oauth/google';
+
+// Icons
+import { AcademicCapIcon } from '@heroicons/react/outline';
 
 const Signin = () => {
   const dispatch = useDispatch()
@@ -42,7 +45,18 @@ const Signin = () => {
 
   if (currentUser === null) {
     return (
-      <div onClick={handleOAuth}>Sign In With Google</div>
+      <div className='flex flex-col items-center pt-10 h-screen w-screen bg-flat_white1'>
+
+        <RouterLink to="/home">
+          <div className='flex items-center pb-10'>
+            <AcademicCapIcon className='h-16 w-16' />
+            <div className='text-3xl pl-2 font-bold'>Exam Cohort App</div>
+          </div>
+        </RouterLink>
+        <div className='text-2xl justify center font-bold pb-10'>Sign in to your account</div>
+
+        <div className="text-white cursor-pointer bg-flat_green1 shadow py-3 px-3 font-bold rounded-lg" onClick={handleOAuth}>Sign In With Google</div>
+      </div>
     );
   } else {
     return <Navigate to='/dashboard' />

@@ -1,9 +1,12 @@
 // Core Packages
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // JWT
 import decode from 'jwt-decode'
+
+// Redux
+import { useSelector } from 'react-redux';
 
 // UI 
 import { Menu, Transition } from '@headlessui/react'
@@ -29,9 +32,9 @@ const MenuItem = (props) => {
   )
 }
 
-const UserMenu = ({ currentUser }) => {
+const UserMenu = ({ currentUser,halfHeader }) => {
   return (
-    <Menu as="div" className='relative inline-block text-left'>
+    <Menu as="div" className={halfHeader ? 'invisible lg:visible relative inline-block text-left' : 'relative inline-block text-left'}>
       <Menu.Button className='inline-flex justify-center w-full focus:outline-none'>
         {!currentUser && <UserCircleIcon className='h-10 w-10 rounded-full'/>}
         {currentUser && <img className="h-10 w-10 rounded-full" alt="profile-pic" src={decode(currentUser.token).picture} referrerPolicy="no-referrer"></img>} 
@@ -58,21 +61,34 @@ const UserMenu = ({ currentUser }) => {
   )
 }
 
-const Navbar = ({ currentUser }) => {
+const Navbar = (props) => {
+  const currentUser = useSelector(store => store.currentUser.value)
+  const halfHeader = props.halfHeader ?? false
+  const title = props.title ?? ''
+
   return (
-    <div className='flex justify-between items-center py-5 px-10'>
-      <RouterLink to="/home">
-        <div className='text-xl text-gray-600 flex justify-center items-center'>
-          <div className='h-8 w-8'>
-            <AcademicCapIcon />
-          </div>
-          <div className='pl-5 font-bold'>
-            Exam Cohort App
-          </div>
-        </div>
-      </RouterLink>
-      <div>
-        <UserMenu currentUser={currentUser} />
+    <div className={halfHeader ? 'bg-flat_white1 lg:bg-white  flex justify-between items-center lg:py-5 lg:px-10 shadow' : 'flex justify-between items-center py-5 px-10'}>
+      {
+        !halfHeader && <RouterLink to="/home">
+                          <div className='text-xl text-gray-600 flex justify-center items-center'>
+                            <div className='h-8 w-8'>
+                              <AcademicCapIcon />
+                            </div>
+                            <div className='pl-5 font-bold'>
+                              Exam Cohort App
+                            </div>
+                          </div>
+                        </RouterLink>
+      }
+
+      {
+        halfHeader && <div className='font-bold text-2xl'>{title}</div>
+      }
+      
+      <div className='flex items-center'>
+        {!currentUser && <div className={halfHeader ? 'invisible lg:visible' : 'visible'}>Hi, Guest</div>}
+        {currentUser && <div className={halfHeader ? 'invisible lg:visible' : 'visible'}>Hi, {decode(currentUser.token).lastName}</div>}
+        <div className='pl-5'><UserMenu currentUser={currentUser} halfHeader={halfHeader} /></div>
       </div>
     </div>
   )
