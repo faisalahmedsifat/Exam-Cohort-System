@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 
 // UI 
 import { Menu, Transition } from '@headlessui/react'
-import { AcademicCapIcon, LogoutIcon, UserIcon, CollectionIcon, LoginIcon, UserCircleIcon } from '@heroicons/react/outline'
+import { AcademicCapIcon, LogoutIcon, UserIcon, HomeIcon, LoginIcon, UserCircleIcon } from '@heroicons/react/outline'
 
 const MenuItem = (props) => {
   return (
@@ -50,7 +50,7 @@ const UserMenu = ({ currentUser,halfHeader }) => {
       >
         <Menu.Items className="origin-top-right absolute right-0 mt-0 w-36 rounded-md shadow-lg bg-flat_white1 ring-1 ring-flat_blue2 ring-opacity-5 focus:outline-none">
           <div className='py-1'>
-            {currentUser && <MenuItem title="Dashboard" link="/dashboard"> <CollectionIcon className="mr-2 h-5 w-5" /> </MenuItem>}
+            {currentUser && <MenuItem title="Dashboard" link="/dashboard"> <HomeIcon className="mr-2 h-5 w-5" /> </MenuItem>}
             {currentUser && <MenuItem title="Profile" link="/profile"> <UserIcon className="mr-2 h-5 w-5" /> </MenuItem>}
             {currentUser && <MenuItem title="Logout" link="/logout"> <LogoutIcon className="mr-2 h-5 w-5" /> </MenuItem>}
             {!currentUser && <MenuItem title="Sign In" link="/signin"> <LoginIcon className="mr-2 h-5 w-5" /> </MenuItem>}
@@ -82,7 +82,7 @@ const Navbar = (props) => {
       }
 
       {
-        halfHeader && <div className='font-bold text-2xl'>{title}</div>
+        halfHeader && <div className='mt-10 ml-16 lg:mt-0 lg:ml-0 font-bold text-2xl'>{title}</div>
       }
       
       <div className='flex items-center'>

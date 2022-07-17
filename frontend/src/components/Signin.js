@@ -55,7 +55,7 @@ const Signin = () => {
         </RouterLink>
         <div className='text-2xl justify center font-bold pb-10'>Sign in to your account</div>
 
-        <div className="text-white cursor-pointer bg-flat_green1 shadow py-3 px-3 font-bold rounded-lg" onClick={handleOAuth}>Sign In With Google</div>
+        <div className="text-white cursor-pointer bg-flat_darkgreen1 hover:bg-flat_darkgreen2 hadow py-3 px-3 font-bold rounded-lg" onClick={handleOAuth}>Sign In With Google</div>
       </div>
     );
   } else {
