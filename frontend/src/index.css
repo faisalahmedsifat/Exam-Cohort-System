@@ -5,5 +5,5 @@
 body {
     font-family: "Varela Round";
     font-weight: 400;
-    @apply overflow-x-hidden;
+    @apply overflow-x-hidden bg-flat_white1;
 }
