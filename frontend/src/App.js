@@ -25,6 +25,8 @@ import Logout from './components/Logout'
 import Dashboard from './components/Dashboard/Dashboard'
 import Profile from './components/Dashboard/Profile'
 import Examcohorts from './components/Dashboard/Examcohorts'
+import ExamcohortsPanel from './components/Dashboard/ExamcohortsPanel'
+import Logs from './components/Logs';
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -35,6 +37,12 @@ const AuthReqRoutes = ({ currentUser }) => {
 
 const AuthNotReqRoutes = ({ currentUser }) => {
   return !currentUser ? <Outlet /> : <Navigate to='/dashboard' />
+}
+
+const RedirToHome = () => {
+  const savedUserLocally = window.localStorage.getItem('currentUser')
+  if(savedUserLocally) return <Navigate to={window.location.pathname} />
+  else return <Navigate to='/home' />
 }
 
 const App = () => {
@@ -58,19 +66,39 @@ const App = () => {
       <NavigateSetter />
       <ToastContainer theme="dark" />
       <Routes>
-        <Route element={<AuthNotReqRoutes currentUser={currentUser} />}>
-          <Route path='/' element={<Home />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/signin' element={<Signin />} />
-        </Route>
+        {
+          !currentUser &&
+          <>
+          <Route element={<AuthNotReqRoutes currentUser={currentUser} />}>
+            <Route path='/' element={<Home />} />
+            <Route path='/home' element={<Home />} />
+            <Route path='/signin' element={<Signin />} />
+          </Route>
+          <Route path='*' element={<RedirToHome />} />
+          </>
+        }
 
-        <Route element={<AuthReqRoutes currentUser={currentUser} />}>
-          <Route path='/dashboard' element={<Dashboard />} />
-          <Route path='/examcohorts' element={<Examcohorts />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/logout' element={<Logout />} />
-        </Route>
-        <Route path='*' element={<Notfound />} />
+        {
+          currentUser &&
+          <>
+            <Route element={<AuthNotReqRoutes currentUser={currentUser} />}>
+              <Route path='/' element={<Home />} />
+              <Route path='/home' element={<Home />} />
+              <Route path='/signin' element={<Signin />} />
+            </Route>
+            <Route element={<AuthReqRoutes currentUser={currentUser} />}>
+              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/examcohorts' element={<Examcohorts />} />
+              <Route path='/examcohorts/:cohortID/candidates' element={<Logs />} />
+              <Route path='/examcohorts/:cohortID' element={<ExamcohortsPanel />} />
+              <Route path='/profile' element={<Profile />} />
+              <Route path='/logout' element={<Logout />} />
+            </Route>
+            <Route path='*' element={<Notfound />} />
+          </>
+        }
+
+        
       </Routes>
     </Router>
   )
