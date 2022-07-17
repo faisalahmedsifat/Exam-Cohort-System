@@ -13,7 +13,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasMany(models.ExamCohort, { 
-        as: 'evaluatorcohort',
+        as: {
+          singular: 'evaluatorcohort',
+          plural: 'evaluatorcohorts'
+        },
         foreignKey: {name: 'evaluatorID', allowNull:false} 
       });
 

@@ -5,10 +5,14 @@ const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 
 // Other Controllers
+const ORMController = require('./ORMController')
 const UserController = require('./UserController')
 
 //Models
-const { User, ExamCohort } = require('../models')
+const { User, ExamCohort, Assessment } = require('../models')
+
+// Helper Functions
+let asyncMap = async (object,callback) => await Promise.all(object.map(async elem => await callback(elem)))
 
 class ExamCohortController {
 
@@ -16,12 +20,34 @@ class ExamCohortController {
         return await ExamCohort.findByPk(cohortID) 
     }
 
+    static async getCohortNumOfAssessment(cohortID){
+        const cohort = await ExamCohortController.getCohortFromCohortID(cohortID);
+        const count = await cohort.countAssessment()
+        return count;
+    }
+    
+    static async getCohortNumOfCandidate(cohortID){
+      const cohort = await ExamCohortController.getCohortFromCohortID(cohortID);
+      const count = await cohort.countCandidate()
+      return count;
+    }
+
+    static async loadCohortStats(cohortInstances){
+      const cohortData = ORMController.getDataAttributesFromInstances(cohortInstances)
+      const cohortListExtra = await asyncMap(cohortData, async cohort => {
+        cohort.numOfAssessments = await ExamCohortController.getCohortNumOfAssessment(cohort.cohortID)
+        cohort.numOfCandidates = await ExamCohortController.getCohortNumOfCandidate(cohort.cohortID)          
+        return cohort          
+      })
+      return cohortListExtra
+    }
 
 
     static async getAllExamCohort(userID){
         const user = await UserController.getUserFromUserID(userID)
-        const cohorts = await user.getEvaluatorcohorts(); 
-        return cohorts
+        let cohorts = await user.getEvaluatorcohorts();
+        let cohortWithStats = await ExamCohortController.loadCohortStats(cohorts) 
+        return cohortWithStats
     }
     static async createExamCohort(userID, name){
         const user = await UserController.getUserFromUserID(userID)

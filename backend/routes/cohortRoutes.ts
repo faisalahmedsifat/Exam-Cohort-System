@@ -15,12 +15,12 @@ const { User, ExamCohort } = require('../models')
 /** 
  * Routes
  * 
- * prefix: api/
+ * prefix: api/examcohort/
  */
 
 
 // exam cohort related routes
-router.get('/examcohort', middleware.authBarrier, async (request, response) => {
+router.get('/', middleware.authBarrier, async (request, response) => {
     const userID = request.userID
     try {
         cohorts =  await ExamCohortController.getAllExamCohort(userID)
@@ -30,7 +30,7 @@ router.get('/examcohort', middleware.authBarrier, async (request, response) => {
     }
 })
 
-router.post('/examcohort', middleware.authBarrier, async (request, response) => {
+router.post('/', middleware.authBarrier, async (request, response) => {
     const { name } = request.body
     const userID = request.userID
     try {
@@ -43,7 +43,7 @@ router.post('/examcohort', middleware.authBarrier, async (request, response) => 
 
 
 // Candidates related routes
-router.post('/examcohort/:id/candidate', middleware.authBarrier, async (request, response) => {
+router.post('/:id/candidate', middleware.authBarrier, async (request, response) => {
     const { userID } = request.body
     const cohortID = request.params.id
     try {
@@ -54,7 +54,7 @@ router.post('/examcohort/:id/candidate', middleware.authBarrier, async (request,
     }
 })
 
-router.get('/examcohort/:id/candidate', middleware.authBarrier, async (request, response) => {
+router.get('/:id/candidate', middleware.authBarrier, async (request, response) => {
     const cohortID = request.params.id
     try {
         const candidates = await ExamCohortController.getAllCandidatesFromExamCohort(cohortID)
@@ -65,7 +65,7 @@ router.get('/examcohort/:id/candidate', middleware.authBarrier, async (request, 
 })
 
 // Assessment related routes
-router.post('/examcohort/:id/assessment', middleware.authBarrier, async (request, response) => {
+router.post('/:id/assessment', middleware.authBarrier, async (request, response) => {
     const { name, availableDateTime, dueDateTime } = request.body
     const examcohortID = request.params.id
    
@@ -78,7 +78,7 @@ router.post('/examcohort/:id/assessment', middleware.authBarrier, async (request
     }
 })
 
-router.get('/examcohort/:id/assessment', middleware.authBarrier, async (request, response) => {
+router.get('/:id/assessment', middleware.authBarrier, async (request, response) => {
     const examcohortID = request.params.id
 
     try {

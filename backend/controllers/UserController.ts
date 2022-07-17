@@ -19,7 +19,7 @@ class UserController {
       include: [
         {
           model: Models.ExamCohort,
-          as: 'evaluatorcohort',
+          as: 'evaluatorcohorts',
         }
       ]
     })
@@ -34,13 +34,13 @@ class UserController {
   static async getUserProfileDetails(userID){
     let fullDetails = await UserController.getUserAndCohortsFromUserID(userID);
     fullDetails = fullDetails.dataValues
-    const NoOfExamCohorts = fullDetails.evaluatorcohort.length;
+    const NoOfExamCohorts = fullDetails.evaluatorcohorts.length;
     const registeredAt = DateTimeController.getTimeAgo(fullDetails.createdAt)
     const userProfileDetails = {...fullDetails, NoOfExamCohorts, registeredAt }
     delete userProfileDetails.userID
     delete userProfileDetails.createdAt
     delete userProfileDetails.updatedAt
-    delete userProfileDetails.evaluatorcohort
+    delete userProfileDetails.evaluatorcohorts
     return userProfileDetails;
   }
 }

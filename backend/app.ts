@@ -55,8 +55,8 @@ app.use(express.json())
  */
 app.use('/', mainRoutes)
 app.use('/api/auth/', authRoutes)
-app.use('/api/', cohortRoutes)
-app.use('/api/profile', profileRoutes)
+app.use('/api/profile/', profileRoutes)
+app.use('/api/examcohort/', cohortRoutes)
 
 /**
  * Handle the unknown endpoint, if no controller is defined for requested endpoint
