@@ -43,7 +43,7 @@ const Maincontent = () => {
   return (
     <div className='grow'>
       <Header halfHeader={true} title="Profile" />
-      <div className='bg-flat_white1 h-screen p-10'>
+      <div className='bg-flat_white1 p-10'>
         <div className='bg-white rounded-lg flex flex-col divide-y'>
           <div className='py-5 px-10 flex flex-row justify-between'>
             <div>

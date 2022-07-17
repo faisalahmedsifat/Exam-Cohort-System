@@ -11,8 +11,14 @@ const getEvaluatorsCohorts = async (token) => {
   return response.data.response
 }
 
+const addEvaluatorsCohort = async (token, body) => {
+  const response = await axios.post(baseUrl,body,{headers: { Authorization: `bearer ${token}` }})
+  return response.data.response
+}
+
 const exports = {
-  getEvaluatorsCohorts
+  getEvaluatorsCohorts,
+  addEvaluatorsCohort
 }
 
 export default exports

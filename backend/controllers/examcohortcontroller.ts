@@ -32,14 +32,18 @@ class ExamCohortController {
       return count;
     }
 
+    // Single Instance Stats Loader
+    static async loadCohortStat(cohortInstance){
+      const cohortData = ORMController.getDataAttributesFromInstance(cohortInstance)
+      cohortData.numOfAssessments = await ExamCohortController.getCohortNumOfAssessment(cohortData.cohortID)
+      cohortData.numOfCandidates = await ExamCohortController.getCohortNumOfCandidate(cohortData.cohortID)                  
+      return cohortData
+    }
+
+    // Multiple Instance Stats Loader
     static async loadCohortStats(cohortInstances){
-      const cohortData = ORMController.getDataAttributesFromInstances(cohortInstances)
-      const cohortListExtra = await asyncMap(cohortData, async cohort => {
-        cohort.numOfAssessments = await ExamCohortController.getCohortNumOfAssessment(cohort.cohortID)
-        cohort.numOfCandidates = await ExamCohortController.getCohortNumOfCandidate(cohort.cohortID)          
-        return cohort          
-      })
-      return cohortListExtra
+      const cohortDataListExtra = await asyncMap(cohortInstances, async cohortInstance => await ExamCohortController.loadCohortStat(cohortInstance))
+      return cohortDataListExtra
     }
 
 
@@ -52,7 +56,7 @@ class ExamCohortController {
     static async createExamCohort(userID, name){
         const user = await UserController.getUserFromUserID(userID)
         const cohort = await user.createEvaluatorcohort({ name: name });
-        return cohort
+        return await ExamCohortController.loadCohortStat(cohort)
     }
     static async addCandidatesToExamCohort(userID, cohortID){
         const user = await UserController.getUserFromUserID(userID)

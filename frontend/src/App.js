@@ -26,7 +26,6 @@ import Dashboard from './components/Dashboard/Dashboard'
 import Profile from './components/Dashboard/Profile'
 import Examcohorts from './components/Dashboard/Examcohorts'
 import ExamcohortsPanel from './components/Dashboard/ExamcohortsPanel'
-import Logs from './components/Logs';
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -89,7 +88,6 @@ const App = () => {
             <Route element={<AuthReqRoutes currentUser={currentUser} />}>
               <Route path='/dashboard' element={<Dashboard />} />
               <Route path='/examcohorts' element={<Examcohorts />} />
-              <Route path='/examcohorts/:cohortID/candidates' element={<Logs />} />
               <Route path='/examcohorts/:cohortID' element={<ExamcohortsPanel />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/logout' element={<Logout />} />

@@ -8,10 +8,8 @@ const middleware = require('../utils/middleware')
 const Models = require('../models')
 
 class ORMController {
-  static getDataAttributesFromInstances(instances){
-    let data = [];
-    instances.forEach(instance => data.push(instance.dataValues));
-    return data;
+  static getDataAttributesFromInstance(instance){
+    return instance.dataValues;
   }
 
   // TODO: Refactor every Sequelize Code into this Controller
