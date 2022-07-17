@@ -69,6 +69,17 @@ class ExamCohortController {
         const users = await cohort.getCandidate()
         return users
     }
-
+    
+    static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime){
+        const cohort = await this.getCohortFromCohortID(cohortID) 
+        const assessment = await cohort.createAssessment({ name: name, availableDateTime: availableDateTime, dueDateTime: dueDateTime })
+        return assessment
+    }
+    static async getAllAssessmentFromExamCohort(cohortID){
+        const cohort = await this.getCohortFromCohortID(cohortID) 
+        const assessments = await cohort.getAssessment()
+        return assessments
+    }
+    
 }
 module.exports = ExamCohortController
