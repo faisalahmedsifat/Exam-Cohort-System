@@ -8,6 +8,9 @@ const jwt = require('jsonwebtoken')
 // Models
 const Models = require('../models')
 
+// Other Controllers
+const UserController = require('./UserController')
+
 // OAuth Helpers
 const { OAuth2Client } = require('google-auth-library');
 const oAuth2Client = new OAuth2Client(
@@ -31,14 +34,9 @@ class AuthController {
     return token
   }
 
-  async checkIfUserExists(emailID) {
-    let searchUser = await Models.User.findOne({ where: { emailID: emailID } });
-    return (searchUser != null)
-  }
-
   async signIn(code) {
     const data = await this.getGoogleUserDataFromCode(code);
-    if (!(await this.checkIfUserExists(data.email))) await Models.User.create({ firstName: data.given_name, lastName: data.family_name, emailID: data.email })
+    if (!(await UserController.checkIfUserExists(data.email))) await Models.User.create({ firstName: data.given_name, lastName: data.family_name, emailID: data.email })
     const token = await this.generateTokenForUser(data);
     return token
   }
