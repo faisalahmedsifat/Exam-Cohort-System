@@ -67,11 +67,10 @@ router.get('/:id/candidate', middleware.authBarrier, async (request, response) =
 // Assessment related routes
 router.post('/:id/assessment', middleware.authBarrier, async (request, response) => {
     const { name, availableDateTime, dueDateTime } = request.body
-    const examcohortID = request.params.id
+    const cohortID = request.params.id
    
     try {
-        const cohort = await ExamCohort.findByPk(examcohortID)
-        const assessment = await cohort.createAssessment({ name: name, availableDateTime: availableDateTime, dueDateTime: dueDateTime })
+        const assessment = await ExamCohortController.addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime)
         return response.status(201).json(middleware.generateApiOutput("OK", assessment))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
@@ -79,12 +78,11 @@ router.post('/:id/assessment', middleware.authBarrier, async (request, response)
 })
 
 router.get('/:id/assessment', middleware.authBarrier, async (request, response) => {
-    const examcohortID = request.params.id
+    const cohortID = request.params.id
 
     try {
-        const cohort = await ExamCohort.findByPk(examcohortID)
-        const assessment = await cohort.getAssessment()
-        return response.status(201).json(middleware.generateApiOutput("OK", assessment))
+        const assessments = await ExamCohortController.getAllAssessmentFromExamCohort(cohortID)
+        return response.status(201).json(middleware.generateApiOutput("OK", assessments))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
     }
