@@ -15,8 +15,12 @@ const UserController = require('../controllers/UserController')
 
 // Read
 router.get('/', middleware.authBarrier, async (request, response) => {
-  const userProfile = await UserController.getUserProfileDetails(request.userID)
-  response.send(middleware.generateApiOutput("OK", userProfile));
+  try {
+    const userProfile = await UserController.getUserProfileDetails(request.userID)
+    return response.send(middleware.generateApiOutput("OK", userProfile));
+  } catch (error) {
+    return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+  }
 })
 
 

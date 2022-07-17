@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'assessment',
         foreignKey: {name: 'cohortID', allowNull:false} 
       });
+      this.hasMany(models.Question, {
+        as: 'question',
+        foreignKey: { name: 'assessmentID', allowNull: false }
+      });
     }
   }
   Assessment.init({

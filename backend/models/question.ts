@@ -12,17 +12,21 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Mcqquestion, { 
-        foreignKey: {name: 'mcqquestionID', allowNull:false} 
-      });
-      
-      this.belongsTo(models.Microvivaquestion, { 
-        foreignKey: {name: 'microvivaquestionID', allowNull:false} 
+      this.belongsTo(models.Mcqquestion, {
+        foreignKey: { name: 'mcqquestionID', allowNull: false }
       });
 
-      this.belongsToMany(models.Candidatelist, { 
+      this.belongsTo(models.Microvivaquestion, {
+        foreignKey: { name: 'microvivaquestionID', allowNull: false }
+      });
+
+      this.belongsToMany(models.Candidatelist, {
         through: models.Answer,
         foreignKey: 'questionID'
+      });
+      this.belongsTo(models.Assessment, {
+        as: 'question',
+        foreignKey: { name: 'assessmentID', allowNull: false }
       });
     }
   }
