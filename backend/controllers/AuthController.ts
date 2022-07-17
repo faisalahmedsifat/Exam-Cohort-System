@@ -16,7 +16,7 @@ const oAuth2Client = new OAuth2Client(
   'postmessage',
 );
 
-class User {
+class AuthController {
 
   async getGoogleUserDataFromCode(code) {
     const { tokens } = await oAuth2Client.getToken(code);
@@ -45,4 +45,4 @@ class User {
 
 }
 
-module.exports = User
+module.exports = AuthController

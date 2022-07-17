@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 // Services
 import notification from '../services/notificationService'
-import oAuthService from "../services/oAuthService"
+import googleOAuthService from "../services/googleOAuthService"
 
 // Google Login
 import { useGoogleLogin } from '@react-oauth/google';
@@ -22,7 +22,7 @@ const Signin = () => {
 
   const oauthSuccess = async (response) => {
     try {
-      const result = await oAuthService.getToken(response.code)
+      const result = await googleOAuthService.getToken(response.code)
       if (result.status === "OK") {
         dispatch(login(result.response))
         window.localStorage.setItem('currentUser', JSON.stringify(result.response))

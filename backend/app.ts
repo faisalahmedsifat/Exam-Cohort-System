@@ -17,7 +17,7 @@ const logger      = require('./utils/logger')
 
 // Routes
 const mainRoutes = require('./routes/mainRoutes')
-const userRoutes = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
 const cohortRoutes = require('./routes/cohortRoutes')
 
 
@@ -53,8 +53,8 @@ app.use(express.json())
  * Use the Routes
  */
 app.use('/', mainRoutes)
+app.use('/api/auth/', authRoutes)
 app.use('/api/', cohortRoutes)
-app.use('/api/user/', userRoutes)
 /**
  * Handle the unknown endpoint, if no controller is defined for requested endpoint
  * Which is a 404 Error Code

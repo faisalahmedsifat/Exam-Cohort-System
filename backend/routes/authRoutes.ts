@@ -6,7 +6,7 @@ const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 
 // Controllers
-const UserController = require('../controllers/user')
+const AuthController = require('../controllers/AuthController')
 
 // Models 
 const { User, ExamCohort } = require('../models')
@@ -14,14 +14,14 @@ const { User, ExamCohort } = require('../models')
 /** 
  * Routes
  * 
- * prefix: api/user
+ * prefix: api/auth/
  */
 
-// signin
-router.post('/signin', async (request, response) => {
+// Google OAuth
+router.post('/oauth/google', async (request, response) => {
   try {
     const { code } = request.body
-    const token = await new UserController().signIn(code);
+    const token = await new AuthController().signIn(code);
     return response.status(200).send(middleware.generateApiOutput("OK", { token }))
   } catch (error) {
     return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
