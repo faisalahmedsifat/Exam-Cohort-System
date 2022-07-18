@@ -23,35 +23,33 @@ const defaultAddCohortForm = { name: "" }
 
 const CohortCard = ({ title, id, role, field1Name, field1Val, field2Name, field2Val }) => {
   return (
-    <RouterLink to={`/examcohorts/${id}`}>
-      <div className='flex flex-col divide-y '>
-        <div className='pr-20 bg-white hover:ring hover:cursor-pointer shadow rounded-lg '>
-          <div className='font-bold flex flex-row items-center px-3 py-3 text-lg text-slate-600'>
+    <div className='max-w-[12rem] w-full bg-white hover:ring hover:cursor-pointer shadow rounded-lg'>
+      <RouterLink to={`/examcohorts/${id}`}>
+        <div className='border-b font-bold flex flex-row items-center px-3 py-3 text-lg text-slate-600'>
+          <div>
+            {title}
+          </div>
+        </div>
+        <div>
+          <div className='px-3 pt-3'>
+            <div className='text-slate-500 text-sm'>
+              {field1Name}
+            </div>
             <div>
-              {title}
+              {field1Val}
             </div>
           </div>
-          <div>
-            <div className='px-3 pt-3'>
-              <div className='text-slate-500 text-sm'>
-                {field1Name}
-              </div>
-              <div>
-                {field1Val}
-              </div>
+          <div className='px-3 pb-3 pt-2'>
+            <div className='text-slate-500 text-sm'>
+              {field2Name}
             </div>
-            <div className='px-3 pb-3 pt-2'>
-              <div className='text-slate-500 text-sm'>
-                {field2Name}
-              </div>
-              <div>
-                {field2Val}
-              </div>
+            <div>
+              {field2Val}
             </div>
           </div>
         </div>
-      </div>
-    </RouterLink>
+      </RouterLink>
+    </div>
   )
 }
 
@@ -149,9 +147,7 @@ const Maincontent = () => {
           </Dialog>
         </div>
 
-        <div className='flex flex-row flex-shrink-0 flex-wrap gap-4
-          max-w-full w-full
-        '>
+        <div className='flex flex-row flex-shrink-0 flex-wrap gap-4'>
           {
             examCohorts.map((cohort, id) => {
               return (
