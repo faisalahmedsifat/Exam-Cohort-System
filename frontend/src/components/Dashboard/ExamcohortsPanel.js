@@ -17,7 +17,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
     <div className='grow'>
       <Header halfHeader={true} title={`${cohortName}'s Evaluator Panel`} />
       <div className='bg-flat_white1 p-10'>
-        <div className=''>Hi, {cohortID}</div>
+        <div className='text-slate-600'>Welcome to {cohortName}'s evaluator panel!</div>
       </div>
     </div>
   )
