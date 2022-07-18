@@ -100,10 +100,14 @@ const Maincontent = () => {
       <div className='bg-flat_white1 p-10'>
 
         <div className='bg-flat_white1'>
-          <div className="flex flex-row items-center justify-start mb-5">
+          <div className="flex flex-row items-center justify-between pb-5 border-b-2">
+            <div>
+              <div className='text-lg text-slate-700'>Exam Cohorts List</div>
+              <div className='text-sm text-slate-500'>You can add a new cohort by clicking on the button on the right.</div>
+            </div>
             <button
               className='bg-flat_blue1 hover:bg-flat_blue2 text-md text-white
-            rounded shadow px-2 py-3'
+            rounded shadow px-2 py-2'
               onClick={() => setIsOpen(true)}>
               <div className="flex flex-row">
                 <PlusSmIcon className='h-5 w-5' />
@@ -147,7 +151,7 @@ const Maincontent = () => {
           </Dialog>
         </div>
 
-        <div className='flex flex-row flex-shrink-0 flex-wrap gap-4'>
+        <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
           {
             examCohorts.map((cohort, id) => {
               return (

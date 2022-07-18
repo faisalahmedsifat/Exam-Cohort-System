@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 // Redux
@@ -15,7 +15,7 @@ import notification from '../../services/notificationService'
 const Maincontent = ({ cohortID, cohortName }) => {
   return (
     <div className='grow'>
-      <Header halfHeader={true} title={`${cohortName}'s Evaluator Panel`} />
+      <Header halfHeader={true} title={`${cohortName}'s Candidate List`} />
       <div className='bg-flat_white1 p-10'>
         <div className=''>Hi, {cohortID}</div>
       </div>

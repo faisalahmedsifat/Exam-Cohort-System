@@ -30,6 +30,17 @@ router.get('/', middleware.authBarrier, async (request, response) => {
     }
 })
 
+router.get('/:cohortID', middleware.authBarrier, async (request, response) => {
+    const userID = request.userID
+    const cohortID = request.params.cohortID
+    try {
+        cohorts =  await ExamCohortController.getExamCohortDetails(userID, cohortID)
+        return response.status(200).json(middleware.generateApiOutput("OK", cohorts))
+    } catch (error) {
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
+    }
+})
+
 router.post('/', middleware.authBarrier, async (request, response) => {
     const { name } = request.body
     const userID = request.userID

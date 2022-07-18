@@ -53,6 +53,17 @@ class ExamCohortController {
         let cohortWithStats = await ExamCohortController.loadCohortStats(cohorts) 
         return cohortWithStats
     }
+    static async getExamCohortDetails(userID, cohortID){
+      try {
+        const cohort = await ExamCohort.findOne({ where: { cohortID:cohortID, evaluatorID: userID} })
+        if(cohort != null){
+          let cohortWithStats = await ExamCohortController.loadCohortStat(cohort) 
+          return cohortWithStats;
+        }else throw Error('Cohort Not Found!')
+      } catch (error) {
+        throw Error('Cohort Not Found!')
+      }
+    }
     static async createExamCohort(userID, name){
         const user = await UserController.getUserFromUserID(userID)
         const cohort = await user.createEvaluatorcohort({ name: name });

@@ -11,6 +11,14 @@ const getEvaluatorsCohorts = async (token) => {
   return response.data.response
 }
 
+const getSingleCohortDetails = async (token, cohortID) => {
+  const axiosInstance = axios.create({
+    headers: { 'Authorization': 'bearer ' + token }
+  });
+  const response = await axiosInstance.get(baseUrl + `/${cohortID}`)
+  return response.data.response
+}
+
 const addEvaluatorsCohort = async (token, body) => {
   const response = await axios.post(baseUrl,body,{headers: { Authorization: `bearer ${token}` }})
   return response.data.response
@@ -18,7 +26,8 @@ const addEvaluatorsCohort = async (token, body) => {
 
 const exports = {
   getEvaluatorsCohorts,
-  addEvaluatorsCohort
+  addEvaluatorsCohort,
+  getSingleCohortDetails
 }
 
 export default exports

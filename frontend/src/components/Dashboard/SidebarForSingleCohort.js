@@ -37,6 +37,7 @@ const SidebarForSingleCohort = ({cohortID}) => {
         <FolderIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Exam Cohorts</div>
       </SidebarItem>
+      <div className='border-t-2'></div>
       <SidebarItem link={`/examcohorts/${cohortID}/candidates`}>
         <UserGroupIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Candidates</div>
@@ -45,6 +46,7 @@ const SidebarForSingleCohort = ({cohortID}) => {
         <ClockIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Assessments</div>
       </SidebarItem>
+      <div className='border-t-2'></div>
       <SidebarItem link="/profile">
         <UserIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Profile</div>
