@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasOne(models.Question, { 
-        foreignKey: {name: 'mcqquestionID', allowNull:false} 
+        foreignKey: {name: 'mcqquestionID', allowNull:true} 
       });
     }
   }

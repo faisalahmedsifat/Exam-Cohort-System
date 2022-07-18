@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Mcqquestion, {
-        foreignKey: { name: 'mcqquestionID', allowNull: false }
+        foreignKey: { name: 'mcqquestionID', allowNull: true }
       });
 
       this.belongsTo(models.Microvivaquestion, {
-        foreignKey: { name: 'microvivaquestionID', allowNull: false }
+        foreignKey: { name: 'microvivaquestionID', allowNull: true }
       });
 
       this.belongsToMany(models.Candidatelist, {
