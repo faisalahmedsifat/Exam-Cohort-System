@@ -55,10 +55,10 @@ router.post('/', middleware.authBarrier, async (request, response) => {
 
 // Candidates related routes
 router.post('/:id/candidate', middleware.authBarrier, async (request, response) => {
-    const { userID } = request.body
+    const { emailID } = request.body
     const cohortID = request.params.id
     try {
-        const user = await ExamCohortController.addCandidatesToExamCohort(userID, cohortID)
+        const user = await ExamCohortController.addCandidatesToExamCohort(emailID, cohortID)
         return response.status(201).json(middleware.generateApiOutput("OK", user))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))

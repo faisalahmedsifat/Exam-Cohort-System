@@ -58,13 +58,16 @@ class ExamCohortController {
       throw Error('Cohort Not Found!')
     }
   }
+  static async getUserFromEmailID(emailID){
+    return await User.findOne({where:{emailID:emailID}})
+  }
   static async createExamCohort(userID, name) {
     const user = await UserController.getUserFromUserID(userID)
     const cohort = await user.createEvaluatorcohort({ name: name });
     return await ExamCohortController.loadCohortStat(cohort)
   }
-  static async addCandidatesToExamCohort(userID, cohortID) {
-    const user = await UserController.getUserFromUserID(userID)
+  static async addCandidatesToExamCohort(emailID, cohortID) {
+    const user = await UserController.getUserFromEmailID(emailID)
     const cohort = await this.getCohortFromCohortID(cohortID)
     cohort.addCandidate(user)
     return user
