@@ -103,16 +103,8 @@ router.get('/:id/assessment', middleware.authBarrier, async (request, response) 
 router.post('/assessment/:id/questions', middleware.authBarrier, async (request, response) => {
     const questions = request.body
     const assessmentID = request.params.id
-    let output = "no data";
     try {
-        const assessment = await ExamCohortController.getAssessmentFromAssessmentID(assessmentID)
-        for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-            const question = await assessment.createQuestion(questions[questionIndex])
-            console.log(question)
-            console.log(questions[questionIndex].details)
-            const mcqquestion = await question.createMcqquestion(questions[questionIndex].details)
-            output = questions[questionIndex]
-        }
+        const output = await ExamCohortController.addQuestionToAssessment(questions, assessmentID)
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
@@ -124,24 +116,7 @@ router.post('/assessment/:id/questions', middleware.authBarrier, async (request,
 router.get('/assessment/:id/questions', middleware.authBarrier, async (request, response) => {
     const assessmentID = request.params.id
     try {
-        const assessment = await ExamCohortController.getAssessmentFromAssessmentID(assessmentID)
-        const questions = await assessment.getQuestion()
-        let output = []
-        for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-            let question = questions[questionIndex]
-            question = question.dataValues
-            delete question.questionID
-            delete question.createdAt
-            delete question.updatedAt
-            delete question.assessmentID
-            delete question.microvivaquestionID
-            let mcqQuestionDetails = await Mcqquestion.findByPk(question.mcqquestionID)
-            mcqQuestionDetails = mcqQuestionDetails.dataValues
-            delete mcqQuestionDetails.createdAt
-            delete mcqQuestionDetails.updatedAt
-            const mcqQuestion = {...question, mcqQuestionDetails}
-            output.push(mcqQuestion)
-        }
+        const output = await ExamCohortController.getQuestionsFromAssessment(assessmentID)
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))

@@ -9,7 +9,7 @@ const ORMController = require('./ORMController')
 const UserController = require('./UserController')
 
 //Models
-const { User, ExamCohort, Assessment } = require('../models')
+const { User, ExamCohort, Assessment , Mcqquestion} = require('../models')
 
 // Helper Functions
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
@@ -58,8 +58,8 @@ class ExamCohortController {
       throw Error('Cohort Not Found!')
     }
   }
-  static async getUserFromEmailID(emailID){
-    return await User.findOne({where:{emailID:emailID}})
+  static async getUserFromEmailID(emailID) {
+    return await User.findOne({ where: { emailID: emailID } })
   }
   static async createExamCohort(userID, name) {
     const user = await UserController.getUserFromUserID(userID)
@@ -95,11 +95,40 @@ class ExamCohortController {
   static questionTypeIsValid(type) {
     return type === 'MCQ' || type === 'MICROVIVA'
   }
-
   static async getAssessmentFromAssessmentID(assessmentID) {
     return await Assessment.findByPk(assessmentID)
   }
 
-
+  static async addQuestionToAssessment(questions, assessmentID) {
+    let output = []
+    const assessment = await ExamCohortController.getAssessmentFromAssessmentID(assessmentID)
+    for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
+      const question = await assessment.createQuestion(questions[questionIndex])
+      const mcqquestion = await question.createMcqquestion(questions[questionIndex].details)
+      output.push(questions[questionIndex])
+    }
+    return output
+  }
+  static async getQuestionsFromAssessment(assessmentID){
+    const assessment = await ExamCohortController.getAssessmentFromAssessmentID(assessmentID)
+    const questions = await assessment.getQuestion()
+    let output = []
+    for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
+      let question = questions[questionIndex]
+      question = question.dataValues
+      delete question.questionID
+      delete question.createdAt
+      delete question.updatedAt
+      delete question.assessmentID
+      delete question.microvivaquestionID
+      let mcqQuestionDetails = await Mcqquestion.findByPk(question.mcqquestionID)
+      mcqQuestionDetails = mcqQuestionDetails.dataValues
+      delete mcqQuestionDetails.createdAt
+      delete mcqQuestionDetails.updatedAt
+      const mcqQuestion = { ...question, mcqQuestionDetails }
+      output.push(mcqQuestion)
+    }
+    return output
+  }
 }
 module.exports = ExamCohortController
