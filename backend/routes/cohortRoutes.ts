@@ -7,7 +7,7 @@ const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 
 // Controllers
-const ExamCohortController = require('../controllers/examcohortcontroller')
+const ExamCohortController = require('../controllers/ExamCohortController')
 // Models 
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
 
@@ -104,7 +104,7 @@ router.post('/assessment/:id/questions', middleware.authBarrier, async (request,
     const questions = request.body
     const assessmentID = request.params.id
     try {
-        const output = await ExamCohortController.addQuestionToAssessment(questions, assessmentID)
+        const output = await ExamCohortController.addQuestionsToAssessment(questions, assessmentID)
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
