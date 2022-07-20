@@ -7,6 +7,7 @@ const middleware = require('../utils/middleware')
 // Other Controllers
 const DatabaseController = require('./DatabaseController')
 const UserController = require('./UserController')
+const DateTimeController = require('./DateTimeController')
 
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
@@ -75,9 +76,12 @@ class ExamCohortController {
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
-    const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
-    const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
-    return assessment
+    if(DateTimeController.isDateTimeValid(availableDateTime, dueDateTime)) {
+      const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
+      const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
+      return assessment
+    } throw {error: ('Invalid date and time!')}
+    
   }
   static async getAllAssessmentFromExamCohort(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
