@@ -12,6 +12,14 @@ class DatabaseController {
     return instance.dataValues;
   }
 
+  static async getUserFromUserID(userID){
+    return await Models.User.findByPk(userID);
+  }
+
+  static async getUserFromEmailID(emailID) {
+    return await Models.User.findOne({ where: { emailID: emailID } });
+  }
+
   // TODO: Refactor every Sequelize Code into this Controller
   static async getCohortFromCohortID(cohortID) {
     return await Models.ExamCohort.findByPk(cohortID)
@@ -38,7 +46,10 @@ class DatabaseController {
   }
 
   static async getAllCandidatesFromCohort(cohort){
-    return await cohort.getCandidate()
+    return await cohort.getCandidate({
+      attributes: { exclude: ['createdAt', "updatedAt"] },
+      joinTableAttributes: []
+    })
   }
 
   static async createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime){

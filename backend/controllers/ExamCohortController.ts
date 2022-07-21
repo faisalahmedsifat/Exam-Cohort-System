@@ -6,7 +6,6 @@ const middleware = require('../utils/middleware')
 
 // Other Controllers
 const DatabaseController = require('./DatabaseController')
-const UserController = require('./UserController')
 const DateTimeController = require('./DateTimeController')
 
 //Models
@@ -16,6 +15,12 @@ const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
 
 class ExamCohortController {
+
+  static async getCohortFromCohortID(cohortID){
+    const cohort = await DatabaseController.getCohortFromCohortID(cohortID);
+    return cohort
+  }
+
   static async getCohortNumOfAssessment(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID);
     const count = await cohort.countAssessment()
@@ -40,7 +45,7 @@ class ExamCohortController {
     return cohortDataListExtra
   }
   static async getAllExamCohort(userID) {
-    const user = await UserController.getUserFromUserID(userID)
+    const user = await DatabaseController.getUserFromUserID(userID)
     let cohorts = await DatabaseController.getExamCohortsFromUser(user)
     let cohortWithStats = await ExamCohortController.loadCohortStats(cohorts)
     return cohortWithStats
@@ -59,14 +64,18 @@ class ExamCohortController {
   }
 
   static async createExamCohort(userID, name) {
-    const user = await UserController.getUserFromUserID(userID)
+    const user = await DatabaseController.getUserFromUserID(userID)
     const cohort = await DatabaseController.createExamCohortFromUser(user, name)
     return await ExamCohortController.loadCohortStat(cohort)
   }
   static async addCandidatesToExamCohort(emailID, cohortID) {
-    const user = await UserController.getUserFromEmailID(emailID)
+    let user = await DatabaseController.getUserFromEmailID(emailID)
+    if(!user) throw Error("No Such User Exists!")
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     await DatabaseController.addCandidateToCohort(cohort, user)
+    user = DatabaseController.getDataAttributesFromInstance(user)
+    delete user.createdAt
+    delete user.updatedAt    
     return user
   }
   static async getAllCandidatesFromExamCohort(cohortID) {

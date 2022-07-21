@@ -7,8 +7,13 @@ const getEvaluatorsCohorts = async (token) => {
   const axiosInstance = axios.create({
     headers: { 'Authorization': 'bearer ' + token }
   });
-  const response = await axiosInstance.get(baseUrl)
-  return response.data.response
+  try {
+    const response = await axiosInstance.get(baseUrl)
+    return response.data.response
+  } catch (error) {
+    console.log(error);
+    throw Error(error.response.data.response.error);
+  }
 }
 
 const getSingleCohortDetails = async (token, cohortID) => {
@@ -20,14 +25,33 @@ const getSingleCohortDetails = async (token, cohortID) => {
 }
 
 const addEvaluatorsCohort = async (token, body) => {
-  const response = await axios.post(baseUrl,body,{headers: { Authorization: `bearer ${token}` }})
+  const response = await axios.post(baseUrl, body, { headers: { Authorization: `bearer ${token}` } })
   return response.data.response
+}
+
+const getCandidateList = async (token, cohortID) => {
+  const axiosInstance = axios.create({
+    headers: { 'Authorization': 'bearer ' + token }
+  });
+  const response = await axiosInstance.get(baseUrl + `/${cohortID}/candidate`)
+  return response.data.response
+}
+
+const addCandidateToCohort = async (token, cohortID, body) => {
+  try {
+    const response = await axios.post(baseUrl + `/${cohortID}/candidate`, body, { headers: { Authorization: `bearer ${token}` } })
+    return response.data.response
+  } catch (error) {
+    throw Error(error.response.data.response.error);
+  }
 }
 
 const exports = {
   getEvaluatorsCohorts,
   addEvaluatorsCohort,
-  getSingleCohortDetails
+  getSingleCohortDetails,
+  getCandidateList,
+  addCandidateToCohort
 }
 
 export default exports

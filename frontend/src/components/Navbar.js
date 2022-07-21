@@ -67,7 +67,7 @@ const Navbar = (props) => {
   const title = props.title ?? ''
 
   return (
-    <div className={halfHeader ? 'bg-flat_white1 lg:bg-white  flex justify-between items-center lg:py-5 lg:px-10 shadow' : 'flex justify-between items-center py-5 px-10'}>
+    <div className={halfHeader ? 'bg-flat_white1 lg:bg-white  flex justify-between items-center lg:py-5 lg:px-10 shadow' : 'bg-white flex justify-between items-center py-5 px-10'}>
       {
         !halfHeader && <RouterLink to="/home">
                           <div className='text-xl text-gray-600 flex justify-center items-center'>

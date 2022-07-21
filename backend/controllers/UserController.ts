@@ -8,6 +8,8 @@ const middleware = require('../utils/middleware')
 const Models = require('../models')
 
 // Other Controller
+const ExamCohortController = require('./ExamCohortController')
+const DatabaseController = require('./DatabaseController')
 const DateTimeController = require('./DateTimeController')
 
 class UserController {
@@ -24,11 +26,9 @@ class UserController {
       ]
     })
   }
-  static async getUserFromEmailID(emailID) {
-    return await Models.User.findOne({ where: { emailID: emailID } });
-  }
+  
   static async checkIfUserExists(emailID) {
-    let searchUser = await UserController.getUserFromEmailID(emailID);
+    let searchUser = await DatabaseController.getUserFromEmailID(emailID);
     return (searchUser != null)
   }
   static async getUserProfileDetails(userID){
@@ -43,6 +43,8 @@ class UserController {
     delete userProfileDetails.evaluatorcohorts
     return userProfileDetails;
   }
+
+  
 }
 
 module.exports = UserController
