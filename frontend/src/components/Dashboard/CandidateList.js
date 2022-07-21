@@ -24,6 +24,8 @@ const defaultAddCandidateForm = { emailID: "" }
 const Maincontent = ({ cohortID, cohortName }) => {
   const [cohortCandidates, setCohortCandidates] = useState([]);
   const [isOpen, setIsOpen] = useState(false)
+  const [isCancelPromptOpen, setIsCancelPromptOpen] = useState(false)
+  const [selectedCandidateToDeleteID, setSelectedCandidateToDeleteID] = useState(null)
   const [addCandidateForm, setAddCandidateForm] = useState(defaultAddCandidateForm)
 
   const currentUser = useSelector(store => store.currentUser.value)
@@ -49,7 +51,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
 
     let alreadyExists = false
     cohortCandidates.forEach(candidate => {
-      if (candidate.emailID === addCandidateForm.emailID){
+      if (candidate.emailID === addCandidateForm.emailID) {
         notification.error("Already Exists!", 2000);
         alreadyExists = true
       }
@@ -69,6 +71,27 @@ const Maincontent = ({ cohortID, cohortName }) => {
     alreadyExists = false;
     setIsOpen(false)
     setAddCandidateForm(defaultAddCandidateForm)
+  }
+
+  const handleDeleteCandidate = async () => {
+    try {
+      const response = await cohortService.deleteCandidate(currentUser.token, cohortID, selectedCandidateToDeleteID)
+      setCohortCandidates(current => cohortCandidates.filter(candidate => candidate.id !== selectedCandidateToDeleteID))
+      notification.info(response.success, 2000)
+    } catch (error) {
+      notification.error(error.message, 2000);
+    }
+    turnOffCancelPromptFor();
+  }
+
+  const turnOnCancelPromptFor = (candidateID) => {
+    setSelectedCandidateToDeleteID(candidateID);
+    setIsCancelPromptOpen(true);
+  }
+
+  const turnOffCancelPromptFor = () => {
+    setSelectedCandidateToDeleteID(null);
+    setIsCancelPromptOpen(false);
   }
 
   return (
@@ -147,8 +170,8 @@ const Maincontent = ({ cohortID, cohortName }) => {
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.firstName} {candidate.lastname}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.emailID}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
-                        <span className='p-1.5 text-xs font-bold uppercase tracking-wider
-            text-flat_red2 bg-flat_red1 rounded-lg bg-opacity-50'>Delete</span>
+                        <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
+                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(candidate.id)}>Delete</span>
                       </td>
                     </tr>
                   )
@@ -156,6 +179,26 @@ const Maincontent = ({ cohortID, cohortName }) => {
               }
             </tbody>
           </table>
+
+          <Dialog as="div"
+            className="relative z-50"
+            open={isCancelPromptOpen} onClose={() => setIsCancelPromptOpen(false)}>
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+              <div className='fixed inset-0 flex items-center justify-center'>
+                <Dialog.Panel className="mx-auto max-w-md w-full rounded bg-white">
+                  <Dialog.Title className="text-lg font-bold px-3 pt-4">Are you sure?</Dialog.Title>
+                  <Dialog.Description className="px-3 py-5 flex items-center">
+                    Do you want to delete this candidate from this cohort?
+                  </Dialog.Description>
+                  <div className='flex flex-row items-center justify-end gap-5 pb-5 pr-5'>
+                    <button className="bg-flat_red1 hover:bg-flat_red2 py-2
+                                                      text-white text-md rounded-md px-5" onClick={() => handleDeleteCandidate()}>Yes</button>
+                    <button className="bg-flat_green1 hover:bg-flat_green2 py-2
+                                                      text-white text-md rounded-md px-5" onClick={() => turnOffCancelPromptFor()}>No</button>
+                  </div>
+                </Dialog.Panel>
+              </div>
+          </Dialog>
         </div>
       </div>
     </div >

@@ -46,12 +46,22 @@ const addCandidateToCohort = async (token, cohortID, body) => {
   }
 }
 
+const deleteCandidate = async (token, cohortID, candidateID) => {
+  try {
+    const response = await axios.delete(baseUrl + `/${cohortID}/candidate/${candidateID}`, { headers: { Authorization: `bearer ${token}` } })
+    return response.data.response
+  } catch (error) {
+    throw Error(error.response.data.response.error);
+  }
+}
+
 const exports = {
   getEvaluatorsCohorts,
   addEvaluatorsCohort,
   getSingleCohortDetails,
   getCandidateList,
-  addCandidateToCohort
+  addCandidateToCohort,
+  deleteCandidate
 }
 
 export default exports

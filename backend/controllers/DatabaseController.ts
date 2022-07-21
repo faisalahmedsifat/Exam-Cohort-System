@@ -9,7 +9,8 @@ const Models = require('../models')
 
 class DatabaseController {
   static getDataAttributesFromInstance(instance) {
-    return instance.dataValues;
+    const jsonString = JSON.stringify(instance);
+    return JSON.parse(jsonString);
   }
 
   static async getUserFromUserID(userID){
@@ -48,7 +49,7 @@ class DatabaseController {
   static async getAllCandidatesFromCohort(cohort){
     return await cohort.getCandidate({
       attributes: { exclude: ['createdAt', "updatedAt"] },
-      joinTableAttributes: []
+      joinTableAttributes: ['id']
     })
   }
 
@@ -73,6 +74,19 @@ class DatabaseController {
   }
   static async getQuestionsFromAssessment(assessment){
     return await assessment.getQuestion()
+  }
+
+  static async deleteCandidateFromCohort(cohortID, candidateID){
+    return await Models.Candidatelist.destroy({where: {cohortID, id: candidateID}})
+  }
+
+  static async getCohortsSingleCandidateInfoFromEmail(cohortInstance, candidateEmailID){
+    return await cohortInstance.getCandidate({
+      limit: 1,
+      where: {emailID: candidateEmailID},
+      attributes: { exclude: ['createdAt', "updatedAt"] },
+      joinTableAttributes: ['id'],
+    })
   }
 }
 

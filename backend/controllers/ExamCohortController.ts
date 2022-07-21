@@ -73,15 +73,21 @@ class ExamCohortController {
     if(!user) throw Error("No Such User Exists!")
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     await DatabaseController.addCandidateToCohort(cohort, user)
-    user = DatabaseController.getDataAttributesFromInstance(user)
-    delete user.createdAt
-    delete user.updatedAt    
+    user = await DatabaseController.getCohortsSingleCandidateInfoFromEmail(cohort, emailID) 
+    user = DatabaseController.getDataAttributesFromInstance(user)[0]
+    user.id = user.Candidatelist.id 
+    delete user.Candidatelist 
     return user
   }
   static async getAllCandidatesFromExamCohort(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
-    const users = await DatabaseController.getAllCandidatesFromCohort(cohort)
-    return users
+    let candidates = await DatabaseController.getAllCandidatesFromCohort(cohort)
+    candidates = DatabaseController.getDataAttributesFromInstance(candidates);
+    for (let candidate of candidates) {
+      candidate.id = candidate.Candidatelist.id 
+      delete candidate.Candidatelist 
+    }
+    return candidates
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
@@ -152,6 +158,10 @@ class ExamCohortController {
       output.push(mcqQuestion)
     }
     return output
+  }
+
+  static async deleteCandidateFromCohort(cohortID, candidateID){
+    await DatabaseController.deleteCandidateFromCohort(cohortID, candidateID)
   }
 }
 module.exports = ExamCohortController
