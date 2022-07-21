@@ -112,6 +112,18 @@ router.get('/:id/assessment', middleware.authBarrier, RoleBarrier.cohortsEvaluat
     }
 })
 
+
+router.delete('/:id/assessment/:assessmentID', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+  const cohortID = request.params.id
+  const assessmentID = request.params.assessmentID
+  try {
+      await ExamCohortController.deleteAssessmentFromCohort(cohortID, assessmentID)
+      return response.status(200).json(middleware.generateApiOutput("OK", {success: "Assessment Deleted!"}))
+  } catch (error) {
+      return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
+  }
+})
+
 // Question related routes
 router.post('/assessment/:id/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
     const questions = request.body

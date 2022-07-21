@@ -88,6 +88,10 @@ class DatabaseController {
       joinTableAttributes: ['id'],
     })
   }
+
+  static async deleteAssessmentFromCohort(cohortID, assessmentID){
+    return await Models.Assessment.destroy({where: {cohortID, assessmentID}})
+  }
 }
 
 module.exports = DatabaseController

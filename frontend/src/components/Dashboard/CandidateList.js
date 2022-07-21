@@ -32,7 +32,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
 
   // Fetch Candidates List
   useEffect(() => {
-    const fetchCohort = async () => {
+    const fetchCandidates = async () => {
       if (currentUser != null && cohortID != null) {
         try {
           const cohortCandidateList = await cohortService.getCandidateList(currentUser.token, cohortID);
@@ -42,7 +42,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
         }
       }
     }
-    fetchCohort()
+    fetchCandidates()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -97,7 +97,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
   return (
     <div className='grow'>
 
-      <Header halfHeader={true} title="Exam Cohorts" />
+      <Header halfHeader={true} title={`Candidates of ${cohortName}`} />
       <div className='bg-flat_white1 p-10'>
 
         <div className='bg-flat_white1'>

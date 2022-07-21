@@ -163,5 +163,9 @@ class ExamCohortController {
   static async deleteCandidateFromCohort(cohortID, candidateID){
     await DatabaseController.deleteCandidateFromCohort(cohortID, candidateID)
   }
+
+  static async deleteAssessmentFromCohort(cohortID, assessmentID){
+    await DatabaseController.deleteAssessmentFromCohort(cohortID, assessmentID)
+  }
 }
 module.exports = ExamCohortController

@@ -55,13 +55,42 @@ const deleteCandidate = async (token, cohortID, candidateID) => {
   }
 }
 
+const getAssessmentList = async (token, cohortID) => {
+  const axiosInstance = axios.create({
+    headers: { 'Authorization': 'bearer ' + token }
+  });
+  const response = await axiosInstance.get(baseUrl + `/${cohortID}/assessment`)
+  return response.data.response
+}
+
+const addAssessmentToCohort = async (token, cohortID, body) => {
+  try {
+    const response = await axios.post(baseUrl + `/${cohortID}/assessment`, body, { headers: { Authorization: `bearer ${token}` } })
+    return response.data.response
+  } catch (error) {
+    throw Error(error.response.data.response.error);
+  }
+}
+
+const deleteAssessment = async (token, cohortID, candidateID) => {
+  try {
+    const response = await axios.delete(baseUrl + `/${cohortID}/assessment/${candidateID}`, { headers: { Authorization: `bearer ${token}` } })
+    return response.data.response
+  } catch (error) {
+    throw Error(error.response.data.response.error);
+  }
+}
+
 const exports = {
   getEvaluatorsCohorts,
   addEvaluatorsCohort,
   getSingleCohortDetails,
   getCandidateList,
   addCandidateToCohort,
-  deleteCandidate
+  deleteCandidate,
+  getAssessmentList,
+  addAssessmentToCohort,
+  deleteAssessment
 }
 
 export default exports

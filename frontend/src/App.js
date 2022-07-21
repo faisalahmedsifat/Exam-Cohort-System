@@ -27,6 +27,8 @@ import Profile from './components/Dashboard/Profile'
 import Examcohorts from './components/Dashboard/Examcohorts'
 import ExamcohortsPanel from './components/Dashboard/ExamcohortsPanel'
 import CandidateList from './components/Dashboard/CandidateList'
+import AssessmentList from './components/Dashboard/AssessmentList'
+import AddAssessment from './components/Dashboard/AddAssessment'
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -91,6 +93,8 @@ const App = () => {
               <Route path='/examcohorts' element={<Examcohorts />} />
               <Route path='/examcohorts/:cohortID' element={<ExamcohortsPanel />} />
               <Route path='/examcohorts/:cohortID/candidates' element={<CandidateList />} />
+              <Route path='/examcohorts/:cohortID/assessments' element={<AssessmentList />} />
+              <Route path='/examcohorts/:cohortID/assessments/add' element={<AddAssessment />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/logout' element={<Logout />} />
             </Route>
