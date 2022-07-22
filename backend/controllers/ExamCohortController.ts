@@ -16,9 +16,15 @@ let asyncMap = async (object, callback) => await Promise.all(object.map(async el
 
 class ExamCohortController {
 
-  static async getCohortFromCohortID(cohortID){
+  static async getCohortFromCohortID(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID);
     return cohort
+  }
+
+  static async getAssessmentNumOfQuestion(assessmentID) {
+    const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
+    const count = await assessment.countQuestion()
+    return count
   }
 
   static async getCohortNumOfAssessment(cohortID) {
@@ -30,6 +36,17 @@ class ExamCohortController {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID);
     const count = await DatabaseController.getAssessmentCountFromCohort(cohort)
     return count;
+  }
+
+  // Single Instance Stats Loader
+  static async loadAssessmentStat(assessmentInstance) {
+    const assessmentData = DatabaseController.getDataAttributesFromInstance(assessmentInstance);
+    assessmentData.numOfQuestions = await ExamCohortController.getAssessmentNumOfQuestion(assessmentData.AssessmentID)
+    return assessmentData
+  }
+
+  static async loadAssessmentStats(assessmentInstances) {
+    return await asyncMap(assessmentInstances, async assessmentInstance => await ExamCohortController.loadAssessmentStat(assessmentInstance))
   }
 
   // Single Instance Stats Loader
@@ -70,13 +87,13 @@ class ExamCohortController {
   }
   static async addCandidatesToExamCohort(emailID, cohortID) {
     let user = await DatabaseController.getUserFromEmailID(emailID)
-    if(!user) throw Error("No Such User Exists!")
+    if (!user) throw Error("No Such User Exists!")
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     await DatabaseController.addCandidateToCohort(cohort, user)
-    user = await DatabaseController.getCohortsSingleCandidateInfoFromEmail(cohort, emailID) 
+    user = await DatabaseController.getCohortsSingleCandidateInfoFromEmail(cohort, emailID)
     user = DatabaseController.getDataAttributesFromInstance(user)[0]
-    user.id = user.Candidatelist.id 
-    delete user.Candidatelist 
+    user.id = user.Candidatelist.id
+    delete user.Candidatelist
     return user
   }
   static async getAllCandidatesFromExamCohort(cohortID) {
@@ -84,25 +101,26 @@ class ExamCohortController {
     let candidates = await DatabaseController.getAllCandidatesFromCohort(cohort)
     candidates = DatabaseController.getDataAttributesFromInstance(candidates);
     for (let candidate of candidates) {
-      candidate.id = candidate.Candidatelist.id 
-      delete candidate.Candidatelist 
+      candidate.id = candidate.Candidatelist.id
+      delete candidate.Candidatelist
     }
     return candidates
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
-    if(!name) throw Error('You must provide a name for the assessment!')
-    if(DateTimeController.isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime)) {
+    if (!name) throw Error('You must provide a name for the assessment!')
+    if (DateTimeController.isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime)) {
       const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
       const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
       return assessment
     } throw Error('Invalid date and time!')
-    
+
   }
   static async getAllAssessmentFromExamCohort(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     const assessments = await DatabaseController.getAllAssessmentFromCohort(cohort)
-    return assessments
+    let assessmentsWithStats = await ExamCohortController.loadAssessmentStats(assessments)
+    return assessmentsWithStats
   }
 
   static questionIsMCQ(type) {
@@ -114,7 +132,13 @@ class ExamCohortController {
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment) {
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion)
-    const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
+    await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
+    const questionInstance = await DatabaseController.getQuestionFromQuestionID(question.questionID)
+    console.log(selectedQuestion);
+    console.log(question);
+    console.log(questionInstance);
+    let presentableData = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questionInstance)
+    return presentableData
   }
 
   static async addQuestionsToAssessment(questions, assessmentID) {
@@ -124,19 +148,32 @@ class ExamCohortController {
       const selectedQuestion = questions[questionIndex]
       const { type } = selectedQuestion
       if (type === 'MCQ') {
-        await ExamCohortController.addMcqQuestionToAssessment(selectedQuestion, assessment)
-        output.push(selectedQuestion)
+        const mcqQuesData = await ExamCohortController.addMcqQuestionToAssessment(selectedQuestion, assessment)
+        output.push(DatabaseController.getDataAttributesFromInstance(mcqQuesData))
       }
     }
     return output
   }
 
   static deleteCreatedAndUpdatedAtFromJsonDataValues(data) {
-    if (data.createdAt !== null && data.updatedAt !== null) {
-      delete data.createdAt
-      delete data.updatedAt
-    }
+    delete data?.createdAt
+    delete data?.updatedAt
     return data
+  }
+
+  static async processSingleMCQQuestionForOutputPresentation(question) {
+    let questionData = DatabaseController.getDataAttributesFromInstance(question)
+    questionData = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(question)
+    delete questionData.assessmentID
+    delete questionData.microvivaquestionID
+
+    let mcqQuestionDetails = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID)
+    mcqQuestionDetails = DatabaseController.getDataAttributesFromInstance(mcqQuestionDetails)
+    mcqQuestionDetails = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(mcqQuestionDetails)
+    let mcqQuestion = { ...questionData, mcqQuestionDetails }
+    delete question.mcqquestionID
+    let finalData = {...mcqQuestion.dataValues, mcqQuestionDetails }
+    return finalData
   }
 
   static async getQuestionsFromAssessment(assessmentID) {
@@ -144,29 +181,27 @@ class ExamCohortController {
     const questions = await DatabaseController.getQuestionsFromAssessment(assessment)
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-
-      let question = questions[questionIndex]
-      question = question.dataValues
-      question = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(question)
-      delete question.questionID
-      delete question.assessmentID
-      delete question.microvivaquestionID
-
-      let mcqQuestionDetails = await Mcqquestion.findByPk(question.mcqquestionID)
-      mcqQuestionDetails = mcqQuestionDetails.dataValues
-      mcqQuestionDetails = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(mcqQuestionDetails)
-      const mcqQuestion = { ...question, mcqQuestionDetails }
-      output.push(mcqQuestion)
+      let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
+      output.push(DatabaseController.getDataAttributesFromInstance(mcqQuestion))
     }
     return output
   }
 
-  static async deleteCandidateFromCohort(cohortID, candidateID){
+  static async deleteCandidateFromCohort(cohortID, candidateID) {
     await DatabaseController.deleteCandidateFromCohort(cohortID, candidateID)
   }
 
-  static async deleteAssessmentFromCohort(cohortID, assessmentID){
+  static async deleteAssessmentFromCohort(cohortID, assessmentID) {
     await DatabaseController.deleteAssessmentFromCohort(cohortID, assessmentID)
+  }
+
+  static async getSingleAssessmentDetails(assessmentID) {
+    const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID);
+    return await ExamCohortController.loadAssessmentStat(assessment)
+  }
+
+  static async deleteQuestionFromAssessment(assessmentID, questionID) {
+    await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
   }
 }
 module.exports = ExamCohortController
