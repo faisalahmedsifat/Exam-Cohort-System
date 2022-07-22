@@ -38,7 +38,7 @@ class DateTimeController {
     return new Date(dateTime).getTime()
   }
 
-  static getISOStringFromDate(dateTime) {
+  static getISOStringToDate(dateTime) {
     return new Date(dateTime).toISOString()
   }
 
