@@ -47,7 +47,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
   const handleDeleteAssessment = async () => {
     try {
       const response = await cohortService.deleteAssessment(currentUser.token, cohortID, selectedAssessmentToDeleteID)
-      setCohortAssessments(current => cohortAssessments.filter(assessment => assessment.asssessmentID !== selectedAssessmentToDeleteID))
+      setCohortAssessments(current => cohortAssessments.filter(assessment => assessment.assessmentID !== selectedAssessmentToDeleteID))
       notification.info(response.success, 2000)
     } catch (error) {
       notification.error(error.message, 2000);
@@ -105,7 +105,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
               {
                 cohortAssessments.map((assessment, id) => {
                   return (
-                    <tr key={assessment.asssessmentID}>
+                    <tr key={assessment.assessmentID}>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.name}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.numOfQuestions}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.availableDateTime).format('MMMM Do YYYY, HH:mm')}</td>
