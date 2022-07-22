@@ -91,11 +91,12 @@ class ExamCohortController {
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
-    if(DateTimeController.isDateTimeValid(availableDateTime, dueDateTime)) {
+    if(!name) throw Error('You must provide a name for the assessment!')
+    if(DateTimeController.isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime)) {
       const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
       const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
       return assessment
-    } throw {error: ('Invalid date and time!')}
+    } throw Error('Invalid date and time!')
     
   }
   static async getAllAssessmentFromExamCohort(cohortID) {
