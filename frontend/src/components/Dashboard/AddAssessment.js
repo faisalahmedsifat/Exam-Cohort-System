@@ -21,8 +21,8 @@ import notification from '../../services/notificationService'
 const Maincontent = ({ cohortID, cohortName }) => {
   const formRef = useRef();
   const navigate = useNavigate();
-  const availableDefaultDateCalc = moment(new Date()).format("YYYY-MM-DDTHH:MM");
-  const dueDefaultDateCalc = moment(new Date(new Date().setDate(new Date().getDate() + 1))).format("YYYY-MM-DDTHH:MM");
+  const availableDefaultDateCalc = moment(new Date()).format("YYYY-MM-DDTHH:mm");
+  const dueDefaultDateCalc = moment(new Date(new Date().setDate(new Date().getDate() + 1))).format("YYYY-MM-DDTHH:mm");
 
   const currentUser = useSelector(store => store.currentUser.value)
 

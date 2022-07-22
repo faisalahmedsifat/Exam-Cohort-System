@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 
+// Moment JS
+import moment from 'moment';
+
 // HeadlessUI
 import { Dialog } from "@headlessui/react";
 
@@ -108,10 +111,14 @@ const Maincontent = ({ cohortID, cohortName }) => {
                   return (
                     <tr key={assessment.AssessmentID}>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.name}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>0</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.availableDateTime}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.dueDateTime}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
+                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.numOfQuestions}</td>
+                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.availableDateTime).format('MMMM Do YYYY, HH:mm')}</td>
+                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.dueDateTime).format('MMMM Do YYYY, HH:mm')}</td>
+                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap flex items-center gap-5'>
+                        <Link to={`/examcohorts/${cohortID}/assessments/${assessment.AssessmentID}`}>
+                          <span className='bg-flat_green1 hover:bg-flat_green2 font-medium text-white
+                          py-1 px-2 rounded hover:cursor-pointer'>Enter</span>
+                        </Link>
                         <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
                         py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.AssessmentID)}>Delete</span>
                       </td>
