@@ -80,6 +80,14 @@ class DatabaseController {
     return await Models.Candidatelist.destroy({where: {cohortID, id: candidateID}})
   }
 
+  static async getQuestionFromQuestionID(questionID){
+    return await Models.Question.findByPk(questionID)
+  }
+
+  static async getMCQQuestionFromQuestionID(questionID){
+    return await Models.Mcqquestion.findByPk(questionID)
+  }
+
   static async getCohortsSingleCandidateInfoFromEmail(cohortInstance, candidateEmailID){
     return await cohortInstance.getCandidate({
       limit: 1,
@@ -91,6 +99,14 @@ class DatabaseController {
 
   static async deleteAssessmentFromCohort(cohortID, assessmentID){
     return await Models.Assessment.destroy({where: {cohortID, assessmentID}})
+  }
+
+  static async getAssessmentFromAssessmentID(assessmentID){
+    return await Models.Assessment.findByPk(assessmentID)
+  }
+
+  static async deleteQuestionFromAssessment(assessmentID, questionID){
+    return await Models.Question.destroy({where: {assessmentID, questionID}})
   }
 }
 
