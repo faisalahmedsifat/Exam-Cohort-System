@@ -21,7 +21,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-07-18T16:56:59.928Z",
+  created: "2022-07-22T20:40:20.046Z",
   comment: "",
 };
 
@@ -297,21 +297,21 @@ const migrationCommands = (transaction) => [
           field: "updatedAt",
           allowNull: false,
         },
-        CohortID: {
+        cohortID: {
           type: Sequelize.UUID,
-          field: "CohortID",
+          field: "cohortID",
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
           references: { model: "examcohorts", key: "cohortID" },
-          unique: "candidate_list_CandidateID_CohortID_unique",
+          unique: "candidate_list_candidateID_cohortID_unique",
         },
-        CandidateID: {
+        candidateID: {
           type: Sequelize.UUID,
-          field: "CandidateID",
+          field: "candidateID",
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
           references: { model: "users", key: "userID" },
-          unique: "candidate_list_CandidateID_CohortID_unique",
+          unique: "candidate_list_candidateID_cohortID_unique",
         },
       },
       { transaction },
@@ -322,9 +322,9 @@ const migrationCommands = (transaction) => [
     params: [
       "assessments",
       {
-        AssessmentID: {
+        assessmentID: {
           type: Sequelize.UUID,
-          field: "AssessmentID",
+          field: "assessmentID",
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
         },
@@ -395,7 +395,7 @@ const migrationCommands = (transaction) => [
           field: "assessmentID",
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
-          references: { model: "assessments", key: "AssessmentID" },
+          references: { model: "assessments", key: "assessmentID" },
           name: "assessmentID",
           allowNull: false,
         },

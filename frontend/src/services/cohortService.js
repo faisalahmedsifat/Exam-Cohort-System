@@ -81,11 +81,11 @@ const deleteAssessment = async (token, cohortID, candidateID) => {
   }
 }
 
-const getSingleAssessmentDetails = async (token, cohortID, AssessmentID) => {
+const getSingleAssessmentDetails = async (token, cohortID, assessmentID) => {
   const axiosInstance = axios.create({
     headers: { 'Authorization': 'bearer ' + token }
   });
-  const response = await axiosInstance.get(baseUrl + `/${cohortID}/assessment/${AssessmentID}`)
+  const response = await axiosInstance.get(baseUrl + `/${cohortID}/assessment/${assessmentID}`)
   return response.data.response
 }
 

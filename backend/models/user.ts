@@ -23,8 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsToMany(models.ExamCohort, { 
         as: 'assignedcohort',
         through: models.Candidatelist,
-        foreignKey: 'CandidateID',
-        otherKey: "CohortID"
+        foreignKey: 'candidateID',
+        otherKey: "cohortID"
       });
     }
   }

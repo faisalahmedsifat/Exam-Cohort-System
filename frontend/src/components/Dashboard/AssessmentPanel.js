@@ -43,6 +43,7 @@ const AssessmentPanel = () => {
     const getAssessmentName = async () => {
       if (currentUser != null) {
         try {
+          console.log(assessmentID);
           const assessment = await cohortService.getSingleAssessmentDetails(currentUser.token, cohortID, assessmentID);
           setAssessmentName(assessment.name);
         } catch (e) {

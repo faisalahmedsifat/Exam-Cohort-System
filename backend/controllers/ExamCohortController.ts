@@ -41,7 +41,7 @@ class ExamCohortController {
   // Single Instance Stats Loader
   static async loadAssessmentStat(assessmentInstance) {
     const assessmentData = DatabaseController.getDataAttributesFromInstance(assessmentInstance);
-    assessmentData.numOfQuestions = await ExamCohortController.getAssessmentNumOfQuestion(assessmentData.AssessmentID)
+    assessmentData.numOfQuestions = await ExamCohortController.getAssessmentNumOfQuestion(assessmentData.assessmentID)
     return assessmentData
   }
 

@@ -51,7 +51,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
   const handleDeleteAssessment = async () => {
     try {
       const response = await cohortService.deleteAssessment(currentUser.token, cohortID, selectedAssessmentToDeleteID)
-      setCohortAssessments(current => cohortAssessments.filter(assessment => assessment.AssessmentID !== selectedAssessmentToDeleteID))
+      setCohortAssessments(current => cohortAssessments.filter(assessment => assessment.asssessmentID !== selectedAssessmentToDeleteID))
       notification.info(response.success, 2000)
     } catch (error) {
       notification.error(error.message, 2000);
@@ -109,18 +109,18 @@ const Maincontent = ({ cohortID, cohortName }) => {
               {
                 cohortAssessments.map((assessment, id) => {
                   return (
-                    <tr key={assessment.AssessmentID}>
+                    <tr key={assessment.asssessmentID}>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.name}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.numOfQuestions}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.availableDateTime).format('MMMM Do YYYY, HH:mm')}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.dueDateTime).format('MMMM Do YYYY, HH:mm')}</td>
                       <td className='p-3 text-sm text-gray-700 whitespace-nowrap flex items-center gap-5'>
-                        <Link to={`/examcohorts/${cohortID}/assessments/${assessment.AssessmentID}`}>
+                        <Link to={`/examcohorts/${cohortID}/assessments/${assessment.assessmentID}`}>
                           <span className='bg-flat_green1 hover:bg-flat_green2 font-medium text-white
                           py-1 px-2 rounded hover:cursor-pointer'>Enter</span>
                         </Link>
                         <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
-                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.AssessmentID)}>Delete</span>
+                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.asssessmentID)}>Delete</span>
                       </td>
                     </tr>
                   )
