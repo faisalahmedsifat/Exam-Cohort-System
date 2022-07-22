@@ -94,12 +94,7 @@ router.post('/:id/assessment', middleware.authBarrier, RoleBarrier.cohortsEvalua
     const cohortID = request.params.id
 
     try {
-      console.log(name);
-      console.log(availableDateTime);
-      console.log(dueDateTime);
         const assessment = await ExamCohortController.addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime)
-        
-        
         return response.status(201).json(middleware.generateApiOutput("OK", assessment))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
@@ -108,13 +103,23 @@ router.post('/:id/assessment', middleware.authBarrier, RoleBarrier.cohortsEvalua
 
 router.get('/:id/assessment', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
     const cohortID = request.params.id
-
     try {
         const assessments = await ExamCohortController.getAllAssessmentFromExamCohort(cohortID)
         return response.status(201).json(middleware.generateApiOutput("OK", assessments))
     } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
+})
+
+
+router.get('/:id/assessment/:assessmentID', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+  const assessmentID = request.params.assessmentID 
+  try { 
+      const assessment = await ExamCohortController.getSingleAssessmentDetails(assessmentID)
+      return response.status(201).json(middleware.generateApiOutput("OK", assessment))
+  } catch (error) {
+      return response.status(500).json(middleware.generateApiOutput("FAILED", { error:error.message }))
+  }
 })
 
 
@@ -130,27 +135,36 @@ router.delete('/:id/assessment/:assessmentID', middleware.authBarrier, RoleBarri
 })
 
 // Question related routes
-router.post('/assessment/:id/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+router.post('/:id/assessment/:assessmentID/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
     const questions = request.body
-    const assessmentID = request.params.id
+    const assessmentID = request.params.assessmentID
     try {
         const output = await ExamCohortController.addQuestionsToAssessment(questions, assessmentID)
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
 })
 
-
-//TODO : Validation if the user is evaluator or candidate
-router.get('/assessment/:id/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
-    const assessmentID = request.params.id
+router.get('/:id/assessment/:assessmentID/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+    const assessmentID = request.params.assessmentID
     try {
         const output = await ExamCohortController.getQuestionsFromAssessment(assessmentID)
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
+})
+
+router.delete('/:id/assessment/:assessmentID/questions/:questionID', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+  const assessmentID = request.params.assessmentID
+  const questionID = request.params.questionID
+  try {
+      await ExamCohortController.deleteQuestionFromAssessment(assessmentID,questionID)
+      return response.status(201).json(middleware.generateApiOutput("OK", {success: "Question Deleted!"}))
+  } catch (error) {
+      return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
+  }
 })
 
 
