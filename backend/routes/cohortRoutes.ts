@@ -94,10 +94,15 @@ router.post('/:id/assessment', middleware.authBarrier, RoleBarrier.cohortsEvalua
     const cohortID = request.params.id
 
     try {
+      console.log(name);
+      console.log(availableDateTime);
+      console.log(dueDateTime);
         const assessment = await ExamCohortController.addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime)
+        
+        
         return response.status(201).json(middleware.generateApiOutput("OK", assessment))
     } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
 })
 
