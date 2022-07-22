@@ -39,13 +39,13 @@ const invalidDates = [
 describe("Date Time Validation", () => {
     test("should return true for valid dates", () => {
         validDates.forEach(date => {
-            expect(DateTimeController.isDateTimeValid(date.availableDateTime, date.dueDateTime)).toBe(true);
+            expect(DateTimeController.isAvailableAndDueDateTimeValid(date.availableDateTime, date.dueDateTime)).toBe(true);
         });
     })
 
     test("should return false for invalid dates", () => {
         invalidDates.forEach(date => {
-            expect(DateTimeController.isDateTimeValid(date.availableDateTime, date.dueDateTime)).toBe(false);
+            expect(DateTimeController.isAvailableAndDueDateTimeValid(date.availableDateTime, date.dueDateTime)).toBe(false);
         });
     })
     
