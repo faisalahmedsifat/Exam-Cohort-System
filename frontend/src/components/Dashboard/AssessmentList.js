@@ -21,14 +21,10 @@ import SidebarForSingleCohort from './SidebarForSingleCohort'
 import cohortService from '../../services/cohortService'
 import notification from '../../services/notificationService'
 
-// Global Variables
-const defaultAddAssessmentForm = { emailID: "" }
-
 const Maincontent = ({ cohortID, cohortName }) => {
   const [cohortAssessments, setCohortAssessments] = useState([]);
   const [isCancelPromptOpen, setIsCancelPromptOpen] = useState(false)
   const [selectedAssessmentToDeleteID, setSelectedAssessmentToDeleteID] = useState(null)
-  const [addAssessmentForm, setAddAssessmentForm] = useState(defaultAddAssessmentForm)
 
   const currentUser = useSelector(store => store.currentUser.value)
 
@@ -120,7 +116,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
                           py-1 px-2 rounded hover:cursor-pointer'>Enter</span>
                         </Link>
                         <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
-                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.asssessmentID)}>Delete</span>
+                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.assessmentID)}>Delete</span>
                       </td>
                     </tr>
                   )
