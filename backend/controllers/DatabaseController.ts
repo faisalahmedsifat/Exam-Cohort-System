@@ -8,6 +8,11 @@ const middleware = require('../utils/middleware')
 const Models = require('../models')
 
 class DatabaseController {
+
+  static async createUser(userDetails){
+    return await Models.User.create(userDetails)
+  }
+
   static getDataAttributesFromInstance(instance) {
     const jsonString = JSON.stringify(instance);
     return JSON.parse(jsonString);

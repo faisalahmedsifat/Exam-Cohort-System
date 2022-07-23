@@ -16,7 +16,7 @@ export class AuthController{
   }
   public async signIn(callback): Promise<string>{
     const userData:OAuthUserData = await this.oauthService.getUserDataFromCallback(callback);
-    if(!(await await UserController.checkIfUserExists(userData.emailID))) await DatabaseController.createUser({ firstName: userData.firstName, lastName: userData.lastName, emailID: userData.emailID })
+    if(!(await UserController.checkIfUserExists(userData.emailID))) await DatabaseController.createUser({ firstName: userData.firstName, lastName: userData.lastName, emailID: userData.emailID })
     const token:string = await this.oauthService.generateTokenFromData(userData);
     return token;
   }
