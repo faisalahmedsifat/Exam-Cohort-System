@@ -4,6 +4,7 @@ import { OAuthUserData,OAuthService } from "./interfaces/OAuthService"
 
 // Other Controllers
 const UserController = require('./UserController')
+const DatabaseController = require('./DatabaseController')
 
 // Strategy Design Pattern
 export class AuthController{
