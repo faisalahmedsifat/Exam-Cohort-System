@@ -1,6 +1,7 @@
 // @ts-nocheck
 
-const {uuid} = require("uuidv4")
+const { uuid } = require("uuidv4")
+
 
 //Models
 const Models = require('../models')
@@ -157,7 +158,22 @@ const dummyQuestions = [
 
 describe('Exam Cohort', () => {
     test('testing create Exam Cohort', async () => {
-        //describe the test suite 
+        // describe the test suite 
+        // for (let dummyUserLength = 0; dummyUserLength < dummyUsers.length; dummyUserLength++) {
+        //     Models.User.findOne({ where: { emailID: dummyUsers[dummyUserLength].emailID } }).then(user => {
+        //         await ExamCohortController.createExamCohort(user.userID, dummyExamCohorts[dummyUserLength]).then(examCohort => {
+        //             expect(examCohort.cohortID).toBeDefined()
+        //             expect(examCohort.evaluatorID).toBeDefined()
+        //             expect(examCohort.name).toBeDefined()
+        //             expect(examCohort.name).toBe(dummyUsers[dummyUserLength].name)
+        //             console.log(examCohort)
+        //             console.log('------------------------------------------')
+        //         }).catch(err => {
+        //             console.log(err)
+        //         }
+        //         )
+        //     })
+        // }
     })
     test('testing get Exam Cohort', async () => {
         //describe the test suite 
