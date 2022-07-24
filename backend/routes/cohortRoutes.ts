@@ -50,7 +50,7 @@ router.post('/', middleware.authBarrier, async (request, response) => {
         const cohort = await ExamCohortController.createExamCohort(userID, name)
         return response.status(201).json(middleware.generateApiOutput("OK", cohort))
     } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error }))
+        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
 })
 

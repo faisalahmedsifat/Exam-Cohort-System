@@ -7,6 +7,7 @@ const middleware = require('../utils/middleware')
 // Other Controllers
 const DatabaseController = require('./DatabaseController')
 const DateTimeController = require('./DateTimeController')
+const ValidationController = require('./ValidationController')
 
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
@@ -81,11 +82,13 @@ class ExamCohortController {
   }
 
   static async createExamCohort(userID, name) {
+    if (!ValidationController.isValidExamCohortName(name)) throw Error("Invalid Cohort Name!")
     const user = await DatabaseController.getUserFromUserID(userID)
     const cohort = await DatabaseController.createExamCohortFromUser(user, name)
     return await ExamCohortController.loadCohortStat(cohort)
   }
   static async addCandidatesToExamCohort(emailID, cohortID) {
+    if (!ValidationController.isValidCandidateEmailID(emailID)) throw Error("Invalid Email ID!")
     let user = await DatabaseController.getUserFromEmailID(emailID)
     if (!user) throw Error("No Such User Exists!")
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
@@ -108,6 +111,7 @@ class ExamCohortController {
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
+    if (!ValidationController.isValidAssessmentName(name)) throw Error("Invalid Assessment Name!")
     if (!name) throw Error('You must provide a name for the assessment!')
     if (DateTimeController.isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime)) {
       const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
@@ -131,12 +135,21 @@ class ExamCohortController {
   }
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment) {
+    if (!ValidationController.isValidQuestionStatement(selectedQuestion.details.mcqStatement)) throw Error("Invalid Question Statement!")
+
+
+
+    //TODO: Check all the options are valid
+    let options = [selectedQuestion.details.mcqOp1, selectedQuestion.details.mcqOp2, selectedQuestion.details.mcqOp3, selectedQuestion.details.mcqOp4]
+    if (!ValidationController.isValidQuestionOptions(options)) throw Error("Invalid Question Options!")
+
+    //TODO: Check at least one option is selected
+    let selectedOptions = [selectedQuestion.details.mcqOp1IsCor, selectedQuestion.details.mcqOp2IsCor, selectedQuestion.details.mcqOp3IsCor, selectedQuestion.details.mcqOp4IsCor] 
+    if (!ValidationController.isAtleastOneCorrectAnswerIsSelected(selectedOptions)) throw Error("Invalid! Select at least one correct answer!")
+
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion)
     await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
     const questionInstance = await DatabaseController.getQuestionFromQuestionID(question.questionID)
-    console.log(selectedQuestion);
-    console.log(question);
-    console.log(questionInstance);
     let presentableData = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questionInstance)
     return presentableData
   }
@@ -172,7 +185,7 @@ class ExamCohortController {
     mcqQuestionDetails = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(mcqQuestionDetails)
     let mcqQuestion = { ...questionData, mcqQuestionDetails }
     delete question.mcqquestionID
-    let finalData = {...mcqQuestion.dataValues, mcqQuestionDetails }
+    let finalData = { ...mcqQuestion.dataValues, mcqQuestionDetails }
     return finalData
   }
 
