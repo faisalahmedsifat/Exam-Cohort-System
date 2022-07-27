@@ -23,7 +23,7 @@ router.post('/oauth/google', async (request, response) => {
   const googleOAuthLogin = new AuthController(new GoogleOAuth());
   try {
     const { code } = request.body
-    const token = await googleOAuthLogin.signIn({code});
+    const token = await googleOAuthLogin.signIn({ code });
     return response.status(200).send(middleware.generateApiOutput("OK", { token }))
   } catch (error) {
     return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))

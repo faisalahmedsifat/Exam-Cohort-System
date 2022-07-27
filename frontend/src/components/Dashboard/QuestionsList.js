@@ -82,7 +82,8 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
     }
   }
 
-  const handleAddQuestion = async () => {
+  const handleAddQuestion = async (e) => {
+    e.preventDefault();
     setIsOpen(false);
     try {
       const currentForm = modalRef.current
@@ -111,132 +112,220 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   }
 
   return (
-    <div className='grow'>
-
+    <div className="grow">
       <Header halfHeader={true} title={`Questions of ${assessmentName}`} />
-      <div className='bg-flat_white1 p-10'>
-
-        <div className='bg-flat_white1'>
+      <div className="bg-flat_white1 p-10">
+        <div className="bg-flat_white1">
           <div className="flex flex-row items-center justify-between pb-5 border-b-2">
             <div>
-              <div className='text-lg text-slate-700'>Questions List for: {assessmentName}</div>
-              <div className='text-sm text-slate-500'>You can add a new question by clicking on the button on the right.</div>
+              <div className="text-lg text-slate-700">
+                Questions List for: {assessmentName}
+              </div>
+              <div className="text-sm text-slate-500">
+                You can add a new question by clicking on the button on the
+                right.
+              </div>
             </div>
             <button
-              className='bg-flat_blue1 hover:bg-flat_blue2 text-md text-white
-                rounded shadow px-2 py-2'>
+              className="bg-flat_blue1 hover:bg-flat_blue2 text-md text-white
+                rounded shadow px-2 py-2"
+            >
               <div className="flex flex-row">
-                <PlusSmIcon className='h-5 w-5' />
-                <div className="pl-2" onClick={() => setIsOpen(true)}>Add Question</div>
+                <PlusSmIcon className="h-5 w-5" />
+                <div className="pl-2" onClick={() => setIsOpen(true)}>
+                  Add Question
+                </div>
               </div>
             </button>
           </div>
         </div>
-        <Dialog as="div"
-            className="relative z-50"
-            open={isOpen} onClose={() => setIsOpen(false)}>
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-            <form ref={modalRef} >
-              <div className='fixed inset-0 flex items-center'>
-                <Dialog.Panel className="mx-auto max-w-xl w-full rounded bg-white">
-                  <Dialog.Title className="text-lg font-bold px-3 pt-4">Add a new Question</Dialog.Title>
-                  <Dialog.Description className="px-5 pt-4 flex flex-col gap-y-5 items-center">
-                    <div className='w-full flex flex-col gap-y-2'>
-                      <label className="block text-gray-700 text-sm font-bold mr-3" htmlFor="newCandidateName">
-                        Question Statement
-                      </label>
-                      <input name="mcqStatement" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="text" placeholder="Questions Statement" />
-                    </div>
-                    <div className='w-full flex flex-col gap-y-2'>
-                      <div className='flex'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" htmlFor="newCandidateName">
-                          Option 1
-                        </label>
-                        <label className="block text-gray-700 text-sm font-bold mr-3" htmlFor="mcqOp1IsCor">
-                          Correct Answer?
-                        </label>
-                        <input name="mcqOp1IsCor" type="checkbox" />
-                      </div>
-                      <input name="mcqOp1" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="text" placeholder="Option 1" />
-                    </div>
-                    <div className='w-full flex flex-col gap-y-2'>
-                      <div className='flex'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" htmlFor="newCandidateName">
-                          Option 2
-                        </label>
-                        <label className="block text-gray-700 text-sm font-bold mr-3" htmlFor="mcqOp2IsCor">
-                          Correct Answer?
-                        </label>
-                        <input name="mcqOp2IsCor" type="checkbox" />
-                      </div>
-                      <input name="mcqOp2" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="text" placeholder="Option 2" />
-                    </div>
-                    <div className='w-full flex flex-col gap-y-2'>
-                      <div className='flex'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" htmlFor="newCandidateName">
-                          Option 3
-                        </label>
-                        <label className="block text-gray-700 text-sm font-bold mr-3" htmlFor="mcqOp3IsCor">
-                          Correct Answer?
-                        </label>
-                        <input name="mcqOp3IsCor" type="checkbox" />
-                      </div>
-                      <input name="mcqOp3" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="text" placeholder="Option 3" />
-                    </div>
-                    <div className='w-full flex flex-col gap-y-2'>
-                      <div className='flex'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" >
-                          Option 4
-                        </label>
-                        <label className="block text-gray-700 text-sm font-bold mr-3" htmlFor="mcqOp4IsCor">
-                          Correct Answer?
-                        </label>
-                        <input name="mcqOp4IsCor" type="checkbox" />
-                      </div>
-                      <input name="mcqOp4" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="text" placeholder="Option 4" />
-                    </div>
-                    <div className='w-full flex flex-row items-center gap-x-5'>
-                      <div className='w-full flex flex-col gap-y-2'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" >
-                          Marks
-                        </label>
-                        <input name="marks" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="number" pattern="\d*" step="1" placeholder="Marks" />
-                      </div>
-                      <div className='w-full flex flex-col gap-y-2'>
-                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3" >
-                          Time Limit
-                        </label>
-                        <input name="timeLimit" required className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200" type="number" pattern="\d*" step="1" placeholder="Time Limit in Minutes" />
-                      </div>
-                    </div>
-                  </Dialog.Description>
-                  <div className='flex flex-row items-center justify-end gap-5 py-5 pr-5'>
-                    <button onClick={() => handleAddQuestion()} className="bg-flat_green1 hover:bg-flat_green2 py-2
-      text-white text-md rounded-md px-5">Add</button>
-                    <button className="bg-flat_red1 hover:bg-flat_red2 py-2
-      text-white text-md rounded-md px-5" onClick={() => setIsOpen(false)}>Cancel</button>
+        <Dialog
+          as="div"
+          className="relative z-50"
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+        >
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <form onSubmit={handleAddQuestion} ref={modalRef}>
+            <div className="fixed inset-0 flex items-center">
+              <Dialog.Panel className="mx-auto max-w-xl w-full rounded bg-white">
+                <Dialog.Title className="text-lg font-bold px-3 pt-4">
+                  Add a new Question
+                </Dialog.Title>
+                <Dialog.Description className="px-5 pt-4 flex flex-col gap-y-5 items-center">
+                  <div className="w-full flex flex-col gap-y-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mr-3"
+                      htmlFor="newCandidateName"
+                    >
+                      Question Statement
+                    </label>
+                    <input
+                      name="mcqStatement"
+                      required
+                      className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                      type="text"
+                      placeholder="Questions Statement"
+                    />
                   </div>
-                </Dialog.Panel>
-              </div>
-            </form>
-          </Dialog>
+                  <div className="w-full flex flex-col gap-y-2">
+                    <div className="flex">
+                      <label
+                        className="flex-grow block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="newCandidateName"
+                      >
+                        Option 1
+                      </label>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="mcqOp1IsCor"
+                      >
+                        Correct Answer?
+                      </label>
+                      <input name="mcqOp1IsCor" type="checkbox" />
+                    </div>
+                    <input
+                      name="mcqOp1"
+                      required
+                      className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                      type="text"
+                      placeholder="Option 1"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-y-2">
+                    <div className="flex">
+                      <label
+                        className="flex-grow block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="newCandidateName"
+                      >
+                        Option 2
+                      </label>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="mcqOp2IsCor"
+                      >
+                        Correct Answer?
+                      </label>
+                      <input name="mcqOp2IsCor" type="checkbox" />
+                    </div>
+                    <input
+                      name="mcqOp2"
+                      required
+                      className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                      type="text"
+                      placeholder="Option 2"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-y-2">
+                    <div className="flex">
+                      <label
+                        className="flex-grow block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="newCandidateName"
+                      >
+                        Option 3
+                      </label>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="mcqOp3IsCor"
+                      >
+                        Correct Answer?
+                      </label>
+                      <input name="mcqOp3IsCor" type="checkbox" />
+                    </div>
+                    <input
+                      name="mcqOp3"
+                      required
+                      className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                      type="text"
+                      placeholder="Option 3"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-y-2">
+                    <div className="flex">
+                      <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                        Option 4
+                      </label>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                        htmlFor="mcqOp4IsCor"
+                      >
+                        Correct Answer?
+                      </label>
+                      <input name="mcqOp4IsCor" type="checkbox" />
+                    </div>
+                    <input
+                      name="mcqOp4"
+                      required
+                      className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                      type="text"
+                      placeholder="Option 4"
+                    />
+                  </div>
+                  <div className="w-full flex flex-row items-center gap-x-5">
+                    <div className="w-full flex flex-col gap-y-2">
+                      <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                        Marks
+                      </label>
+                      <input
+                        name="marks"
+                        required
+                        className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                        type="number"
+                        pattern="\d*"
+                        step="1"
+                        placeholder="Marks"
+                      />
+                    </div>
+                    <div className="w-full flex flex-col gap-y-2">
+                      <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                        Time Limit
+                      </label>
+                      <input
+                        name="timeLimit"
+                        required
+                        className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                        type="number"
+                        pattern="\d*"
+                        step="1"
+                        placeholder="Time Limit in Minutes"
+                      />
+                    </div>
+                  </div>
+                </Dialog.Description>
+                <div className="flex flex-row items-center justify-end gap-5 py-5 pr-5">
+                  <button
+                    type="submit"
+                    className="bg-flat_green1 hover:bg-flat_green2 py-2
+      text-white text-md rounded-md px-5"
+                  >
+                    Add
+                  </button>
+                  <button
+                    className="bg-flat_red1 hover:bg-flat_red2 py-2
+      text-white text-md rounded-md px-5"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </div>
+          </form>
+        </Dialog>
         <div>
-          {
-            assessmentsQuestions.map(question => {
-              return (
-                <QuestionDisplayCard
-                  key={question.questionID}
-                  body={question}
-                  handleDeleteQuestion={handleDeleteQuestion}
-                />
-              )
-            })
-          }
+          {assessmentsQuestions.map((question) => {
+            return (
+              <QuestionDisplayCard
+                key={question.questionID}
+                body={question}
+                handleDeleteQuestion={handleDeleteQuestion}
+              />
+            );
+          })}
         </div>
-
       </div>
-    </div >
-  )
+    </div>
+  );
 }
 
 const QuestionList = () => {
