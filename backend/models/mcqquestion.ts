@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {name: 'mcqquestionID', allowNull:true} 
       });
       this.hasMany(models.Mcqoption, { 
-        as: 'mcqoption',
+        as: 'mcqoptions',
         foreignKey: {name: 'mcqquestionID', allowNull:true} 
       });
     }

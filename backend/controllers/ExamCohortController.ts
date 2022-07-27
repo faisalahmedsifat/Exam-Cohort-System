@@ -135,20 +135,17 @@ class ExamCohortController {
   }
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment) {
-    if (!ValidationController.isValidQuestionStatement(selectedQuestion.details.mcqStatement)) throw Error("Invalid Question Statement!")
-
-
-
-    //TODO: Check all the options are valid
-    let options = [selectedQuestion.details.mcqOp1, selectedQuestion.details.mcqOp2, selectedQuestion.details.mcqOp3, selectedQuestion.details.mcqOp4]
-    if (!ValidationController.isValidQuestionOptions(options)) throw Error("Invalid Question Options!")
-
-    //TODO: Check at least one option is selected
-    let selectedOptions = [selectedQuestion.details.mcqOp1IsCor, selectedQuestion.details.mcqOp2IsCor, selectedQuestion.details.mcqOp3IsCor, selectedQuestion.details.mcqOp4IsCor] 
-    if (!ValidationController.isAtleastOneCorrectAnswerIsSelected(selectedOptions)) throw Error("Invalid! Select at least one correct answer!")
+    // if (!ValidationController.isValidQuestionStatement(selectedQuestion.details.mcqStatement)) throw Error("Invalid Question Statement!")
+    // //TODO: Check all the options are valid
+    // let options = [selectedQuestion.details.mcqOp1, selectedQuestion.details.mcqOp2, selectedQuestion.details.mcqOp3, selectedQuestion.details.mcqOp4]
+    // if (!ValidationController.isValidQuestionOptions(options)) throw Error("Invalid Question Options!")
+    // //TODO: Check at least one option is selected
+    // let selectedOptions = [selectedQuestion.details.mcqOp1IsCor, selectedQuestion.details.mcqOp2IsCor, selectedQuestion.details.mcqOp3IsCor, selectedQuestion.details.mcqOp4IsCor] 
+    // if (!ValidationController.isAtleastOneCorrectAnswerIsSelected(selectedOptions)) throw Error("Invalid! Select at least one correct answer!")
 
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion)
-    await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
+    const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
+    await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions)
     const questionInstance = await DatabaseController.getQuestionFromQuestionID(question.questionID)
     let presentableData = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questionInstance)
     return presentableData
@@ -176,17 +173,20 @@ class ExamCohortController {
 
   static async processSingleMCQQuestionForOutputPresentation(question) {
     let questionData = DatabaseController.getDataAttributesFromInstance(question)
-    questionData = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(question)
-    delete questionData.assessmentID
-    delete questionData.microvivaquestionID
-
-    let mcqQuestionDetails = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID)
-    mcqQuestionDetails = DatabaseController.getDataAttributesFromInstance(mcqQuestionDetails)
-    mcqQuestionDetails = ExamCohortController.deleteCreatedAndUpdatedAtFromJsonDataValues(mcqQuestionDetails)
-    let mcqQuestion = { ...questionData, mcqQuestionDetails }
-    delete question.mcqquestionID
-    let finalData = { ...mcqQuestion.dataValues, mcqQuestionDetails }
-    return finalData
+    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance)
+    mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+    let final = {
+      questionID: questionData.questionID,
+      type: questionData.type,
+      marks: questionData.marks,
+      timeLimit: questionData.timeLimit,
+      mcqQuestionDetails: {
+        mcqStatement: mcqQuestionInstance.mcqStatement,
+        mcqOptions: [...mcqQuestionOptions]
+      }
+    }
+    return final;
   }
 
   static async getQuestionsFromAssessment(assessmentID) {
@@ -195,7 +195,7 @@ class ExamCohortController {
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
       let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
-      output.push(DatabaseController.getDataAttributesFromInstance(mcqQuestion))
+      output.push(mcqQuestion)
     }
     return output
   }

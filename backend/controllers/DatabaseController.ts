@@ -7,6 +7,10 @@ const middleware = require('../utils/middleware')
 //Models
 const Models = require('../models')
 
+// Helper Functions
+let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
+
+
 class DatabaseController {
 
   static async createUser(userDetails) {
@@ -77,8 +81,25 @@ class DatabaseController {
   static async addMcqQuestionFromQuestionDetails(question, mcqDetails) {
     return await question.createMcqquestion(mcqDetails)
   }
+
+  static async createSingleOptionFromDetails(mcqquestion, mcqOption){
+    return await mcqquestion.createMcqoption(mcqOption)
+  }
+
+  static async getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionDetails){
+    return await mcqQuestionDetails.getMcqoptions({
+      attributes: { exclude: ['id','createdAt', "updatedAt",'mcqquestionID'] },
+    });
+  }
+
+  static async createMcqOptionsFromQuestionDetails(mcqquestion, mcqOptions){
+    return await asyncMap(mcqOptions, async mcqOption => await DatabaseController.createSingleOptionFromDetails(mcqquestion, mcqOption))
+  }
+
   static async getQuestionsFromAssessment(assessment) {
-    return await assessment.getQuestion()
+    return await assessment.getQuestion({
+      attributes: { exclude: ['id','createdAt', 'updatedAt'] },
+    })
   }
 
   static async deleteCandidateFromCohort(cohortID, candidateID) {
