@@ -14,6 +14,8 @@ const Sequelize = require("sequelize");
  * createTable() => "candidate_list", deps: [examcohorts, users]
  * createTable() => "assessments", deps: [examcohorts]
  * createTable() => "questions", deps: [assessments, mcq_questions, microviva_questions]
+ * createTable() => "mcqoption", deps: [mcq_questions]
+ * createTable() => "mcqoptionselected", deps: [mcq_answers]
  * createTable() => "answers", deps: [mcq_answers, microviva_answer, candidate_list, questions]
  *
  */
@@ -21,7 +23,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-07-22T20:40:20.046Z",
+  created: "2022-07-27T06:42:36.895Z",
   comment: "",
 };
 
@@ -36,26 +38,6 @@ const migrationCommands = (transaction) => [
           field: "id",
           autoIncrement: true,
           primaryKey: true,
-          allowNull: false,
-        },
-        mcqOp1Selected: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp1Selected",
-          allowNull: false,
-        },
-        mcqOp2Selected: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp2Selected",
-          allowNull: false,
-        },
-        mcqOp3Selected: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp3Selected",
-          allowNull: false,
-        },
-        mcqOp4Selected: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp4Selected",
           allowNull: false,
         },
         createdAt: {
@@ -87,30 +69,6 @@ const migrationCommands = (transaction) => [
         mcqStatement: {
           type: Sequelize.STRING,
           field: "mcqStatement",
-          allowNull: false,
-        },
-        mcqOp1: { type: Sequelize.STRING, field: "mcqOp1", allowNull: false },
-        mcqOp2: { type: Sequelize.STRING, field: "mcqOp2", allowNull: false },
-        mcqOp3: { type: Sequelize.STRING, field: "mcqOp3", allowNull: false },
-        mcqOp4: { type: Sequelize.STRING, field: "mcqOp4", allowNull: false },
-        mcqOp1IsCor: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp1IsCor",
-          allowNull: false,
-        },
-        mcqOp2IsCor: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp2IsCor",
-          allowNull: false,
-        },
-        mcqOp3IsCor: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp3IsCor",
-          allowNull: false,
-        },
-        mcqOp4IsCor: {
-          type: Sequelize.BOOLEAN,
-          field: "mcqOp4IsCor",
           allowNull: false,
         },
         createdAt: {
@@ -424,6 +382,91 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
+      "mcqoption",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        mcqOptionText: {
+          type: Sequelize.STRING,
+          field: "mcqOptionText",
+          allowNull: false,
+        },
+        isMcqOptionCor: {
+          type: Sequelize.BOOLEAN,
+          field: "isMcqOptionCor",
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        mcqquestionID: {
+          type: Sequelize.INTEGER,
+          field: "mcqquestionID",
+          onUpdate: "CASCADE",
+          onDelete: "NO ACTION",
+          references: { model: "mcq_questions", key: "id" },
+          name: "mcqquestionID",
+          allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
+      "mcqoptionselected",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        isSelectedInAnswer: {
+          type: Sequelize.BOOLEAN,
+          field: "isSelectedInAnswer",
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        mcqanswerID: {
+          type: Sequelize.INTEGER,
+          field: "mcqanswerID",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "mcq_answers", key: "id" },
+          name: "mcqanswerID",
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
       "answers",
       {
         answerID: {
@@ -506,6 +549,14 @@ const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
     params: ["mcq_answers", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["mcqoption", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["mcqoptionselected", { transaction }],
   },
   {
     fn: "dropTable",
