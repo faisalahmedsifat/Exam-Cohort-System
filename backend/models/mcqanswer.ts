@@ -13,10 +13,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasOne(models.Answer, { 
-        foreignKey: {name: 'mcqanswerID', allowNull:true} 
+        foreignKey: {name: 'mcqanswerID', allowNull:true}
       });
       this.hasMany(models.Mcqoptionselected, {
-        foreignKey: {name: 'mcqanswerID', allowNull:true} 
+        foreignKey: {name: 'mcqanswerID', allowNull:true}
       });
     }
   }

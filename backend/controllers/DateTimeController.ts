@@ -19,10 +19,16 @@ class DateTimeController {
   }
 
   static isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime) {
-    const fiveMinAgoTimeStamp = Date.parse(new Date())-1000*60*5 // Allow only 3 Min of delay
+    const fiveMinAgoTimeStamp = Date.parse(new Date())-1000*60*60 // Allow only 60 Min of delay
     let availableTimeStamp = Date.parse(new Date(availableDateTime))
     let dueTimeStamp = Date.parse(new Date(dueDateTime))    
     return (availableTimeStamp < dueTimeStamp) && (availableTimeStamp >= fiveMinAgoTimeStamp)
+  }
+
+  static getQuestionMinutesRemainToAddInAssessment(availableDateTime, dueDateTime, usedMinutes){
+    let minutesTotal = (Date.parse(new Date(dueDateTime))-Date.parse(new Date(availableDateTime)))/(60*1000);
+    let minutesRemains = minutesTotal-usedMinutes;
+    return minutesRemains
   }
 
 }

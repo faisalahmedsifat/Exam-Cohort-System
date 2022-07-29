@@ -6,7 +6,6 @@ const middleware = require('../utils/middleware')
 
 // Other Controllers
 const DatabaseController = require('./DatabaseController')
-const DateTimeController = require('./DateTimeController')
 const ValidationController = require('./ValidationController')
 
 //Models
@@ -82,13 +81,12 @@ class ExamCohortController {
   }
 
   static async createExamCohort(userID, name) {
-    if (!ValidationController.isValidExamCohortName(name)) throw Error("Invalid Cohort Name!")
+    ValidationController.validateCreateExamCohortInput({userID,name})
     const user = await DatabaseController.getUserFromUserID(userID)
     const cohort = await DatabaseController.createExamCohortFromUser(user, name)
     return await ExamCohortController.loadCohortStat(cohort)
   }
   static async addCandidatesToExamCohort(emailID, cohortID) {
-    if (!ValidationController.isValidCandidateEmailID(emailID)) throw Error("Invalid Email ID!")
     let user = await DatabaseController.getUserFromEmailID(emailID)
     if (!user) throw Error("No Such User Exists!")
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
@@ -111,15 +109,12 @@ class ExamCohortController {
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
-    if (!ValidationController.isValidAssessmentName(name)) throw Error("Invalid Assessment Name!")
-    if (!name) throw Error('You must provide a name for the assessment!')
-    if (DateTimeController.isAvailableAndDueDateTimeValid(availableDateTime, dueDateTime)) {
-      const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
-      const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
-      return assessment
-    } throw Error('Invalid date and time!')
-
+    ValidationController.validateAddAssessmentInput({cohortID, name, availableDateTime, dueDateTime})
+    const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
+    const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
+    return assessment
   }
+
   static async getAllAssessmentFromExamCohort(cohortID) {
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     const assessments = await DatabaseController.getAllAssessmentFromCohort(cohort)
@@ -135,14 +130,6 @@ class ExamCohortController {
   }
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment) {
-    // if (!ValidationController.isValidQuestionStatement(selectedQuestion.details.mcqStatement)) throw Error("Invalid Question Statement!")
-    // //TODO: Check all the options are valid
-    // let options = [selectedQuestion.details.mcqOp1, selectedQuestion.details.mcqOp2, selectedQuestion.details.mcqOp3, selectedQuestion.details.mcqOp4]
-    // if (!ValidationController.isValidQuestionOptions(options)) throw Error("Invalid Question Options!")
-    // //TODO: Check at least one option is selected
-    // let selectedOptions = [selectedQuestion.details.mcqOp1IsCor, selectedQuestion.details.mcqOp2IsCor, selectedQuestion.details.mcqOp3IsCor, selectedQuestion.details.mcqOp4IsCor] 
-    // if (!ValidationController.isAtleastOneCorrectAnswerIsSelected(selectedOptions)) throw Error("Invalid! Select at least one correct answer!")
-
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion)
     const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
     await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions)
@@ -152,6 +139,11 @@ class ExamCohortController {
   }
 
   static async addQuestionsToAssessment(questions, assessmentID) {
+    let maxMinuteRemainsOfThisAssessment = await DatabaseController.getAssessmentAllocatedMinutes(assessmentID)
+    let availableDatetime = await DatabaseController.getAssessmentAvailableDatetime(assessmentID)
+    let dueDatetime = await DatabaseController.getAssessmentDueDatetime(assessmentID) 
+    ValidationController.validateAddQuestionInputs(questions,availableDatetime, dueDatetime, maxMinuteRemainsOfThisAssessment)
+
     let output = []
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {

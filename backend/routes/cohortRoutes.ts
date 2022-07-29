@@ -9,6 +9,7 @@ const middleware = require('../utils/middleware')
 // Controllers
 const ExamCohortController = require('../controllers/ExamCohortController')
 const RoleBarrier = require('../controllers/RoleBarrier')
+const ValidationController = require('../controllers/ValidationController')
 
 // Models 
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
@@ -60,6 +61,7 @@ router.post('/:id/candidate', middleware.authBarrier, RoleBarrier.cohortsEvaluat
     const { emailID } = request.body
     const cohortID = request.params.id
     try {
+        ValidationController.validateAddCandidateInput({candidateEmailID: emailID, evaluatorEmailID: request.emailID, cohortID})
         const user = await ExamCohortController.addCandidatesToExamCohort(emailID, cohortID)
         return response.status(201).json(middleware.generateApiOutput("OK", user))
     } catch (error) {      

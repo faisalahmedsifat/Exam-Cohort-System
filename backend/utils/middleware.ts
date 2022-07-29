@@ -31,6 +31,7 @@ const authBarrier = (request, response, next) => {
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) token = authorization.substring(7)
     const tokenData = jwt.verify(token, config.SECRET)
     request.userID = tokenData.userID 
+    request.emailID = tokenData.emailID 
     next()
   } catch (error) {
     return response.status(400).json(generateApiOutput("FAILED", "Authentication Failed!"))

@@ -23,7 +23,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-07-27T06:42:36.895Z",
+  created: "2022-07-29T12:22:47.591Z",
   comment: "",
 };
 
@@ -225,7 +225,7 @@ const migrationCommands = (transaction) => [
           type: Sequelize.UUID,
           field: "evaluatorID",
           onUpdate: "CASCADE",
-          onDelete: "NO ACTION",
+          onDelete: "CASCADE",
           references: { model: "users", key: "userID" },
           name: "evaluatorID",
           allowNull: false,
