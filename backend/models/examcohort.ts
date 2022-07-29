@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
           singular: 'evaluatorcohort',
           plural: 'evaluatorcohorts'
         },
-        foreignKey: {name: 'evaluatorID', allowNull:false} 
+        foreignKey: {name: 'evaluatorID', allowNull:false} ,
+        onDelete: 'CASCADE'
       });
 
       this.belongsToMany(models.User, { 
@@ -29,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
 
       this.hasMany(models.Assessment, { 
         as: 'assessment',
-        foreignKey: {name: 'cohortID', allowNull:false} 
+        foreignKey: {name: 'cohortID', allowNull:false}
       });
     }
   }

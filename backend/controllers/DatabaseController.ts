@@ -134,6 +134,31 @@ class DatabaseController {
   static async deleteQuestionFromAssessment(assessmentID, questionID) {
     return await Models.Question.destroy({ where: { assessmentID, questionID } })
   }
+
+  static async getAssessmentAvailableDatetime(assessmentID){
+    return (await Models.Assessment.findByPk(assessmentID)).availableDateTime
+  }
+
+  static async getAssessmentDueDatetime(assessmentID){
+    return (await Models.Assessment.findByPk(assessmentID)).dueDateTime
+  }
+
+  static async getAssessmentAllocatedMinutes(assessmentID){
+    const questionOfAssessment = await Models.Question.findAll({where:{assessmentID}})
+    if(questionOfAssessment.length === 0){
+      return 0;
+    }
+    let allocatedMinutes = (await Models.Question.findAll({
+      where: {
+        assessmentID: assessmentID
+      },
+      attributes: [
+        [Models.Sequelize.fn('sum', Models.Sequelize.col('timeLimit')), 'usedTimeLimit'],
+      ],
+      group: ['assessmentID']
+    }))[0]    
+    return allocatedMinutes.dataValues.usedTimeLimit
+  }
 }
 
 module.exports = DatabaseController

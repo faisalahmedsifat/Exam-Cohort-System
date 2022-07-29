@@ -4,9 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 // Moment JS
 import moment from 'moment'
 
-// Icons
-import {PlusSmIcon} from '@heroicons/react/outline'
-
 // Redux
 import { useSelector } from 'react-redux'
 

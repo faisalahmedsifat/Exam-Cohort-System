@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.ExamCohort, { 
         as: 'assessment',
-        foreignKey: {name: 'cohortID', allowNull:false} 
+        foreignKey: {name: 'cohortID', allowNull:false}
       });
       this.hasMany(models.Question, {
         as: 'question',

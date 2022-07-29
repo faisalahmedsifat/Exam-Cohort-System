@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
           singular: 'evaluatorcohort',
           plural: 'evaluatorcohorts'
         },
-        foreignKey: {name: 'evaluatorID', allowNull:false} 
+        foreignKey: {name: 'evaluatorID', allowNull:false}
       });
 
       this.belongsToMany(models.ExamCohort, { 
