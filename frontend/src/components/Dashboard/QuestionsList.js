@@ -34,10 +34,13 @@ const QuestionDisplayCard = ({ body, handleDeleteQuestion }) => {
         <div className='border-b-2'></div>
         <div className='text-slate-800 font-bold'>{body.mcqQuestionDetails.mcqStatement}</div>
         <div className='flex flex-col gap-y-2'>
-          <div className={`py-2 px-2 rounded-lg text-white font-semibold ${body.mcqQuestionDetails.mcqOp1IsCor ? 'bg-flat_green1' : 'bg-flat_white2'}`}>1. {body.mcqQuestionDetails.mcqOp1}</div>
-          <div className={`py-2 px-2 rounded-lg text-white font-semibold ${body.mcqQuestionDetails.mcqOp2IsCor ? 'bg-flat_green1' : 'bg-flat_white2'}`}>2. {body.mcqQuestionDetails.mcqOp2}</div>
-          <div className={`py-2 px-2 rounded-lg text-white font-semibold ${body.mcqQuestionDetails.mcqOp3IsCor ? 'bg-flat_green1' : 'bg-flat_white2'}`}>3. {body.mcqQuestionDetails.mcqOp3}</div>
-          <div className={`py-2 px-2 rounded-lg text-white font-semibold ${body.mcqQuestionDetails.mcqOp4IsCor ? 'bg-flat_green1' : 'bg-flat_white2'}`}>4. {body.mcqQuestionDetails.mcqOp4}</div>
+          {
+            body.mcqQuestionDetails.mcqOptions.map((mcqoption, index) => {
+              return (
+                <div key={index} className={`py-2 px-2 rounded-lg text-white font-semibold ${mcqoption.isMcqOptionCor ? 'bg-flat_green1' : 'bg-flat_white2'}`}>{index + 1}. {mcqoption.mcqOptionText}</div>
+              )
+            })
+          }
         </div>
       </div>
     )

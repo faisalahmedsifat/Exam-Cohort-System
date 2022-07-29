@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Icons
 import { XCircleIcon } from '@heroicons/react/solid';
-import { LightningBoltIcon, PlusCircleIcon } from '@heroicons/react/outline';
+import { PlusCircleIcon } from '@heroicons/react/outline';
 
 // Redux
 import { useSelector } from 'react-redux'
@@ -23,20 +23,50 @@ const mcqOptionFormDefault = {
 }
 
 const mcqQuestionFormDefault = {
+  type: 'MCQ',
   mcqStatement: '',
+  marks: 0,
+  timeLimit: '',
   mcqOptions: []
 }
 
 const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => {
   const [inputFields, setInputFields] = useState([])
 
+  const currentUser = useSelector(store => store.currentUser.value)
+
   // Router Navigator
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("inputFields", inputFields);
-  };
+  const handleInputOnChange = (inputID, e) => {
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        inputField[e.target.name] = e.target.value
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
+
+  const handleInputOnChangeOption = (inputID, optionID, e) => {
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        const newOptionFields = inputField.mcqOptions.map(mcqOption => {
+          if (mcqOption.id === optionID) {
+            if (e.target.name === "isMcqOptionCor") {
+              mcqOption[e.target.name] = !(mcqOption.isMcqOptionCor)
+            } else {
+              mcqOption[e.target.name] = e.target.value
+            }
+          }
+          return mcqOption
+        })
+        inputField["mcqOptions"] = newOptionFields
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
 
   const handleAddMcqFields = () => {
     setInputFields(inputFields.concat({ ...mcqQuestionFormDefault, id: uuidv4() }))
@@ -45,7 +75,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   const handleAddNewOption = id => {
     const newInputFields = inputFields.map(inputField => {
       if (inputField.id === id) {
-        inputField['mcqOptions'] = [...inputField['mcqOptions'], { ...mcqOptionFormDefault, id: uuidv4 }]
+        inputField['mcqOptions'] = [...inputField['mcqOptions'], { ...mcqOptionFormDefault, id: uuidv4() }]
       }
       return inputField;
     })
@@ -53,13 +83,48 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   }
 
   const handleRemoveFields = (id) => {
-    setInputFields(oldInputFields => oldInputFields.filter((inputField, index) => inputField.id !== id));
+    setInputFields(oldInputFields => oldInputFields.filter((inputField, index) => inputField.id !== id))
   }
 
-  const createQuestions = async (e) => {
+  const handleDeleteOption = (questionID, optionID) => {
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === questionID) {
+        inputField['mcqOptions'] = inputField.mcqOptions.filter(option => option.id !==optionID )
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      // await cohortService.addAssessmentToCohort(currentUser.token, cohortID, body)
+      let body = []
+      for (let question of inputFields) {
+        if (question.type === "MCQ") {
+          let parsedMcqOptions = []
+          for (const option of question.mcqOptions) {
+            let singleOptionBody = {
+              mcqOptionText: option.mcqOptionText,
+              isMcqOptionCor: Boolean(option.isMcqOptionCor)
+            }
+            parsedMcqOptions.push(singleOptionBody)
+          }
+          let singleQuestionBody = {
+            type: "MCQ",
+            marks: Number(question.marks),
+            timeLimit: Number(question.timeLimit),
+            details: {
+              mcqStatement: question.mcqStatement,
+              mcqOptions: parsedMcqOptions
+            }
+          }
+          body.push(singleQuestionBody)
+        } else if (question.type === "MICROVIVA") {
+          // TODO
+        }
+      }
+      await cohortService.addQuestionToAssessment(currentUser.token, cohortID, assessmentID, body)
       notification.success('Successfully Added!', 2000);
       navigate(`/examcohorts/${cohortID}/assessments/${assessmentID}/questions`)
     } catch (error) {
@@ -77,7 +142,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
             <div className='text-sm text-slate-500'>Click the type of question you want to add to the assessment, then fill the forms appropiately.</div>
           </div>
         </div>
-        <form className="my-10" onSubmit={createQuestions}>
+        <form className="my-10">
           {
             inputFields.map((inputField, index) => {
               return (
@@ -97,13 +162,15 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                         Marks
                       </label>
                       <input
-                        name="marks"
                         required
                         className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
                         type="number"
                         pattern="\d*"
                         step="1"
                         placeholder="Marks"
+                        name="marks"
+                        value={inputField.marks}
+                        onChange={(event) => handleInputOnChange(inputField.id, event)}
                       />
                     </div>
                     <div className="w-full flex flex-col gap-y-2">
@@ -111,13 +178,15 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                         Time Limit
                       </label>
                       <input
-                        name="timeLimit"
                         required
                         className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
                         type="number"
                         pattern="\d*"
                         step="1"
                         placeholder="Time Limit in Minutes"
+                        name="timeLimit"
+                        value={inputField.timeLimit}
+                        onChange={(event) => handleInputOnChange(inputField.id, event)}
                       />
                     </div>
                   </div>
@@ -131,6 +200,9 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                       className="appearance-none border rounded w-full mr-5 py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
                       type="text"
                       placeholder="Questions Statement"
+                      name="mcqStatement"
+                      value={inputField.mcqStatement}
+                      onChange={(event) => handleInputOnChange(inputField.id, event)}
                     />
                   </div>
                   {
@@ -145,15 +217,29 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                               <label className="block text-gray-700 text-sm font-bold mr-3">
                                 Correct Answer?
                               </label>
-                              <input type="checkbox" />
+                              <input
+                                type="checkbox"
+                                name='isMcqOptionCor'
+                                checked={mcqOption.isMcqOptionCor}
+                                onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
+                              />
                             </div>
                           </div>
-                          <input
-                            required
-                            className="appearance-none border rounded w-full mr-5 py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
-                            type="text"
-                            placeholder={`Option ${optionNo + 1} Text`}
-                          />
+                          <div className='relative flex items-center justify-end'>
+                            <input
+                              required
+                              className="appearance-none border rounded w-full py-2 px-3 pr-10 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                              type="text"
+                              placeholder={`Option ${optionNo + 1} Text`}
+                              name="mcqOptionText"
+                              value={mcqOption.mcqOptionText}
+                              onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
+                            />
+                            <XCircleIcon
+                              onClick={() => handleDeleteOption(inputField.id, mcqOption.id)}
+                              className='absolute mr-1 h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
+                            />
+                          </div>
                         </div>
                       )
                     })
@@ -198,12 +284,11 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
 
           <div className='flex flex-row-reverse mr-3 gap-x-2'>
             <Link to={`/examcohorts/${cohortID}/assessments/${assessmentID}/questions`}>
-              <button
+              <div
                 className="mt-5 bg-flat_red1 hover:bg-flat_red2 rounded px-3 py-2 text-md text-white font-medium"
-                type='submit'
               >
                 Cancel
-              </button>
+              </div>
             </Link>
 
             <button
@@ -221,7 +306,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
 }
 
 const AddQuestions = () => {
-  const {cohortID, assessmentID} = useParams()
+  const { cohortID, assessmentID } = useParams()
   const [cohortName, setCohortName] = useState('Cohort');
   const [assessmentName, setAssessmentName] = useState('Assessment');
   const currentUser = useSelector(store => store.currentUser.value)
@@ -251,14 +336,14 @@ const AddQuestions = () => {
     getAssessmentName();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
   return (
     <div className='w-screen absolute lg:flex'>
       <SidebarForSingleAssessment cohortID={cohortID} cohortName={cohortName} assessmentID={assessmentID} assessmentName={assessmentName} />
       <Maincontent cohortID={cohortID} cohortName={cohortName} assessmentID={assessmentID} assessmentName={assessmentName} />
     </div>
   )
-  
+
 }
 
 export default AddQuestions

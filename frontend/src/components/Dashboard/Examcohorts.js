@@ -66,7 +66,7 @@ const Maincontent = () => {
       setExamCohorts(examCohorts.concat(data))
       notification.success("Successfully Created.", 2000);
     } catch (error) {
-      notification.error(error.response.data.response, 2000);
+      notification.error(error.message, 2000);
     }
     setIsOpen(false)
     setAddCohortForm(defaultAddCohortForm)
