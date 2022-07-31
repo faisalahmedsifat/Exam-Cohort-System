@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid';
 
+// Recorder
+import { ReactMediaRecorder } from "react-media-recorder";
+
 // Icons
 import { XCircleIcon } from '@heroicons/react/solid';
-import { PlusCircleIcon } from '@heroicons/react/outline';
-
+import { PlusCircleIcon, MicrophoneIcon } from '@heroicons/react/outline';
 // Redux
 import { useSelector } from 'react-redux'
 
@@ -22,12 +24,25 @@ const mcqOptionFormDefault = {
   isMcqOptionCor: false
 }
 
+const microResetValues = {
+  blobUrl: '',
+  blob: ''
+}
+
 const mcqQuestionFormDefault = {
   type: 'MCQ',
   mcqStatement: '',
   marks: 0,
   timeLimit: '',
   mcqOptions: []
+}
+
+const microVivaQuestionFormDefault = {
+  type: 'MICROVIVA',
+  marks: 0,
+  timeLimit: '',
+  questionAudio: microResetValues,
+  correctAudio: microResetValues
 }
 
 const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => {
@@ -37,6 +52,49 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
 
   // Router Navigator
   const navigate = useNavigate();
+
+  // Handle Question Audio
+  const handleQuestionAudioChange = (blobUrl, blob, inputID) => {
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        inputField["questionAudio"] = { blobUrl, blob }
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
+
+  const resetQuestionAudio = (clearBlobUrl, inputID) => {
+    clearBlobUrl()
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        inputField["questionAudio"] = microResetValues
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
+
+  const handleCorrectAudioChange = (blobUrl, blob, inputID) => {
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        inputField["correctAudio"] = { blobUrl, blob }
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
+
+  const resetCorrectAudio = (clearBlobUrl, inputID) => {
+    clearBlobUrl()
+    const newInputFields = inputFields.map(inputField => {
+      if (inputField.id === inputID) {
+        inputField["correctAudio"] = microResetValues
+      }
+      return inputField;
+    })
+    setInputFields(newInputFields);
+  }
 
   const handleInputOnChange = (inputID, e) => {
     const newInputFields = inputFields.map(inputField => {
@@ -72,6 +130,10 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
     setInputFields(inputFields.concat({ ...mcqQuestionFormDefault, id: uuidv4() }))
   }
 
+  const handleAddMicroFields = () => {
+    setInputFields(inputFields.concat({ ...microVivaQuestionFormDefault, id: uuidv4() }))
+  }
+
   const handleAddNewOption = id => {
     const newInputFields = inputFields.map(inputField => {
       if (inputField.id === id) {
@@ -89,7 +151,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   const handleDeleteOption = (questionID, optionID) => {
     const newInputFields = inputFields.map(inputField => {
       if (inputField.id === questionID) {
-        inputField['mcqOptions'] = inputField.mcqOptions.filter(option => option.id !==optionID )
+        inputField['mcqOptions'] = inputField.mcqOptions.filter(option => option.id !== optionID)
       }
       return inputField;
     })
@@ -145,117 +207,291 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
         <form className="my-10">
           {
             inputFields.map((inputField, index) => {
-              return (
-                <div className='bg-white shadow flex flex-col py-5 px-5 mb-5 rounded gap-y-5' key={inputField.id}>
-                  <div className='text-lg font-bold border-b-2 pb-5 flex justify-between items-center'>
-                    <div className='px-2'>
-                      MCQ Question
+              if (inputField.type === "MCQ") {
+                return (
+                  <div className='bg-white shadow flex flex-col py-5 px-5 mb-5 rounded gap-y-5' key={inputField.id}>
+                    <div className='text-lg font-bold border-b-2 pb-5 flex justify-between items-center'>
+                      <div className='px-2'>
+                        MCQ Question
+                      </div>
+                      <XCircleIcon
+                        onClick={() => handleRemoveFields(inputField.id)}
+                        className='h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
+                      />
                     </div>
-                    <XCircleIcon
-                      onClick={() => handleRemoveFields(inputField.id)}
-                      className='h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
-                    />
-                  </div>
-                  <div className="w-full flex flex-row items-center gap-x-5 px-2">
-                    <div className="w-full flex flex-col gap-y-2">
-                      <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
-                        Marks
+                    <div className="w-full flex flex-row items-center gap-x-5 px-2">
+                      <div className="w-full flex flex-col gap-y-2">
+                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                          Marks
+                        </label>
+                        <input
+                          required
+                          className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                          type="number"
+                          pattern="\d*"
+                          step="1"
+                          placeholder="Marks"
+                          name="marks"
+                          value={inputField.marks}
+                          onChange={(event) => handleInputOnChange(inputField.id, event)}
+                        />
+                      </div>
+                      <div className="w-full flex flex-col gap-y-2">
+                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                          Time Limit
+                        </label>
+                        <input
+                          required
+                          className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                          type="number"
+                          pattern="\d*"
+                          step="1"
+                          placeholder="Time Limit in Minutes"
+                          name="timeLimit"
+                          value={inputField.timeLimit}
+                          onChange={(event) => handleInputOnChange(inputField.id, event)}
+                        />
+                      </div>
+                    </div>
+                    <div className='flex flex-col gap-y-2 px-2'>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                      >
+                        Question Statement
                       </label>
                       <input
-                        required
-                        className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
-                        type="number"
-                        pattern="\d*"
-                        step="1"
-                        placeholder="Marks"
-                        name="marks"
-                        value={inputField.marks}
+                        className="appearance-none border rounded w-full mr-5 py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                        type="text"
+                        placeholder="Questions Statement"
+                        name="mcqStatement"
+                        value={inputField.mcqStatement}
                         onChange={(event) => handleInputOnChange(inputField.id, event)}
                       />
                     </div>
-                    <div className="w-full flex flex-col gap-y-2">
-                      <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
-                        Time Limit
-                      </label>
-                      <input
-                        required
-                        className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
-                        type="number"
-                        pattern="\d*"
-                        step="1"
-                        placeholder="Time Limit in Minutes"
-                        name="timeLimit"
-                        value={inputField.timeLimit}
-                        onChange={(event) => handleInputOnChange(inputField.id, event)}
-                      />
-                    </div>
-                  </div>
-                  <div className='flex flex-col gap-y-2 px-2'>
-                    <label
-                      className="block text-gray-700 text-sm font-bold mr-3"
-                    >
-                      Question Statement
-                    </label>
-                    <input
-                      className="appearance-none border rounded w-full mr-5 py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
-                      type="text"
-                      placeholder="Questions Statement"
-                      name="mcqStatement"
-                      value={inputField.mcqStatement}
-                      onChange={(event) => handleInputOnChange(inputField.id, event)}
-                    />
-                  </div>
-                  {
-                    inputField.mcqOptions.map((mcqOption, optionNo) => {
-                      return (
-                        <div className='flex flex-col gap-y-2 px-2' key={optionNo}>
-                          <div className='flex justify-between'>
-                            <label className="block text-gray-700 text-sm font-bold mr-3">
-                              Option {optionNo + 1}
-                            </label>
-                            <div className='flex'>
+                    {
+                      inputField.mcqOptions.map((mcqOption, optionNo) => {
+                        return (
+                          <div className='flex flex-col gap-y-2 px-2' key={optionNo}>
+                            <div className='flex justify-between'>
                               <label className="block text-gray-700 text-sm font-bold mr-3">
-                                Correct Answer?
+                                Option {optionNo + 1}
                               </label>
+                              <div className='flex'>
+                                <label className="block text-gray-700 text-sm font-bold mr-3">
+                                  Correct Answer?
+                                </label>
+                                <input
+                                  type="checkbox"
+                                  name='isMcqOptionCor'
+                                  checked={mcqOption.isMcqOptionCor}
+                                  onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
+                                />
+                              </div>
+                            </div>
+                            <div className='relative flex items-center justify-end'>
                               <input
-                                type="checkbox"
-                                name='isMcqOptionCor'
-                                checked={mcqOption.isMcqOptionCor}
+                                required
+                                className="appearance-none border rounded w-full py-2 px-3 pr-10 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                                type="text"
+                                placeholder={`Option ${optionNo + 1} Text`}
+                                name="mcqOptionText"
+                                value={mcqOption.mcqOptionText}
                                 onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
+                              />
+                              <XCircleIcon
+                                onClick={() => handleDeleteOption(inputField.id, mcqOption.id)}
+                                className='absolute mr-1 h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
                               />
                             </div>
                           </div>
-                          <div className='relative flex items-center justify-end'>
-                            <input
-                              required
-                              className="appearance-none border rounded w-full py-2 px-3 pr-10 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
-                              type="text"
-                              placeholder={`Option ${optionNo + 1} Text`}
-                              name="mcqOptionText"
-                              value={mcqOption.mcqOptionText}
-                              onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
-                            />
-                            <XCircleIcon
-                              onClick={() => handleDeleteOption(inputField.id, mcqOption.id)}
-                              className='absolute mr-1 h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
-                            />
-                          </div>
-                        </div>
-                      )
-                    })
-                  }
-                  <div
-                    onClick={() => handleAddNewOption(inputField.id)}
-                    className='flex flex-row items-center justify-center
-                            bg-flat_gray1 hover:bg-flat_gray2 hover:cursor-pointer px-3 py-2 
-                            rounded shadow text-white font-medium'>
-                    <PlusCircleIcon className='h-5 w-5' />
-                    <div className='pl-2'>
-                      Add New Option
+                        )
+                      })
+                    }
+                    <div
+                      onClick={() => handleAddNewOption(inputField.id)}
+                      className='flex flex-row items-center justify-center
+                              bg-flat_gray1 hover:bg-flat_gray2 hover:cursor-pointer px-3 py-2 
+                              rounded shadow text-white font-medium'>
+                      <PlusCircleIcon className='h-5 w-5' />
+                      <div className='pl-2'>
+                        Add New Option
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
+                )
+              } else if (inputField.type === "MICROVIVA") {
+                return (
+                  <div className='bg-white shadow flex flex-col py-5 px-5 mb-5 rounded gap-y-5' key={inputField.id}>
+                    <div className='text-lg font-bold border-b-2 pb-5 flex justify-between items-center'>
+                      <div className='px-2'>
+                        Micro Viva Question
+                      </div>
+                      <XCircleIcon
+                        onClick={() => handleRemoveFields(inputField.id)}
+                        className='h-6 w-6 text-flat_red1 hover:text-flat_red2 hover:cursor-pointer'
+                      />
+                    </div>
+                    <div className="w-full flex flex-row items-center gap-x-5 px-2">
+                      <div className="w-full flex flex-col gap-y-2">
+                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                          Marks
+                        </label>
+                        <input
+                          required
+                          className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                          type="number"
+                          pattern="\d*"
+                          step="1"
+                          placeholder="Marks"
+                          name="marks"
+                          value={inputField.marks}
+                          onChange={(event) => handleInputOnChange(inputField.id, event)}
+                        />
+                      </div>
+                      <div className="w-full flex flex-col gap-y-2">
+                        <label className="flex-grow block text-gray-700 text-sm font-bold mr-3">
+                          Time Limit
+                        </label>
+                        <input
+                          required
+                          className="appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-700 leading-tight ring focus:outline-none focus:shadow-outline focus:ring-flat_blue1 focus:bg-gray-200"
+                          type="number"
+                          pattern="\d*"
+                          step="1"
+                          placeholder="Time Limit in Minutes"
+                          name="timeLimit"
+                          value={inputField.timeLimit}
+                          onChange={(event) => handleInputOnChange(inputField.id, event)}
+                        />
+                      </div>
+                    </div>
+                    <div className='flex flex-col gap-y-2 px-2'>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                      >
+                        Question Prompt Audio
+                      </label>
+                      <div>
+                        <ReactMediaRecorder
+                          audio
+                          onStop={(blobUrl, blob) => handleQuestionAudioChange(blobUrl, blob, inputField.id)}
+                          render={({ status, startRecording, stopRecording, clearBlobUrl }) => (
+                            <div className="flex flex-row gap-x-2 items-center">
+                              <audio className="" src={inputField.questionAudio.blobUrl} controls />
+                              <div className="py-2 px-3 flex gap-x-2">
+                              {
+                                status === "idle" && (
+                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer" onClick={startRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Start</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "stopped" && (
+                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer" onClick={startRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Re-Record</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "recording" && (
+                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer"
+                                    onClick={stopRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Stop</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "stopped" && (
+                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex flex-row items-center hover:cursor-pointer"
+                                    onClick={() => resetQuestionAudio(clearBlobUrl, inputField.id)}>
+                                    <XCircleIcon className="h-5 w-5" />
+                                    <div className="pl-1">Clear</div>
+                                  </div>
+                                )
+                              }
+                              </div>
+                            </div>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className='flex flex-col gap-y-2 px-2'>
+                      <label
+                        className="block text-gray-700 text-sm font-bold mr-3"
+                      >
+                        Correct Answer Audio
+                      </label>
+                      <ReactMediaRecorder
+                        audio
+                        onStop={(blobUrl, blob) => handleCorrectAudioChange(blobUrl, blob, inputField.id)}
+                        render={({ status, startRecording, stopRecording, clearBlobUrl }) => (
+                          <div className="flex flex-row gap-x-2 items-center">
+                            <audio className="" src={inputField.correctAudio.blobUrl} controls />
+                            <div className="py-2 px-3 flex gap-x-2">
+                              {
+                                status === "idle" && (
+                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer" onClick={startRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Start</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "stopped" && (
+                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer" onClick={startRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Re-Record</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "recording" && (
+                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      py-4 px-2 rounded text-white font-medium
+                                      flex items-center hover:cursor-pointer"
+                                    onClick={stopRecording}>
+                                    <MicrophoneIcon className="h-5 w-5" />
+                                    <div className="pl-1">Stop</div>
+                                  </div>
+                                )
+                              }
+                              {
+                                status === "stopped" && (
+                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      py-3 px-2 rounded text-white font-medium
+                                      flex flex-row items-center hover:cursor-pointer"
+                                    onClick={() => resetCorrectAudio(clearBlobUrl, inputField.id)}>
+                                    <XCircleIcon className="h-5 w-5" />
+                                    <div className="pl-1">Clear</div>
+                                  </div>
+                                )
+                              }
+                            </div>
+                          </div>
+                        )}
+                      />
+                    </div>
+                  </div>
+                )
+              } else {
+                return <div>Unknown Question Type is being added!</div>
+              }
             })
           }
           <div className='flex flex-row w-full gap-x-2 mt-5'>
@@ -271,6 +507,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
               </div>
             </div>
             <div
+              onClick={handleAddMicroFields}
               className='flex-grow flex flex-row items-center justify-center
                        bg-flat_gray1 hover:bg-flat_gray2 px-3 py-2 
                        hover:cursor-pointer
