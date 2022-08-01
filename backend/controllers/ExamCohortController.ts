@@ -129,29 +129,39 @@ class ExamCohortController {
     return type === 'MCQ' || type === 'MICROVIVA'
   }
 
-  static async addMcqQuestionToAssessment(selectedQuestion, assessment) {
-    const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion)
-    const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details)
-    await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions)
-    const questionInstance = await DatabaseController.getQuestionFromQuestionID(question.questionID)
-    let presentableData = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questionInstance)
+  static async addMcqQuestionToAssessment(selectedQuestion, assessment, transactionRef = null) {
+    const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion, transactionRef)
+    const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)
+    await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions, transactionRef)
+    const questionInstance = await DatabaseController.getQuestionFromQuestionID(question.questionID, transactionRef)
+    let presentableData = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questionInstance, transactionRef)
     return presentableData
   }
 
-  static async addQuestionsToAssessment(questions, assessmentID) {
+  static async addMicroVivaQuestionToAssessment(selectedQuestion, assessment, transactionRef = null){
+    const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion, transactionRef)
+    await DatabaseController.addMicroVivaQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)    
+    let presentableData = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(question,transactionRef)
+    return presentableData
+  }
+
+  static async addQuestionsToAssessment(questions, assessmentID, transactionRef = null) {
     let maxMinuteRemainsOfThisAssessment = await DatabaseController.getAssessmentAllocatedMinutes(assessmentID)
     let availableDatetime = await DatabaseController.getAssessmentAvailableDatetime(assessmentID)
     let dueDatetime = await DatabaseController.getAssessmentDueDatetime(assessmentID) 
     ValidationController.validateAddQuestionInputs(questions,availableDatetime, dueDatetime, maxMinuteRemainsOfThisAssessment)
-
+    
     let output = []
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
       const selectedQuestion = questions[questionIndex]
       const { type } = selectedQuestion
       if (type === 'MCQ') {
-        const mcqQuesData = await ExamCohortController.addMcqQuestionToAssessment(selectedQuestion, assessment)
+        const mcqQuesData = await ExamCohortController.addMcqQuestionToAssessment(selectedQuestion, assessment, transactionRef)
         output.push(DatabaseController.getDataAttributesFromInstance(mcqQuesData))
+      }else if(type === "MICROVIVA"){
+        const microQuesData = await ExamCohortController.addMicroVivaQuestionToAssessment(selectedQuestion, assessment, transactionRef)
+        output.push(DatabaseController.getDataAttributesFromInstance(microQuesData))
       }
     }
     return output
@@ -163,10 +173,10 @@ class ExamCohortController {
     return data
   }
 
-  static async processSingleMCQQuestionForOutputPresentation(question) {
-    let questionData = DatabaseController.getDataAttributesFromInstance(question)
-    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID)
-    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance)
+  static async processSingleMCQQuestionForOutputPresentation(question, transactionRef=null) {
+    let questionData = DatabaseController.getDataAttributesFromInstance(question,transactionRef)
+    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID,transactionRef)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance,transactionRef)
     mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
     let final = {
       questionID: questionData.questionID,
@@ -181,13 +191,36 @@ class ExamCohortController {
     return final;
   }
 
+  static async processSingleMicroVivaQuestionForOutputPresentation(question, transactionRef=null){
+    let questionData = DatabaseController.getDataAttributesFromInstance(question)
+    let microVivaQuestionInstance = await DatabaseController.getMicroVivaQuestionFromQuestionID(questionData.microvivaquestionID,transactionRef )
+    let microVivaQuestionData = DatabaseController.getDataAttributesFromInstance(microVivaQuestionInstance)
+    let final = {
+      questionID: questionData.questionID,
+      type: questionData.type,
+      marks: questionData.marks,
+      timeLimit: questionData.timeLimit,
+      microVivaQuestionDetails: {
+        micQuesAudioID: microVivaQuestionData.micQuesAudioID,
+        micCorAudioID: microVivaQuestionData.micCorAudioID,
+        micCorAnsText: microVivaQuestionData.micCorAnsText,
+      }
+    }
+    return final;
+  }
+
   static async getQuestionsFromAssessment(assessmentID) {
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     const questions = await DatabaseController.getQuestionsFromAssessment(assessment)
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-      let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
-      output.push(mcqQuestion)
+      if(questions[questionIndex].type === "MCQ"){
+        let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
+        output.push(mcqQuestion)
+      }else if(questions[questionIndex].type === "MICROVIVA"){
+        let microVivaQuestion = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(questions[questionIndex])
+        output.push(microVivaQuestion)
+      }
     }
     return output
   }

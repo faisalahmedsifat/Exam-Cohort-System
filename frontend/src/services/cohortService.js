@@ -121,7 +121,7 @@ const getQuestionsList = async (token, cohortID, assessmentID) => {
   }
 }
 
-const addQuestionToAssessment = async (token, cohortID, assessmentID,body) => {
+const addQuestionToAssessment = async (token, cohortID, assessmentID, body) => {
   try {
     const response = await axios.post(baseUrl + `/${cohortID}/assessment/${assessmentID}/questions`, body, { headers: { Authorization: `bearer ${token}` } })
     return response.data.response
@@ -130,7 +130,7 @@ const addQuestionToAssessment = async (token, cohortID, assessmentID,body) => {
   }
 }
 
-const deleteQuestion = async (token, cohortID, assessmentID,questionID) => {
+const deleteQuestion = async (token, cohortID, assessmentID, questionID) => {
   try {
     const response = await axios.delete(baseUrl + `/${cohortID}/assessment/${assessmentID}/questions/${questionID}`, { headers: { Authorization: `bearer ${token}` } })
     return response.data.response
