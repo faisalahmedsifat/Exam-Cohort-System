@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid';
 
+// Firebase Storage
+import firebaseService from "../../services/firebaseService"
+import { ref, uploadBytes, deleteObject } from "firebase/storage"
+
 // Recorder
 import { ReactMediaRecorder } from "react-media-recorder";
 
@@ -160,6 +164,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    let firebaseFilesRefs = [] 
     try {
       let body = []
       for (let question of inputFields) {
@@ -183,13 +188,38 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
           }
           body.push(singleQuestionBody)
         } else if (question.type === "MICROVIVA") {
-          // TODO
+          const micQuesAudioID = uuidv4()
+          const micCorAudioID = uuidv4()
+
+          const questionAudioRef = ref(firebaseService.firebaseStorage, `questions/prompt/${micQuesAudioID}.wav`)
+          const answerAudioRef = ref(firebaseService.firebaseStorage, `questions/correct_answer/${micCorAudioID}.wav`)
+          
+          firebaseFilesRefs.push(questionAudioRef)
+          firebaseFilesRefs.push(answerAudioRef)
+
+          await uploadBytes(questionAudioRef, question.questionAudio.blob)
+          await uploadBytes(answerAudioRef, question.correctAudio.blob)
+
+          let singleQuestionBody = {
+            type: "MICROVIVA",
+            marks: Number(question.marks),
+            timeLimit: Number(question.timeLimit),
+            details:{
+              micQuesAudioID: micQuesAudioID,
+              micCorAudioID: micCorAudioID,
+              micCorAnsText: "TODO"
+            }
+          }
+          body.push(singleQuestionBody)
         }
       }
       await cohortService.addQuestionToAssessment(currentUser.token, cohortID, assessmentID, body)
       notification.success('Successfully Added!', 2000);
       navigate(`/examcohorts/${cohortID}/assessments/${assessmentID}/questions`)
     } catch (error) {
+      for (const refOfFiles of firebaseFilesRefs) {
+        await deleteObject(refOfFiles)
+      }
       notification.error(error.message, 2000);
     }
   }
@@ -379,48 +409,48 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                             <div className="flex flex-row gap-x-2 items-center">
                               <audio className="" src={inputField.questionAudio.blobUrl} controls />
                               <div className="py-2 px-3 flex gap-x-2">
-                              {
-                                status === "idle" && (
-                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                {
+                                  status === "idle" && (
+                                    <div className="bg-flat_green1 hover:bg-flat_green2
                                       py-4 px-2 rounded text-white font-medium
                                       flex items-center hover:cursor-pointer" onClick={startRecording}>
-                                    <MicrophoneIcon className="h-5 w-5" />
-                                    <div className="pl-1">Start</div>
-                                  </div>
-                                )
-                              }
-                              {
-                                status === "stopped" && (
-                                  <div className="bg-flat_green1 hover:bg-flat_green2
+                                      <MicrophoneIcon className="h-5 w-5" />
+                                      <div className="pl-1">Start</div>
+                                    </div>
+                                  )
+                                }
+                                {
+                                  status === "stopped" && (
+                                    <div className="bg-flat_green1 hover:bg-flat_green2
                                       py-4 px-2 rounded text-white font-medium
                                       flex items-center hover:cursor-pointer" onClick={startRecording}>
-                                    <MicrophoneIcon className="h-5 w-5" />
-                                    <div className="pl-1">Re-Record</div>
-                                  </div>
-                                )
-                              }
-                              {
-                                status === "recording" && (
-                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      <MicrophoneIcon className="h-5 w-5" />
+                                      <div className="pl-1">Re-Record</div>
+                                    </div>
+                                  )
+                                }
+                                {
+                                  status === "recording" && (
+                                    <div className="bg-flat_red1 hover:bg-flat_red2
                                       py-4 px-2 rounded text-white font-medium
                                       flex items-center hover:cursor-pointer"
-                                    onClick={stopRecording}>
-                                    <MicrophoneIcon className="h-5 w-5" />
-                                    <div className="pl-1">Stop</div>
-                                  </div>
-                                )
-                              }
-                              {
-                                status === "stopped" && (
-                                  <div className="bg-flat_red1 hover:bg-flat_red2
+                                      onClick={stopRecording}>
+                                      <MicrophoneIcon className="h-5 w-5" />
+                                      <div className="pl-1">Stop</div>
+                                    </div>
+                                  )
+                                }
+                                {
+                                  status === "stopped" && (
+                                    <div className="bg-flat_red1 hover:bg-flat_red2
                                       py-4 px-2 rounded text-white font-medium
                                       flex flex-row items-center hover:cursor-pointer"
-                                    onClick={() => resetQuestionAudio(clearBlobUrl, inputField.id)}>
-                                    <XCircleIcon className="h-5 w-5" />
-                                    <div className="pl-1">Clear</div>
-                                  </div>
-                                )
-                              }
+                                      onClick={() => resetQuestionAudio(clearBlobUrl, inputField.id)}>
+                                      <XCircleIcon className="h-5 w-5" />
+                                      <div className="pl-1">Clear</div>
+                                    </div>
+                                  )
+                                }
                               </div>
                             </div>
                           )}
