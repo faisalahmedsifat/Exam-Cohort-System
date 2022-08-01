@@ -8,11 +8,12 @@ const middleware = require('../utils/middleware')
 
 // Controllers
 const ExamCohortController = require('../controllers/ExamCohortController')
+const DatabaseController = require('../controllers/DatabaseController')
 const RoleBarrier = require('../controllers/RoleBarrier')
 const ValidationController = require('../controllers/ValidationController')
 
 // Models 
-const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
+const Models = require('../models')
 
 
 /** 
@@ -140,10 +141,13 @@ router.delete('/:id/assessment/:assessmentID', middleware.authBarrier, RoleBarri
 router.post('/:id/assessment/:assessmentID/questions', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
     const questions = request.body
     const assessmentID = request.params.assessmentID
+    const transactionRef = await DatabaseController.createTransaction()
     try {
-        const output = await ExamCohortController.addQuestionsToAssessment(questions, assessmentID)
+        const output = await ExamCohortController.addQuestionsToAssessment(questions, assessmentID, transactionRef)
+        await transactionRef.commit()
         return response.status(201).json(middleware.generateApiOutput("OK", output))
     } catch (error) {
+        await DatabaseController.transactionRollback(transactionRef)
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
 })
