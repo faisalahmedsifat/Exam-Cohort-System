@@ -13,16 +13,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Mcqanswer, { 
-        as: 'mcqoption',
         foreignKey: {name: 'mcqanswerID', allowNull:false}
       });
+      this.belongsTo(models.Mcqoption, { 
+        as: 'mcqoption',
+        foreignKey: {name: 'mcqoptionID', allowNull:false}
+      });
+    
     }
   }
   Mcqoptionselected.init({
     isSelectedInAnswer: {
       type: DataTypes.BOOLEAN,
       allowNull: false
-    }
+    },
   }, {
     sequelize,
     modelName: 'Mcqoptionselected',

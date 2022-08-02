@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 const Sequelize = require("sequelize");
 
 /**
@@ -15,7 +14,7 @@ const Sequelize = require("sequelize");
  * createTable() => "assessments", deps: [examcohorts]
  * createTable() => "questions", deps: [assessments, mcq_questions, microviva_questions]
  * createTable() => "mcqoption", deps: [mcq_questions]
- * createTable() => "mcqoptionselected", deps: [mcq_answers]
+ * createTable() => "mcqoptionselected", deps: [mcq_answers, mcqoption]
  * createTable() => "answers", deps: [mcq_answers, microviva_answer, candidate_list, questions]
  *
  */
@@ -23,7 +22,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-07-29T12:22:47.591Z",
+  created: "2022-07-31T17:45:26.024Z",
   comment: "",
 };
 
@@ -459,6 +458,15 @@ const migrationCommands = (transaction) => [
           references: { model: "mcq_answers", key: "id" },
           name: "mcqanswerID",
           allowNull: true,
+        },
+        mcqoptionID: {
+          type: Sequelize.INTEGER,
+          field: "mcqoptionID",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "mcqoption", key: "id" },
+          name: "mcqoptionID",
+          allowNull: false,
         },
       },
       { transaction },

@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'mcqoptions',
         foreignKey: {name: 'mcqquestionID', allowNull:false} 
       });
+      this.hasMany(models.Mcqoptionselected, { 
+        as: 'mcqoption',
+        foreignKey: {name: 'mcqoptionID', allowNull:false} 
+      });
     }
   }
   Mcqoption.init({
