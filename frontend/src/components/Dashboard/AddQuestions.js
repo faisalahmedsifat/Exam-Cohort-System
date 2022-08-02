@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid';
 
-// Firebase Storage
-import firebaseService from "../../services/firebaseService"
-import { ref, uploadBytes, deleteObject } from "firebase/storage"
-
 // Recorder
 import { ReactMediaRecorder } from "react-media-recorder";
 
@@ -22,6 +18,7 @@ import SidebarForSingleAssessment from './SidebarForSingleAssessment'
 // Services
 import cohortService from '../../services/cohortService'
 import notification from '../../services/notificationService'
+import audioUploadService from '../../services/audioUploadService'
 
 const mcqOptionFormDefault = {
   mcqOptionText: '',
@@ -164,7 +161,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    let firebaseFilesRefs = [] 
+    let uploadedFilesDetails = [] 
     try {
       let body = []
       for (let question of inputFields) {
@@ -191,14 +188,23 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
           const micQuesAudioID = uuidv4()
           const micCorAudioID = uuidv4()
 
-          const questionAudioRef = ref(firebaseService.firebaseStorage, `questions/prompt/${micQuesAudioID}.wav`)
-          const answerAudioRef = ref(firebaseService.firebaseStorage, `questions/correct_answer/${micCorAudioID}.wav`)
-          
-          firebaseFilesRefs.push(questionAudioRef)
-          firebaseFilesRefs.push(answerAudioRef)
+          const questionAudioFileDetails = {
+            fileName: micQuesAudioID,
+            fileDir: 'questions/prompt',
+            fileExt: 'wav'
+          }
 
-          await uploadBytes(questionAudioRef, question.questionAudio.blob)
-          await uploadBytes(answerAudioRef, question.correctAudio.blob)
+          const correctAudioFileDetails = {
+            fileName: micCorAudioID,
+            fileDir: 'questions/correct_answer',
+            fileExt: 'wav'
+          }
+
+          uploadedFilesDetails.push(questionAudioFileDetails)
+          uploadedFilesDetails.push(correctAudioFileDetails)
+
+          await audioUploadService.uploadAudioFile(currentUser.token, questionAudioFileDetails, question.questionAudio.blob)
+          await audioUploadService.uploadAudioFile(currentUser.token, correctAudioFileDetails, question.correctAudio.blob)
 
           let singleQuestionBody = {
             type: "MICROVIVA",
@@ -217,8 +223,8 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
       notification.success('Successfully Added!', 2000);
       navigate(`/examcohorts/${cohortID}/assessments/${assessmentID}/questions`)
     } catch (error) {
-      for (const refOfFiles of firebaseFilesRefs) {
-        await deleteObject(refOfFiles)
+      for (const detailsOfFiles of uploadedFilesDetails) {
+        await audioUploadService.deleteAudioFile(currentUser.token, detailsOfFiles)
       }
       notification.error(error.message, 2000);
     }

@@ -20,6 +20,7 @@ const mainRoutes = require('./routes/mainRoutes')
 const authRoutes = require('./routes/authRoutes')
 const profileRoutes = require('./routes/profileRoutes')
 const cohortRoutes = require('./routes/cohortRoutes')
+const audioFileRoutes = require('./routes/audioFileRoutes')
 
 
 /**
@@ -58,6 +59,7 @@ app.use('/', mainRoutes)
 app.use('/api/auth/', authRoutes)
 app.use('/api/profile/', profileRoutes)
 app.use('/api/examcohort/', cohortRoutes)
+app.use('/api/audio/', audioFileRoutes)
 
 /**
  * Handle the unknown endpoint, if no controller is defined for requested endpoint

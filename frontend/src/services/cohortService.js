@@ -11,7 +11,6 @@ const getEvaluatorsCohorts = async (token) => {
     const response = await axiosInstance.get(baseUrl)
     return response.data.response
   } catch (error) {
-    console.log(error);
     throw Error(error.response.data.response.error);
   }
 }

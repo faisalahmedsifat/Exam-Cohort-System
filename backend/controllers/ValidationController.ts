@@ -59,7 +59,7 @@ class ValidationController {
   }
 
   static validateMicroVivaQuestionUserInput(microVivaQuestion) {
-    console.log(microVivaQuestion);
+    // console.log(microVivaQuestion);
   }
 
   static validateAddQuestionInputs(questions, availableDatetime, dueDatetime, minutesUsed) {

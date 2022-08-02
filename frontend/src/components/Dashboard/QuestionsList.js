@@ -14,6 +14,10 @@ import SidebarForSingleAssessment from './SidebarForSingleAssessment'
 // Services
 import cohortService from '../../services/cohortService'
 import notification from '../../services/notificationService'
+import audioUploadService from '../../services/audioUploadService'
+
+// Helper Function
+let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
 
 const QuestionDisplayCard = ({ body, handleDeleteQuestion }) => {
   if (body.type === "MCQ") {
@@ -46,7 +50,25 @@ const QuestionDisplayCard = ({ body, handleDeleteQuestion }) => {
     )
   } else {
     return (
-      <div>micro viva question</div>
+      <div className='flex flex-col hover:ring gap-5 py-5 px-5 rounded-md mt-10 bg-white'>
+        <div className='ml-2'>
+          <div className='flex flex-row justify-between items-center'>
+            <div className='text-lg font-semibold text-slate-800'>Question Info:</div>
+            <div className='text-md font-semibold text-white bg-flat_red1 hover:bg-flat_red2
+              py-2 px-2 rounded hover:cursor-pointer' onClick={() => handleDeleteQuestion(body.questionID)}>Delete</div>
+          </div>
+          <div className='mt-2'>
+            <div className='text-sm font-semibold text-slate-500'>Type: {body.type}</div>
+            <div className='text-sm font-semibold text-slate-500'>Marks: {body.marks}</div>
+            <div className='text-sm font-semibold text-slate-500'>Time Limit: {body.timeLimit} Minutes</div>
+          </div>
+        </div>
+        <div className='border-b-2'></div>
+        <div className='text-slate-800 font-bold'>Question Prompt Audio</div>
+        <audio src={body.microVivaQuestionDetails.micQuesAudioBlobUrl} controls />
+        <div className='text-slate-800 font-bold'>Correct Answer Audio</div>
+        <audio src={body.microVivaQuestionDetails.micCorAudioBlobUrl} controls />
+      </div>
     )
   }
 
@@ -60,8 +82,21 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const assessmentsQuestionsList = await cohortService.getQuestionsList(currentUser.token, cohortID, assessmentID);
-        setAssessmentsQuestions(assessmentsQuestionsList);
+        let assessmentsQuestionsList = await cohortService.getQuestionsList(currentUser.token, cohortID, assessmentID);
+        const newQuestionList = await asyncMap(assessmentsQuestionsList, async question => {
+          if (question.type === "MICROVIVA") {
+            let micQuesAudioBlob = await audioUploadService.getAudioFile(currentUser.token, { fileName: question.microVivaQuestionDetails.micQuesAudioID, fileDir: "questions/prompt", fileExt: "wav" });
+            let micCorAudioBlob = await audioUploadService.getAudioFile(currentUser.token, { fileName: question.microVivaQuestionDetails.micCorAudioID, fileDir: "questions/correct_answer", fileExt: "wav" });
+            question["microVivaQuestionDetails"] = {
+              ...question.microVivaQuestionDetails,
+              micQuesAudioBlobUrl: URL.createObjectURL(micQuesAudioBlob),
+              micCorAudioBlobUrl: URL.createObjectURL(micCorAudioBlob)
+            }
+            return question
+          }
+          return question;
+        })
+        setAssessmentsQuestions(newQuestionList);
       } catch (e) {
         notification.error(e.message, 2000)
       }
