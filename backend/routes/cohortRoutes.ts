@@ -183,7 +183,23 @@ router.post('/:id/assessment/:assessmentID/questions/:questionID/answer', middle
     const answer = request.body
     const candidateID = request.userID
     try {
+        
 
+
+        //Validations TODO
+
+        //submitted > viewed at
+        //giving one exam at a time
+        //must be before due date of assessment
+        //submittedAt > availableDateTime of assessment and < dueDateTime of assessment
+        //submitdelay 10s
+        //type is 'mcq;
+        //must submit all options
+
+
+
+
+        //TODO: isCorrect Implementation
         const output = await ExamCohortController.addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID);
 
         return response.status(201).json(middleware.generateApiOutput("OK", { success: output }))

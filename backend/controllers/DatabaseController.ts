@@ -238,6 +238,10 @@ class DatabaseController {
   static async createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer) {
     return await Models.Answer.create(candidateResponseAnswer)
   }
+
+  static async findAnswerFromCandidateID(candidateID, questionID) {
+    return await Models.Answer.findOne({ where: { candidateID: candidateID, questionID : questionID} })
+  }
 }
 
 module.exports = DatabaseController

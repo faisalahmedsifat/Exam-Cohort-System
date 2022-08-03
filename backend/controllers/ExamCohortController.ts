@@ -9,7 +9,7 @@ const DatabaseController = require('./DatabaseController')
 const ValidationController = require('./ValidationController')
 
 //Models
-const { User, ExamCohort, Assessment, Mcqquestion, Mcqanswer, Candidatelist, Answer, Mcqoptionselected } = require('../models')
+const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
 
 
 
@@ -251,17 +251,20 @@ class ExamCohortController {
     let selectedOptions = []
     let candidateResponseAnswer = {};
 
-    let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
+    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
 
+    //Validate if the candidate has already answered the question
+    await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
+    console.log('check 1')
+
+    let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
     for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
       selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID })
     }
 
     await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
 
-    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
-
-
+    console.log('check 2')
     candidateResponseAnswer = {
       viewedAt: answer.viewedAt,
       submttedAt: answer.submttedAt,
