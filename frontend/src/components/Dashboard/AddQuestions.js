@@ -300,6 +300,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                         type="text"
                         placeholder="Questions Statement"
                         name="mcqStatement"
+                        maxLength="50"
                         value={inputField.mcqStatement}
                         onChange={(event) => handleInputOnChange(inputField.id, event)}
                       />
@@ -331,6 +332,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                                 type="text"
                                 placeholder={`Option ${optionNo + 1} Text`}
                                 name="mcqOptionText"
+                                maxLength="50"
                                 value={mcqOption.mcqOptionText}
                                 onChange={(event) => handleInputOnChangeOption(inputField.id, mcqOption.id, event)}
                               />

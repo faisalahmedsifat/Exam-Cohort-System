@@ -2,7 +2,7 @@ import React from 'react'
 import { Link as RouterLink } from 'react-router-dom';
 
 // Icons
-import { HomeIcon, UserIcon, LogoutIcon, AcademicCapIcon, FolderIcon, FolderOpenIcon } from '@heroicons/react/outline'
+import { HomeIcon, UserIcon, LogoutIcon, AcademicCapIcon, FolderIcon, ClockIcon } from '@heroicons/react/outline'
 
 const SidebarItem = (props) => {
   return (
@@ -15,7 +15,7 @@ const SidebarItem = (props) => {
   )
 }
 
-const Sidebar = () => {
+const SidebarForSingleCohort = ({cohortID}) => {
   return (
     <div className='bg-flat_darkgreen1 text-white py-10 px-5
     lg:sticky lg:top-0 lg:self-start lg:min-h-screen  flex flex-col lg:shrink-0 lg:py-6 lg:px-5 lg:gap-1'>
@@ -37,10 +37,12 @@ const Sidebar = () => {
         <FolderIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Exam Cohorts</div>
       </SidebarItem>
-      <SidebarItem  link="/assignedcohorts">
-        <FolderOpenIcon className='h-6 w-6' />
-        <div className='pl-4 text-xl'>Assigned Cohorts</div>
+      <div className='border-t-2'></div>
+      <SidebarItem link={`/assignedcohorts/${cohortID}/assessments`}>
+        <ClockIcon className='h-6 w-6' />
+        <div className='pl-4 text-xl'>Assessments</div>
       </SidebarItem>
+      <div className='border-t-2'></div>
       <SidebarItem link="/profile">
         <UserIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Profile</div>
@@ -53,4 +55,4 @@ const Sidebar = () => {
   )
 }
 
-export default Sidebar
+export default SidebarForSingleCohort
