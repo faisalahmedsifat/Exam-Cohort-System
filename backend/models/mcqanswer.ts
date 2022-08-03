@@ -13,9 +13,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasOne(models.Answer, { 
+        as: 'answer',
         foreignKey: {name: 'mcqanswerID', allowNull:true}
       });
       this.hasMany(models.Mcqoptionselected, {
+        as: 'selectedoption',
         foreignKey: {name: 'mcqanswerID', allowNull:true}
       });
     }

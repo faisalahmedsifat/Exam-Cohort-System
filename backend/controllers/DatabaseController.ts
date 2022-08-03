@@ -36,7 +36,7 @@ class DatabaseController {
     else return await Models.User.findByPk(userID, { transaction: transactionRef });
   }
 
-  static async getUserFromEmailID(emailID, transactionRef=null) {
+  static async getUserFromEmailID(emailID, transactionRef = null) {
     if (transactionRef == null) return await Models.User.findOne({ where: { emailID: emailID } });
     else return await Models.User.findOne({ where: { emailID: emailID } }, { transaction: transactionRef });
   }
@@ -224,6 +224,19 @@ class DatabaseController {
     if (transactionRef == null) allocatedMinutes = (await Models.Question.findAll({ where: { assessmentID: assessmentID }, attributes: [[Models.Sequelize.fn('sum', Models.Sequelize.col('timeLimit')), 'usedTimeLimit'],], group: ['assessmentID'] }))[0]
     else allocatedMinutes = (await Models.Question.findAll({ where: { assessmentID: assessmentID }, attributes: [[Models.Sequelize.fn('sum', Models.Sequelize.col('timeLimit')), 'usedTimeLimit'],], group: ['assessmentID'] }, { transaction: transactionRef }))[0]
     return allocatedMinutes.dataValues.usedTimeLimit
+  }
+
+  static async createMcqAnswer() {
+    return await Models.Mcqanswer.create()
+  }
+  static async addMcqOptionSelectedFromArray(selectedOptions) {
+    return await Models.Mcqoptionselected.bulkCreate(selectedOptions)
+  }
+  static async findCandidateFromCandidateList(candidateID, cohortID) {
+    return await Models.Candidatelist.findOne({ where: { cohortID: cohortID, candidateID: candidateID } })
+  }
+  static async createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer) {
+    return await Models.Answer.create(candidateResponseAnswer)
   }
 }
 
