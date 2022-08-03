@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Mcqanswer, { 
+      this.belongsTo(models.Mcqanswer, {
+        as: {
+          singular: 'option',
+          plural: 'options'
+        },
         foreignKey: {name: 'mcqanswerID', allowNull:false}
       });
       this.belongsTo(models.Mcqoption, { 

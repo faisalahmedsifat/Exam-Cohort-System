@@ -1,4 +1,3 @@
-// @ts-nocheck
 const Sequelize = require("sequelize");
 
 /**
@@ -22,7 +21,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-07-31T17:45:26.024Z",
+  created: "2022-08-02T17:21:31.860Z",
   comment: "",
 };
 

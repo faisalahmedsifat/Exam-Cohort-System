@@ -3,6 +3,7 @@
 // Controllers
 const ValidationHelper = require('./ValidationHelper')
 const DateTimeController = require('./DateTimeController')
+const DatabaseController = require('./DatabaseController')
 
 /*
  * Validation Settings
@@ -84,5 +85,20 @@ class ValidationController {
     if (totalTimeLimit > maxMinuteRemainsOfThisAssessment)
       throw new Error("The total sum of time limit exceeds the difference between assessment\'s due datetime and available datetime!");
   }
+
+  static async validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID) {
+    const alreadyAnswered = await DatabaseController.findAnswerFromCandidateID(candidateListID, questionID)
+    if (alreadyAnswered != null) {
+      throw new Error('Candidate has already answered this question')
+    }
+  }
+
+  static async validateUserIsAssignedToCohort(candidateID, cohortID) {
+    const candidate = await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID)
+    if (candidate == null)
+      throw new Error('Candidate is not assigned to this cohort')
+  }
+
+
 }
 module.exports = ValidationController

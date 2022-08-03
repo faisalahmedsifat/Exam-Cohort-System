@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Mcqanswer, { 
+        as: {
+          singular: 'mcqanswer',
+          plural: 'mcqanswers',
+        },
         foreignKey: {name: 'mcqanswerID', allowNull:true}
       });
       

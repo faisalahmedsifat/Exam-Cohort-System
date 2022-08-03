@@ -11,6 +11,8 @@ const ValidationController = require('./ValidationController')
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
 
+
+
 // Helper Functions
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
 
@@ -81,7 +83,7 @@ class ExamCohortController {
   }
 
   static async createExamCohort(userID, name) {
-    ValidationController.validateCreateExamCohortInput({userID,name})
+    ValidationController.validateCreateExamCohortInput({ userID, name })
     const user = await DatabaseController.getUserFromUserID(userID)
     const cohort = await DatabaseController.createExamCohortFromUser(user, name)
     return await ExamCohortController.loadCohortStat(cohort)
@@ -109,7 +111,7 @@ class ExamCohortController {
   }
 
   static async addAssessmentToExamCohort(cohortID, name, availableDateTime, dueDateTime) {
-    ValidationController.validateAddAssessmentInput({cohortID, name, availableDateTime, dueDateTime})
+    ValidationController.validateAddAssessmentInput({ cohortID, name, availableDateTime, dueDateTime })
     const cohort = await DatabaseController.getCohortFromCohortID(cohortID)
     const assessment = await DatabaseController.createAssessmentFromCohort(cohort, name, availableDateTime, dueDateTime)
     return assessment
@@ -130,6 +132,7 @@ class ExamCohortController {
   }
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment, transactionRef = null) {
+    console.error("addMcqQuestionToAssessment")
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion, transactionRef)
     const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)
     await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions, transactionRef)
@@ -138,19 +141,19 @@ class ExamCohortController {
     return presentableData
   }
 
-  static async addMicroVivaQuestionToAssessment(selectedQuestion, assessment, transactionRef = null){
+  static async addMicroVivaQuestionToAssessment(selectedQuestion, assessment, transactionRef = null) {
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion, transactionRef)
-    await DatabaseController.addMicroVivaQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)    
-    let presentableData = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(question,transactionRef)
+    await DatabaseController.addMicroVivaQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)
+    let presentableData = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(question, transactionRef)
     return presentableData
   }
 
   static async addQuestionsToAssessment(questions, assessmentID, transactionRef = null) {
     let maxMinuteRemainsOfThisAssessment = await DatabaseController.getAssessmentAllocatedMinutes(assessmentID)
     let availableDatetime = await DatabaseController.getAssessmentAvailableDatetime(assessmentID)
-    let dueDatetime = await DatabaseController.getAssessmentDueDatetime(assessmentID) 
-    ValidationController.validateAddQuestionInputs(questions,availableDatetime, dueDatetime, maxMinuteRemainsOfThisAssessment)
-    
+    let dueDatetime = await DatabaseController.getAssessmentDueDatetime(assessmentID)
+    ValidationController.validateAddQuestionInputs(questions, availableDatetime, dueDatetime, maxMinuteRemainsOfThisAssessment)
+
     let output = []
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
@@ -159,11 +162,12 @@ class ExamCohortController {
       if (type === 'MCQ') {
         const mcqQuesData = await ExamCohortController.addMcqQuestionToAssessment(selectedQuestion, assessment, transactionRef)
         output.push(DatabaseController.getDataAttributesFromInstance(mcqQuesData))
-      }else if(type === "MICROVIVA"){
+      } else if (type === "MICROVIVA") {
         const microQuesData = await ExamCohortController.addMicroVivaQuestionToAssessment(selectedQuestion, assessment, transactionRef)
         output.push(DatabaseController.getDataAttributesFromInstance(microQuesData))
       }
     }
+    console.log('check 1')
     return output
   }
 
@@ -173,10 +177,10 @@ class ExamCohortController {
     return data
   }
 
-  static async processSingleMCQQuestionForOutputPresentation(question, transactionRef=null) {
-    let questionData = DatabaseController.getDataAttributesFromInstance(question,transactionRef)
-    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID,transactionRef)
-    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance,transactionRef)
+  static async processSingleMCQQuestionForOutputPresentation(question, transactionRef = null) {
+    let questionData = DatabaseController.getDataAttributesFromInstance(question, transactionRef)
+    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID, transactionRef)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, transactionRef)
     mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
     let final = {
       questionID: questionData.questionID,
@@ -191,9 +195,9 @@ class ExamCohortController {
     return final;
   }
 
-  static async processSingleMicroVivaQuestionForOutputPresentation(question, transactionRef=null){
+  static async processSingleMicroVivaQuestionForOutputPresentation(question, transactionRef = null) {
     let questionData = DatabaseController.getDataAttributesFromInstance(question)
-    let microVivaQuestionInstance = await DatabaseController.getMicroVivaQuestionFromQuestionID(questionData.microvivaquestionID,transactionRef )
+    let microVivaQuestionInstance = await DatabaseController.getMicroVivaQuestionFromQuestionID(questionData.microvivaquestionID, transactionRef)
     let microVivaQuestionData = DatabaseController.getDataAttributesFromInstance(microVivaQuestionInstance)
     let final = {
       questionID: questionData.questionID,
@@ -214,10 +218,10 @@ class ExamCohortController {
     const questions = await DatabaseController.getQuestionsFromAssessment(assessment)
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-      if(questions[questionIndex].type === "MCQ"){
+      if (questions[questionIndex].type === "MCQ") {
         let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
         output.push(mcqQuestion)
-      }else if(questions[questionIndex].type === "MICROVIVA"){
+      } else if (questions[questionIndex].type === "MICROVIVA") {
         let microVivaQuestion = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(questions[questionIndex])
         output.push(microVivaQuestion)
       }
@@ -241,5 +245,37 @@ class ExamCohortController {
   static async deleteQuestionFromAssessment(assessmentID, questionID) {
     await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
   }
+
+  static async addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
+    let selectedOptionDetails = answer.details.mcqOptionsSelected
+    let selectedOptions = []
+    let candidateResponseAnswer = {};
+
+    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
+
+    //Validate if the candidate has already answered the question
+    await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
+    console.log('check 1')
+
+    let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
+    for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
+      selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID })
+    }
+
+    await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
+
+    console.log('check 2')
+    candidateResponseAnswer = {
+      viewedAt: answer.viewedAt,
+      submttedAt: answer.submttedAt,
+      type: answer.type,
+      mcqanswerID: mcqanswerID,
+      candidateID: candidateListID,
+      questionID: questionID,
+    }
+    const candidateResponse = await DatabaseController.createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer)
+    return candidateResponse
+  }
+
 }
 module.exports = ExamCohortController
