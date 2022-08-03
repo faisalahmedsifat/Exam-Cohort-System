@@ -240,7 +240,13 @@ class DatabaseController {
   }
 
   static async findAnswerFromCandidateID(candidateID, questionID) {
-    return await Models.Answer.findOne({ where: { candidateID: candidateID, questionID : questionID} })
+    return await Models.Answer.findOne({ where: { candidateID: candidateID, questionID: questionID } })
+  }
+
+  static async getAssignedCohortListFromUserInstance(userInstance) {
+    return await userInstance.getAssignedcohort({
+      joinTableAttributes: ['id']
+    });
   }
 }
 

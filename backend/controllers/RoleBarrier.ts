@@ -40,7 +40,7 @@ class RoleBarrier {
       const cohortID = request.params.id
       const isCandidate = await RoleBarrier.checkIfUserIsCandidateOfCohort(userID, cohortID);
       if (isCandidate) next()
-      else throw Error("User does not have rights! Candidate rights are required!");
+      else throw Error("User does not have candidate rights!");
     } catch (error) {
       return response.status(400).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
