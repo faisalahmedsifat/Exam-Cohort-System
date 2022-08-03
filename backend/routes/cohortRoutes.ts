@@ -206,23 +206,5 @@ router.post('/:id/assessment/:assessmentID/questions/:questionID/answer', middle
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
-
-
 })
-router.get('/:id/assessment/:assessmentID/randomq', middleware.authBarrier, RoleBarrier.cohortsCandidateRoleBarrier, async (request, response) => {
-    const cohortID = request.params.id
-    const assessmentID = request.params.assessmentID
-    const candidateID = request.userID 
-    try {
-        const radomQuestion = await ExamCohortController.viewRandomQuestion(assessmentID);
-
-        return response.status(201).json(middleware.generateApiOutput("OK", { success: radomQuestion }))
-    } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
-    }
-
-
-})
-
-
 module.exports = router

@@ -1,8 +1,5 @@
 // @ts-nocheck
 
-
-import { RandomQuestion } from './RandomQuestion'
-
 const Sequelize = require('sequelize')
 const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
@@ -13,7 +10,6 @@ const ValidationController = require('./ValidationController')
 
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
-
 
 
 
@@ -216,20 +212,14 @@ class ExamCohortController {
     }
     return final;
   }
-  static deleteIsMcqCorFieldFromQuestionDetails(mcqOptions) {
-    for (let mcqOption of mcqOptions) {
-      delete mcqOption.isMcqOptionCor
-    }
-  }
-  static async getQuestionsFromAssessment(assessmentID, toDeleteCorrectAnswer = false) {
+
+  static async getQuestionsFromAssessment(assessmentID) {
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     const questions = await DatabaseController.getQuestionsFromAssessment(assessment)
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
       if (questions[questionIndex].type === "MCQ") {
         let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
-        console.log(mcqQuestion.mcqQuestionDetails.mcqOptions)
-        if (toDeleteCorrectAnswer) ExamCohortController.deleteIsMcqCorFieldFromQuestionDetails(mcqQuestion.mcqQuestionDetails.mcqOptions)
         output.push(mcqQuestion)
       } else if (questions[questionIndex].type === "MICROVIVA") {
         let microVivaQuestion = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(questions[questionIndex])
@@ -285,10 +275,6 @@ class ExamCohortController {
     }
     const candidateResponse = await DatabaseController.createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer)
     return candidateResponse
-  }
-
-  static async viewRandomQuestion(assessmentID) {
-    //TODO
   }
 
 }
