@@ -124,15 +124,28 @@ class DatabaseController {
     else return await mcqquestion.createMcqoption(mcqOption, { transaction: transactionRef })
   }
 
-  static async getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionDetails, transactionRef = null) {
+  static async getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionDetails, transactionRef = null, idIsRequired = false) {
     if (transactionRef == null) {
-      return await mcqQuestionDetails.getMcqoptions({
-        attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
-      });
+      if (idIsRequired) {
+        return await mcqQuestionDetails.getMcqoptions({
+          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID', 'mcqOptionText'] },
+        });
+      } else {
+        return await mcqQuestionDetails.getMcqoptions({
+          attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
+        });
+      }
+
     } else {
-      return await mcqQuestionDetails.getMcqoptions({
-        attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
-      }, { transaction: transactionRef });
+      if (idIsRequired) {
+        return await mcqQuestionDetails.getMcqoptions({
+          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID', 'mcqOptionText'] },
+        }, { transaction: transactionRef });
+      } else {
+        return await mcqQuestionDetails.getMcqoptions({
+          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
+        }, { transaction: transactionRef });
+      }
     }
   }
 
