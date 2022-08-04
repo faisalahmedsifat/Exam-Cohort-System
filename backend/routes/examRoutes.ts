@@ -8,7 +8,7 @@ const middleware = require('../utils/middleware')
 // Controllers
 const RoleBarrier = require('../controllers/RoleBarrier')
 const DatabaseController = require('../controllers/DatabaseController')
-import { ExamServerSingleton } from "../controllers/ExamServerSingleton"
+import { ExamServerFactory } from "../controllers/ExamServerFactory"
 
 /** 
  * Routes
@@ -21,7 +21,7 @@ router.get('/:assessmentID', middleware.authBarrier, async (request, response) =
   const userID = request.userID
   const assessmentID = request.params.assessmentID
   try {    
-    const questionServer = await ExamServerSingleton.getInstance(userID, assessmentID);
+    const questionServer = await ExamServerFactory.getServer(userID, assessmentID);
     const question = await questionServer.getNextQuestion()
     return response.status(200).send(middleware.generateApiOutput("OK", question))
   } catch (error) {
@@ -35,7 +35,7 @@ router.post('/:assessmentID/submit_single', middleware.authBarrier, async (reque
   const assessmentID = request.params.assessmentID
   const body = request.body   
   try {
-    const questionServer = await ExamServerSingleton.getInstance(userID, assessmentID);
+    const questionServer = await ExamServerFactory.getServer(userID, assessmentID);
     await questionServer.answerQuestion(body);
     return response.status(200).send(middleware.generateApiOutput("OK", "OK"))
   } catch (error) {

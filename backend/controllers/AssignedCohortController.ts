@@ -29,8 +29,9 @@ class AssignedCohortController {
   static async processSingleMCQQuestionForNoCorAnsOutputPresentation(question, transactionRef = null) {
     let questionData = DatabaseController.getDataAttributesFromInstance(question, transactionRef)
     let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID, transactionRef)
-    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, transactionRef)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, transactionRef, true)
     mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+    
     mcqQuestionOptions = mcqQuestionOptions.map(option => {
       return {mcqOptionText: option.mcqOptionText, mcqOptionID: option.id, isSelectedInAnswer: false}
     })

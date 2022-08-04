@@ -128,7 +128,7 @@ class DatabaseController {
     if (transactionRef == null) {
       if (idIsRequired) {
         return await mcqQuestionDetails.getMcqoptions({
-          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID', 'mcqOptionText'] },
+          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
         });
       } else {
         return await mcqQuestionDetails.getMcqoptions({
@@ -139,11 +139,11 @@ class DatabaseController {
     } else {
       if (idIsRequired) {
         return await mcqQuestionDetails.getMcqoptions({
-          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID', 'mcqOptionText'] },
+          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
         }, { transaction: transactionRef });
       } else {
         return await mcqQuestionDetails.getMcqoptions({
-          attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
+          attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
         }, { transaction: transactionRef });
       }
     }

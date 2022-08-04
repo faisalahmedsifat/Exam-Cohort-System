@@ -31,6 +31,17 @@ class DateTimeController {
     return minutesRemains
   }
 
+  static calculateRemainingTimeInSecondsOfAQuestion(dueDateTime, timeNow, originalLimitInSec, passedTime){
+    return Math.min(
+      Math.max((dueDateTime-timeNow), 0),
+      Math.max((originalLimitInSec-passedTime), 0)
+    )
+  }
+
+  static checkIsGreaterEq(datetimeA, datetimeB){
+    return Date.parse(datetimeA) >= Date.parse(datetimeB)
+  }
+
 }
 
 module.exports = DateTimeController

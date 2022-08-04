@@ -255,24 +255,25 @@ class ExamCohortController {
   }
 
 
-  static async addMcqAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
-    let selectedOptionDetails = answer.details.mcqOptionsSelected
+  static async addMcqAnswerToQuestion(answerBody) {
+    const questionID = answerBody.questionID
+    const answer = {
+      details: {
+        mcqOptionsSelected: answerBody.mcqQuestionDetails.mcqOptions
+      }
+    }
+    let selectedOptionDetails = answer.details.mcqOptionsSelected    
     let selectedOptions = []
-    let candidateResponseAnswer = {};
-
     let correctAnswer = true
     let output = {}
-    //CHECK IS CORRECT
 
-    // const mcqOptions = await 
     let question = await DatabaseController.getQuestionFromQuestionID(questionID)
     let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(question.mcqquestionID)
     let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, false, true)
-
     let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
     for (let optionIndex = 0; optionIndex < mcqQuestionOptionData.length; optionIndex++) {
       if (
-        (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqoptionID)
+        (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqOptionID)
         && ((mcqQuestionOptionData[optionIndex].isMcqOptionCor === true && selectedOptionDetails[optionIndex].isSelectedInAnswer === 1) ||
           (mcqQuestionOptionData[optionIndex].isMcqOptionCor === false && selectedOptionDetails[optionIndex].isSelectedInAnswer === 0))
       ) {
@@ -282,48 +283,16 @@ class ExamCohortController {
         correctAnswer = false
         break;
       }
-
     }
-
-
-    //CHECK IS CORRECT
-
-    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
-    await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
-
     let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
     for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
-      selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID })
+      selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID, mcqoptionID:selectedOptionDetails[selectedOptionIndex].mcqOptionID  })
     }
     await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
-
-
-    // candidateResponseAnswer = {
-    //   viewedAt: answer.viewedAt,
-    //   submittedAt: answer.submittedAt,
-    //   type: answer.type,
-    //   mcqanswerID: mcqanswerID,
-    //   candidateID: candidateListID,
-    //   questionID: questionID,
-    //   isCorrect: correctAnswer
-    // }
-    // const candidateResponse = await DatabaseController.createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer)
-    // return candidateResponse
     output = {
       correctAnswer, mcqanswerID
     }
     return output
-  }
-
-  static async addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
-    let type = answer.type
-
-    if (type === "MCQ") {
-      return await ExamCohortController.addMcqAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID)
-    }
-    else if (type === "MICROVIVA") {
-      return await ExamCohortController.addMicroVivaAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID)
-    }
   }
 
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Link as RouterLink } from 'react-router-dom';
 
 // Icons
-import { HomeIcon, UserIcon, LogoutIcon, AcademicCapIcon, FolderIcon, NewspaperIcon } from '@heroicons/react/outline'
+import { HomeIcon, UserIcon, LogoutIcon, AcademicCapIcon, FolderIcon, NewspaperIcon,FolderOpenIcon } from '@heroicons/react/outline'
 
 const SidebarItem = (props) => {
   return (
@@ -43,6 +43,10 @@ const SidebarForSingleCohort = ({cohortID, assessmentID}) => {
         <div className='pl-4 text-xl'>Questions</div>
       </SidebarItem>
       <div className='border-t-2'></div>
+      <SidebarItem  link="/assignedcohorts">
+        <FolderOpenIcon className='h-6 w-6' />
+        <div className='pl-4 text-xl'>Assigned Cohorts</div>
+      </SidebarItem>
       <SidebarItem link="/profile">
         <UserIcon className='h-6 w-6' />
         <div className='pl-4 text-xl'>Profile</div>

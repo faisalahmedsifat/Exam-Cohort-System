@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Countdown from 'react-countdown';
 
 // Icons
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { BanIcon, CheckCircleIcon } from '@heroicons/react/outline'
 
 // Redux
 import { useSelector } from 'react-redux'
@@ -18,7 +18,7 @@ import examService from '../../services/examService'
 import notification from '../../services/notificationService'
 
 const ExamArena = () => {
-  const { cohortID, assessmentID } = useParams()
+  const { assessmentID } = useParams()
   const [currentQuestion, setCurrentQuestion] = useState(null)
   const currentUser = useSelector(store => store.currentUser.value)
   const navigate = useNavigate()
@@ -27,6 +27,7 @@ const ExamArena = () => {
     try {
       const question = await examService.getNextQuestion(currentUser.token, assessmentID)
       // question.timeLimit = 0.1
+      console.log(question);
       setCurrentQuestion(question)
     } catch (e) {
       notification.error(e.message, 2000)
@@ -50,7 +51,22 @@ const ExamArena = () => {
     }
   }
 
-  if (currentQuestion != null && currentQuestion.all_answered === true) {
+  if (currentQuestion != null && currentQuestion.started === false) {
+    setTimeout(() => {
+      navigate('/dashboard')
+    }, 5000)
+
+    return (
+      <>
+        <div className='h-screen flex justify-center items-center'>
+          <div className='bg-white py-5 px-10 rounded flex gap-x-2'>
+            <BanIcon className='h-6 w-6 text-flat_red2' />
+            <div className='font-bold'>Assessment Is Not Avaliable Yet! Redirecting to Dashboard...</div>
+          </div>
+        </div>
+      </>
+    )
+  } else if (currentQuestion != null && currentQuestion.all_answered === true) {
     setTimeout(() => {
       navigate('/dashboard')
     }, 5000)

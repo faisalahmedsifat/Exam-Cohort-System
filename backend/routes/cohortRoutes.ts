@@ -173,40 +173,4 @@ router.delete('/:id/assessment/:assessmentID/questions/:questionID', middleware.
     }
 })
 
-
-// Assessment related routes
-//TODO: Change the creation of tables to use association
-router.post('/:id/assessment/:assessmentID/questions/:questionID/answer', middleware.authBarrier, RoleBarrier.cohortsCandidateRoleBarrier, async (request, response) => {
-    const cohortID = request.params.id
-    const assessmentID = request.params.assessmentID
-    const questionID = request.params.questionID
-    const answer = request.body
-    const candidateID = request.userID
-    try {
-        
-
-
-        //Validations TODO
-
-        //submitted > viewed at
-        //giving one exam at a time:
-        //must be before due date of assessment
-        //submittedAt > availableDateTime of assessment and < dueDateTime of assessment
-        //submitdelay 10s
-
-        
-        //must submit all options
-        //the options submitted must be in the question
-
-
-
-
-        //TODO: isCorrect Implementation
-        const output = await ExamCohortController.addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID);
-
-        return response.status(201).json(middleware.generateApiOutput("OK", { success: output }))
-    } catch (error) {
-        return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
-    }
-})
 module.exports = router
