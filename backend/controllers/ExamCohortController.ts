@@ -252,35 +252,82 @@ class ExamCohortController {
     await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
   }
 
-  static async addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
+  static async addMicroVivaAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
+
+    //TODO: add microviva answer to question
+
+  }
+
+
+  static async addMcqAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
     let selectedOptionDetails = answer.details.mcqOptionsSelected
     let selectedOptions = []
     let candidateResponseAnswer = {};
 
-    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
+    let correctAnswer = true
+    let output = {}
+    //CHECK IS CORRECT
 
-    //Validate if the candidate has already answered the question
-    await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
-    console.log('check 1')
+    // const mcqOptions = await 
+    let question = await DatabaseController.getQuestionFromQuestionID(questionID)
+    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(question.mcqquestionID)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, false, true)
+
+    let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+    for (let optionIndex = 0; optionIndex < mcqQuestionOptionData.length; optionIndex++) {
+      if (
+        (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqoptionID)
+        && ((mcqQuestionOptionData[optionIndex].isMcqOptionCor === true && selectedOptionDetails[optionIndex].isSelectedInAnswer === 1) ||
+          (mcqQuestionOptionData[optionIndex].isMcqOptionCor === false && selectedOptionDetails[optionIndex].isSelectedInAnswer === 0))
+      ) {
+        correctAnswer = true;
+      }
+      else {
+        correctAnswer = false
+        break;
+      }
+
+    }
+
+
+    //CHECK IS CORRECT
+
+    const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
+    // await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
 
     let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
     for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
       selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID })
     }
-
     await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
 
-    console.log('check 2')
-    candidateResponseAnswer = {
-      viewedAt: answer.viewedAt,
-      submttedAt: answer.submttedAt,
-      type: answer.type,
-      mcqanswerID: mcqanswerID,
-      candidateID: candidateListID,
-      questionID: questionID,
+
+    // candidateResponseAnswer = {
+    //   viewedAt: answer.viewedAt,
+    //   submittedAt: answer.submittedAt,
+    //   type: answer.type,
+    //   mcqanswerID: mcqanswerID,
+    //   candidateID: candidateListID,
+    //   questionID: questionID,
+    //   isCorrect: correctAnswer
+    // }
+    // const candidateResponse = await DatabaseController.createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer)
+    // return candidateResponse
+    output = {
+      correctAnswer, mcqanswerID
     }
-    const candidateResponse = await DatabaseController.createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer)
-    return candidateResponse
+    return output
+  }
+
+  static async addAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
+    let type = answer.type
+
+    if (type === "MCQ") {
+      return await ExamCohortController.addMcqAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID)
+    }
+    else if (type === "MICROVIVA") {
+      return await ExamCohortController.addMicroVivaAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID)
+    }
   }
 
 }

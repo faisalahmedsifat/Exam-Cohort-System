@@ -189,12 +189,14 @@ router.post('/:id/assessment/:assessmentID/questions/:questionID/answer', middle
         //Validations TODO
 
         //submitted > viewed at
-        //giving one exam at a time
+        //giving one exam at a time:
         //must be before due date of assessment
         //submittedAt > availableDateTime of assessment and < dueDateTime of assessment
         //submitdelay 10s
-        //type is 'mcq;
+
+        
         //must submit all options
+        //the options submitted must be in the question
 
 
 
