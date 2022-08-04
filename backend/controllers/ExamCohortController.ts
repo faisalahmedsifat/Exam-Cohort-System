@@ -213,13 +213,19 @@ class ExamCohortController {
     return final;
   }
 
-  static async getQuestionsFromAssessment(assessmentID) {
+  static deleteIsMcqCorFieldFromQuestionDetails(mcqOptions) {
+    for (let mcqOption of mcqOptions) {
+      delete mcqOption.isMcqOptionCor
+    }
+  }
+  static async getQuestionsFromAssessment(assessmentID, toDeleteCorrectAnswer = false) {
     const assessment = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
     const questions = await DatabaseController.getQuestionsFromAssessment(assessment)
     let output = []
     for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
       if (questions[questionIndex].type === "MCQ") {
         let mcqQuestion = await ExamCohortController.processSingleMCQQuestionForOutputPresentation(questions[questionIndex])
+        if (toDeleteCorrectAnswer) ExamCohortController.deleteIsMcqCorFieldFromQuestionDetails(mcqQuestion.mcqQuestionDetails.mcqOptions)
         output.push(mcqQuestion)
       } else if (questions[questionIndex].type === "MICROVIVA") {
         let microVivaQuestion = await ExamCohortController.processSingleMicroVivaQuestionForOutputPresentation(questions[questionIndex])
