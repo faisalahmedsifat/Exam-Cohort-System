@@ -289,7 +289,7 @@ class ExamCohortController {
     //CHECK IS CORRECT
 
     const candidateListID = (await DatabaseController.findCandidateFromCandidateList(candidateID, cohortID))?.id;
-    // await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
+    await ValidationController.validateQuestionIsAlreadyAnsweredByCandidate(candidateListID, questionID)
 
     let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
     for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
