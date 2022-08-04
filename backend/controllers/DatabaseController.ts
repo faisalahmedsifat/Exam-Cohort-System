@@ -127,11 +127,11 @@ class DatabaseController {
   static async getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionDetails, transactionRef = null) {
     if (transactionRef == null) {
       return await mcqQuestionDetails.getMcqoptions({
-        attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
+        attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
       });
     } else {
       return await mcqQuestionDetails.getMcqoptions({
-        attributes: { exclude: ['id', 'createdAt', "updatedAt", 'mcqquestionID'] },
+        attributes: { exclude: ['createdAt', "updatedAt", 'mcqquestionID'] },
       }, { transaction: transactionRef });
     }
   }
@@ -226,27 +226,48 @@ class DatabaseController {
     return allocatedMinutes.dataValues.usedTimeLimit
   }
 
+  static async findCandidateFromCandidateList(userID, cohortID) {
+    return await Models.Candidatelist.findOne({ where: { cohortID: cohortID, candidateID: userID } })
+  }
+
+  /**
+   * 
+   * 
+   */
   static async createMcqAnswer() {
     return await Models.Mcqanswer.create()
   }
   static async addMcqOptionSelectedFromArray(selectedOptions) {
     return await Models.Mcqoptionselected.bulkCreate(selectedOptions)
   }
-  static async findCandidateFromCandidateList(candidateID, cohortID) {
-    return await Models.Candidatelist.findOne({ where: { cohortID: cohortID, candidateID: candidateID } })
-  }
+
   static async createAnswerFromMcqAnswerAndResponse(candidateResponseAnswer) {
     return await Models.Answer.create(candidateResponseAnswer)
   }
-
   static async findAnswerFromCandidateID(candidateID, questionID) {
     return await Models.Answer.findOne({ where: { candidateID: candidateID, questionID: questionID } })
   }
+  /**
+   * 
+   * 
+   */
 
   static async getAssignedCohortListFromUserInstance(userInstance) {
     return await userInstance.getAssignedcohort({
       joinTableAttributes: ['id']
     });
+  }
+
+  static async createAnswerBase(details){
+    return await Models.Answer.create(details)
+  }
+
+  static async getAnswerBase(candidateID, questionID){
+    return await Models.Answer.findOne({where: {candidateID, questionID}})
+  }
+
+  static async getCohortFromAssessmentID(assessmentID){
+    return await DatabaseController.getCohortFromCohortID((await Models.Assessment.findByPk(assessmentID)).cohortID)
   }
 }
 

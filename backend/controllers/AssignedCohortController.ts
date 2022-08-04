@@ -32,7 +32,7 @@ class AssignedCohortController {
     let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, transactionRef)
     mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
     mcqQuestionOptions = mcqQuestionOptions.map(option => {
-      return {mcqOptionText: option.mcqOptionText}
+      return {mcqOptionText: option.mcqOptionText, mcqOptionID: option.id, isSelectedInAnswer: false}
     })
     let final = {
       questionID: questionData.questionID,
