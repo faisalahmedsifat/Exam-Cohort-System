@@ -11,8 +11,6 @@ const ValidationController = require('./ValidationController')
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
 
-
-
 // Helper Functions
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
 
@@ -132,7 +130,6 @@ class ExamCohortController {
   }
 
   static async addMcqQuestionToAssessment(selectedQuestion, assessment, transactionRef = null) {
-    console.error("addMcqQuestionToAssessment")
     const question = await DatabaseController.addQuestionToAssessment(assessment, selectedQuestion, transactionRef)
     const mcqquestion = await DatabaseController.addMcqQuestionFromQuestionDetails(question, selectedQuestion.details, transactionRef)
     await DatabaseController.createMcqOptionsFromQuestionDetails(mcqquestion, selectedQuestion.details.mcqOptions, transactionRef)
@@ -167,7 +164,6 @@ class ExamCohortController {
         output.push(DatabaseController.getDataAttributesFromInstance(microQuesData))
       }
     }
-    console.log('check 1')
     return output
   }
 

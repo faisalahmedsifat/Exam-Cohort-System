@@ -32,6 +32,10 @@ import AddAssessment from './components/Dashboard/AddAssessment'
 import AssessmentPanel from './components/Dashboard/AssessmentPanel'
 import QuestionsList from './components/Dashboard/QuestionsList'
 import AddQuestions from './components/Dashboard/AddQuestions'
+import AssignedCohorts from './components/Dashboard/AssignedCohorts'
+import AssignedCohortsPanel from './components/Dashboard/AssignedCohortsPanel'
+import AssignedAssessmentList from './components/Dashboard/AssignedAssessmentList'
+import ExamArena from './components/Dashboard/ExamArena'
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -103,6 +107,11 @@ const App = () => {
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID/questions/add' element={<AddQuestions />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/logout' element={<Logout />} />
+
+              <Route path='/assignedcohorts' element={<AssignedCohorts />} />
+              <Route path='/assignedcohorts/:cohortID' element={<AssignedCohortsPanel />} />
+              <Route path='/assignedcohorts/:cohortID/assessments' element={<AssignedAssessmentList />} />
+              <Route path='/assignedcohorts/:cohortID/assessments/:assessmentID/start' element={<ExamArena />} />
             </Route>
             <Route path='*' element={<Notfound />} />
           </>

@@ -32,7 +32,7 @@ export class GoogleOAuth implements OAuthService{
   async generateTokenFromData(userData: OAuthUserData): Promise<string>{
     const userDetails = await DatabaseController.getUserFromEmailID(userData.emailID)
     const detailsForToken = { userID: userDetails.userID, emailID: userDetails.emailID, firstName: userDetails.firstName, lastName: userDetails.lastName, picture: userData.picture }
-    const token = jwt.sign(detailsForToken, config.SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(detailsForToken, config.SECRET, { expiresIn: '24h' });
     return token
   }
 }
