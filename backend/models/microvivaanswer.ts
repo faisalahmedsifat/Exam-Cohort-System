@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {name: 'microvivaanswerID', allowNull:true}
       });
       this.belongsTo(models.Microvivaquestion, { 
-        foreignKey: {name: 'microvivaquesionID', allowNull:true}
+        as: 'mvanswer',
+        foreignKey: { name: 'microvivaquestionID', allowNull:false}
       });
     }
   }
