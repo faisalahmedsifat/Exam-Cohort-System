@@ -8,6 +8,7 @@ const middleware = require('../utils/middleware')
 // Controllers
 const RoleBarrier = require('../controllers/RoleBarrier')
 const DatabaseController = require('../controllers/DatabaseController')
+const ExamCohortController = require('../controllers/ExamCohortController')
 import { ExamServerFactory } from "../controllers/ExamServerFactory"
 
 /** 
@@ -37,6 +38,7 @@ router.post('/:assessmentID/submit_single', middleware.authBarrier, async (reque
   try {
     const questionServer = await ExamServerFactory.getServer(userID, assessmentID);
     await questionServer.answerQuestion(body);
+    // await ExamCohortController.addMicroVivaAnswerToQuestion(body)
     return response.status(200).send(middleware.generateApiOutput("OK", "OK"))
   } catch (error) {
     return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))

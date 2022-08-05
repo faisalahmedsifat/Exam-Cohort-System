@@ -9,7 +9,7 @@ const DatabaseController = require('./DatabaseController')
 const ValidationController = require('./ValidationController')
 
 //Models
-const { User, ExamCohort, Assessment, Mcqquestion } = require('../models')
+const { User, ExamCohort, Assessment, Mcqquestion, } = require('../models')
 
 // Helper Functions
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
@@ -248,10 +248,31 @@ class ExamCohortController {
     await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
   }
 
-  static async addMicroVivaAnswerToQuestion(cohortID, assessmentID, questionID, answer, candidateID) {
+  static async addMicroVivaAnswerToQuestion(answerBody) {
 
     //TODO: add microviva answer to question
+    const questionID = answerBody.questionID
+    const answer = {
+      details: {
+        micAnsAudioID: answerBody.micAnsAudioID,
+      }
+    }
 
+    let micAnsAudioID = answer.details.micAnsAudioID
+    console.log(micAnsAudioID)
+
+    let correctAnswer = false;
+    let output = {};
+
+    let question = await DatabaseController.getQuestionFromQuestionID(questionID)
+    let microVivaQuestion = await DatabaseController.getMicroVivaQuestionFromQuestionID(question.microvivaquestionID)
+    let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(micAnsAudioID, question.microvivaquestionID)
+    console.log(microVivaAnswer.id)
+    output = {
+      correctAnswer : false,
+      microvivaanswerID : microVivaAnswer.id
+    }
+    return output
   }
 
 
@@ -294,6 +315,8 @@ class ExamCohortController {
     }
     return output
   }
+
+  
 
 }
 module.exports = ExamCohortController
