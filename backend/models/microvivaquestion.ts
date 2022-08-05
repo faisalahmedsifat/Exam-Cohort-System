@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.Question, { 
         foreignKey: {name: 'microvivaquestionID', allowNull:true}
       });
+      this.hasOne(models.Microvivaquestion, {
+        foreignKey: { name: 'microvivaquesionID', allowNull: true }
+      });
     }
   }
   Microvivaquestion.init({
