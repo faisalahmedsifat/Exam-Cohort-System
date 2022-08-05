@@ -118,10 +118,8 @@ class DatabaseController {
     if (transactionRef == null) return await question.createMicrovivaquestion(microvivaDetails);
     else return await question.createMicrovivaquestion(microvivaDetails, { transaction: transactionRef });
   }
-  static async addMicroVivaAnswerFromQuestion(micAnsAudioID, microvivaquestionID){
-    // return await micVivaQuestion.createMvanswer({micAnsAudioID: micAnsAudioID})
-    console.log('created')
-    return await Models.Microvivaanswer.create({ micAnsAudioID: micAnsAudioID, microvivaquestionID: microvivaquestionID})
+  static async addMicroVivaAnswerFromQuestion(micAnsAudioID){
+    return await Models.Microvivaanswer.create({ micAnsAudioID: micAnsAudioID})
   }
 
   static async createSingleOptionFromDetails(mcqquestion, mcqOption, transactionRef = null) {

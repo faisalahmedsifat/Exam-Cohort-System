@@ -125,7 +125,7 @@ export class ExamServerFactory {
         // console.dir(answer, {depth: null});
         const result = await ExamCohortController.addMicroVivaAnswerToQuestion(answer)
         answerBase.isCorrect = Boolean(result.correctAnswer)
-        answerBase.microvivaanswerID = Boolean(result.microvivaanswerID)
+        answerBase.microvivaanswerID = result.microvivaanswerID
         await answerBase.save()
       }
 

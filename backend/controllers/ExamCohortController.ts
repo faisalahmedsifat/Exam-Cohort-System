@@ -263,12 +263,12 @@ class ExamCohortController {
 
     let question = await DatabaseController.getQuestionFromQuestionID(questionID)
     let microVivaQuestion = await DatabaseController.getMicroVivaQuestionFromQuestionID(question.microvivaquestionID)
-    let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(micAnsAudioID, question.microvivaquestionID)
-    output = {
+    let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(micAnsAudioID)
+    
+    return {
       correctAnswer : correctAnswer,
       microvivaanswerID : microVivaAnswer.id
     }
-    return output
   }
 
 
