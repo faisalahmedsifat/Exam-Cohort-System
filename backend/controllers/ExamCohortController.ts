@@ -290,18 +290,12 @@ class ExamCohortController {
     console.dir(mcqQuestionOptionData, {depth: null});
     console.dir(answerBody.mcqQuestionDetails.mcqOptions, {depth: null});
     
-    for (let optionIndex = 0; optionIndex < mcqQuestionOptionData.length; optionIndex++) {
-      if (
-        (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqOptionID)
-        && ((mcqQuestionOptionData[optionIndex].isMcqOptionCor === true && selectedOptionDetails[optionIndex].isSelectedInAnswer === true) ||
-          (mcqQuestionOptionData[optionIndex].isMcqOptionCor === false && selectedOptionDetails[optionIndex].isSelectedInAnswer === false))
-      ) {
-        correctAnswer = true;
-      }
-      else {
-        correctAnswer = false
-        break;
-      }
+    for (const original of mcqQuestionOptionData) {
+      answerBody.mcqQuestionDetails.mcqOptions.map(givenOption => {
+        if(original.id === givenOption.mcqOptionID){
+          correctAnswer &= (original.isMcqOptionCor === givenOption.isSelectedInAnswer)
+        }
+      })
     }
 
     // Insert to database
