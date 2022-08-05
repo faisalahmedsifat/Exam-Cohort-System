@@ -6,14 +6,14 @@ const Sequelize = require("sequelize");
  * createTable() => "mcq_answers", deps: []
  * createTable() => "mcq_questions", deps: []
  * createTable() => "microviva_answer", deps: []
- * createTable() => "microviva_questions", deps: []
  * createTable() => "users", deps: []
  * createTable() => "examcohorts", deps: [users]
  * createTable() => "candidate_list", deps: [examcohorts, users]
  * createTable() => "assessments", deps: [examcohorts]
- * createTable() => "questions", deps: [assessments, mcq_questions, microviva_questions]
+ * createTable() => "microviva_questions", deps: [microviva_answer]
  * createTable() => "mcqoption", deps: [mcq_questions]
  * createTable() => "mcqoptionselected", deps: [mcq_answers, mcqoption]
+ * createTable() => "questions", deps: [assessments, mcq_questions, microviva_questions]
  * createTable() => "answers", deps: [mcq_answers, microviva_answer, candidate_list, questions]
  *
  */
@@ -21,7 +21,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-08-02T17:21:31.860Z",
+  created: "2022-08-05T10:13:30.122Z",
   comment: "",
 };
 
@@ -101,45 +101,9 @@ const migrationCommands = (transaction) => [
           allowNull: false,
         },
         micAnsAudioText: { type: Sequelize.STRING, field: "micAnsAudioText" },
-        createdAt: {
-          type: Sequelize.DATE,
-          field: "createdAt",
-          allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          field: "updatedAt",
-          allowNull: false,
-        },
-      },
-      { transaction },
-    ],
-  },
-  {
-    fn: "createTable",
-    params: [
-      "microviva_questions",
-      {
-        id: {
+        microvivaquestionID: {
           type: Sequelize.INTEGER,
-          field: "id",
-          autoIncrement: true,
-          primaryKey: true,
-          allowNull: false,
-        },
-        micQuesAudioID: {
-          type: Sequelize.STRING,
-          field: "micQuesAudioID",
-          allowNull: false,
-        },
-        micCorAudioID: {
-          type: Sequelize.STRING,
-          field: "micCorAudioID",
-          allowNull: false,
-        },
-        micCorAnsText: {
-          type: Sequelize.STRING,
-          field: "micCorAnsText",
+          field: "microvivaquestionID",
           allowNull: false,
         },
         createdAt: {
@@ -321,19 +285,28 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "questions",
+      "microviva_questions",
       {
-        questionID: {
-          type: Sequelize.UUID,
-          field: "questionID",
-          primaryKey: true,
-          defaultValue: Sequelize.UUIDV4,
-        },
-        type: { type: Sequelize.STRING, field: "type", allowNull: false },
-        marks: { type: Sequelize.INTEGER, field: "marks", allowNull: false },
-        timeLimit: {
+        id: {
           type: Sequelize.INTEGER,
-          field: "timeLimit",
+          field: "id",
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: false,
+        },
+        micQuesAudioID: {
+          type: Sequelize.STRING,
+          field: "micQuesAudioID",
+          allowNull: false,
+        },
+        micCorAudioID: {
+          type: Sequelize.STRING,
+          field: "micCorAudioID",
+          allowNull: false,
+        },
+        micCorAnsText: {
+          type: Sequelize.STRING,
+          field: "micCorAnsText",
           allowNull: false,
         },
         createdAt: {
@@ -346,31 +319,13 @@ const migrationCommands = (transaction) => [
           field: "updatedAt",
           allowNull: false,
         },
-        assessmentID: {
-          type: Sequelize.UUID,
-          field: "assessmentID",
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "assessments", key: "assessmentID" },
-          name: "assessmentID",
-          allowNull: false,
-        },
-        mcqquestionID: {
+        microvivaquesionID: {
           type: Sequelize.INTEGER,
-          field: "mcqquestionID",
+          field: "microvivaquesionID",
           onUpdate: "CASCADE",
           onDelete: "SET NULL",
-          references: { model: "mcq_questions", key: "id" },
-          name: "mcqquestionID",
-          allowNull: true,
-        },
-        microvivaquestionID: {
-          type: Sequelize.INTEGER,
-          field: "microvivaquestionID",
-          onUpdate: "CASCADE",
-          onDelete: "SET NULL",
-          references: { model: "microviva_questions", key: "id" },
-          name: "microvivaquestionID",
+          references: { model: "microviva_answer", key: "id" },
+          name: "microvivaquesionID",
           allowNull: true,
         },
       },
@@ -466,6 +421,65 @@ const migrationCommands = (transaction) => [
           references: { model: "mcqoption", key: "id" },
           name: "mcqoptionID",
           allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
+      "questions",
+      {
+        questionID: {
+          type: Sequelize.UUID,
+          field: "questionID",
+          primaryKey: true,
+          defaultValue: Sequelize.UUIDV4,
+        },
+        type: { type: Sequelize.STRING, field: "type", allowNull: false },
+        marks: { type: Sequelize.INTEGER, field: "marks", allowNull: false },
+        timeLimit: {
+          type: Sequelize.INTEGER,
+          field: "timeLimit",
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        assessmentID: {
+          type: Sequelize.UUID,
+          field: "assessmentID",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "assessments", key: "assessmentID" },
+          name: "assessmentID",
+          allowNull: false,
+        },
+        mcqquestionID: {
+          type: Sequelize.INTEGER,
+          field: "mcqquestionID",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "mcq_questions", key: "id" },
+          name: "mcqquestionID",
+          allowNull: true,
+        },
+        microvivaquestionID: {
+          type: Sequelize.INTEGER,
+          field: "microvivaquestionID",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "microviva_questions", key: "id" },
+          name: "microvivaquestionID",
+          allowNull: true,
         },
       },
       { transaction },

@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.Answer, { 
         foreignKey: {name: 'microvivaanswerID', allowNull:true}
       });
+      this.hasOne(models.Microvivaquestion, { 
+        foreignKey: {name: 'microvivaquesionID', allowNull:true}
+      });
     }
   }
   Microvivaanswer.init({
@@ -24,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     micAnsAudioText: {
       type: DataTypes.STRING
+    },
+    microvivaquestionID: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     sequelize,
