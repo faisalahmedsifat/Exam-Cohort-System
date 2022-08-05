@@ -24,14 +24,18 @@ const generateApiOutput = (type, message) => {
   }
 }
 
+const getRandomNumberBetween = (minInclusive, maxInclusive) => {
+  return Math.floor(Math.random() * (maxInclusive - minInclusive + 1) + minInclusive)
+}
+
 const authBarrier = (request, response, next) => {
   try {
     let token;
     const authorization = request.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) token = authorization.substring(7)
     const tokenData = jwt.verify(token, config.SECRET)
-    request.userID = tokenData.userID 
-    request.emailID = tokenData.emailID 
+    request.userID = tokenData.userID
+    request.emailID = tokenData.emailID
     next()
   } catch (error) {
     return response.status(400).json(generateApiOutput("FAILED", "Authentication Failed!"))
@@ -40,6 +44,7 @@ const authBarrier = (request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
+  getRandomNumberBetween,
   generateApiOutput,
   authBarrier
 }

@@ -1,5 +1,8 @@
 // @ts-nocheck
 
+// Middlewares
+const { randomShuffleArray } = require('../utils/middleware')
+
 // Controllers
 const DatabaseController = require('./DatabaseController')
 const AssignedCohortController = require('./AssignedCohortController')
@@ -21,12 +24,16 @@ export class ExamServerFactory {
     this.assessmentID = assessmentID
     this.cohortID = cohortID
     this.candidateID = candidateID
-    this.question = question
+    
+    // Randomize the questions
+    let unshuffledQuestions = question 
+    let shuffledQuestions = randomShuffleArray(unshuffledQuestions)
+    this.question = shuffledQuestions
   }
   private static async callContructorWithAsyncData(userID, assessmentID) {
     const cohortID = (await DatabaseController.getCohortFromAssessmentID(assessmentID)).cohortID
     const candidateID = (await DatabaseController.findCandidateFromCandidateList(userID, cohortID)).id
-    const questions = await AssignedCohortController.getQuestionsOfAssessmentWithoutCorAns(assessmentID)    
+    const questions = await AssignedCohortController.getQuestionsOfAssessmentWithoutCorAns(assessmentID)
     return new ExamServerFactory(userID, assessmentID, cohortID, candidateID, questions);
   }
   public static async getServer(userID, assessmentID) {
@@ -56,13 +63,16 @@ export class ExamServerFactory {
   public async getNextQuestion() {
     // check if time now is >= than available datetime
     const assessmentInstance = await DatabaseController.getAssessmentFromAssessmentID(this.assessmentID)
-    if(!DateTimeController.checkIsGreaterEq(new Date(), assessmentInstance.availableDateTime)){
+    if (!DateTimeController.checkIsGreaterEq(new Date(), assessmentInstance.availableDateTime)) {
       return {
         started: false
       }
     }
 
-    const indexSending = 0; // TODO: make this random between the lenngth of question array len
+    let len = this.question.length;
+    len -= 1;
+    let indexSending = 0; // don't change here, try to randomize the whole question array beforehand
+
     if (this.question.length !== 0) {
       let servingQuestion = { ...this.question[indexSending], all_answered: false, started: true }
 
@@ -90,6 +100,14 @@ export class ExamServerFactory {
       }
 
       servingQuestion = { ...servingQuestion, timeLimitSec: newTimeLimitSeconds }
+
+      if (servingQuestion.type === "MCQ") {
+        // randomize the options
+        let mcqOptionsUnshuffled = servingQuestion.mcqQuestionDetails.mcqOptions
+        let mcqOptionsShuffled = randomShuffleArray(mcqOptionsUnshuffled)
+        servingQuestion.mcqQuestionDetails.mcqOptions = mcqOptionsShuffled
+      }
+
       return servingQuestion
     } else return { all_answered: true }
   }
@@ -104,11 +122,11 @@ export class ExamServerFactory {
       // check if submitted within time limit, consider even due time as long as current question
       let assessmentInstance = await DatabaseController.getAssessmentFromAssessmentID(this.assessmentID)
       const questionInstance = await DatabaseController.getQuestionFromQuestionID(answer.questionID)
-      const newTimeLimitSeconds = await this.getRemSecOfQues(questionInstance.timeLimit, assessmentInstance.dueDateTime, answerBase.viewedAt, new Date(new Date().getTime()-1000*ACCEPT_DELAY_OF_SECONDS))
+      const newTimeLimitSeconds = await this.getRemSecOfQues(questionInstance.timeLimit, assessmentInstance.dueDateTime, answerBase.viewedAt, new Date(new Date().getTime() - 1000 * ACCEPT_DELAY_OF_SECONDS))
       if (newTimeLimitSeconds === 0) {
         throw new Error("Time Limit Exceeded!"); // Don't Accept The Answer, as there is a time limit exceeded case 
       }
-      
+
       // log the database submittedAt
       answerBase = await DatabaseController.getAnswerBase(this.candidateID, answer.questionID)
       answerBase.submittedAt = new Date();
@@ -119,7 +137,7 @@ export class ExamServerFactory {
         // console.dir(answer, {depth: null});
         const result = await ExamCohortController.addMcqAnswerToQuestion(answer)
         answerBase.isCorrect = Boolean(result.correctAnswer)
-        answerBase.mcqanswerID  = result.mcqanswerID
+        answerBase.mcqanswerID = result.mcqanswerID
         await answerBase.save()
       } else if (answer.type === "MICROVIVA") {
         // console.dir(answer, {depth: null});
