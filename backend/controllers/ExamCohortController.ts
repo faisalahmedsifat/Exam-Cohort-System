@@ -287,6 +287,9 @@ class ExamCohortController {
     let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, null, true)
     let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
 
+    console.dir(mcqQuestionOptionData, {depth: null});
+    console.dir(answerBody.mcqQuestionDetails.mcqOptions, {depth: null});
+    
     for (let optionIndex = 0; optionIndex < mcqQuestionOptionData.length; optionIndex++) {
       if (
         (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqOptionID)

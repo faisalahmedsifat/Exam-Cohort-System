@@ -24,8 +24,12 @@ const generateApiOutput = (type, message) => {
   }
 }
 
-const getRandomNumberBetween = (minInclusive, maxInclusive) => {
-  return Math.floor(Math.random() * (maxInclusive - minInclusive + 1) + minInclusive)
+const randomShuffleArray = (a) => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 const authBarrier = (request, response, next) => {
@@ -44,7 +48,7 @@ const authBarrier = (request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  getRandomNumberBetween,
+  randomShuffleArray,
   generateApiOutput,
   authBarrier
 }
