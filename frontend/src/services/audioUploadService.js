@@ -35,8 +35,15 @@ const getAudioFile = async (token, fileDetails) => {
 
 const deleteAudioFile = async (token, fileDetails) => {
   try {
-    const response = await axios.post(baseUrl + `/delete`, fileDetails, { headers: { Authorization: `bearer ${token}`, "Content-Type": "multipart/form-data" } })
-    return response.data.response
+    const response = await fetch(baseUrl+`/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+      },
+      body: JSON.stringify(fileDetails)
+    })
+    return response
   } catch (error) {
     throw Error(error.response.data.response.error);
   }

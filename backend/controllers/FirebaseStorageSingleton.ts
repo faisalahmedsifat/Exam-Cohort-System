@@ -39,7 +39,11 @@ export class FirebaseStorageSingleton implements StorageStrategy {
     return await fetch(url).then(r => r.blob())
   }
   public async deleteRef(details: FileDetails){
-    return await deleteObject(ref(this.firebaseStorage, `${details.ref_dir}/${details.fileName}.${details.ref_ext}`))
+    try {
+      return await deleteObject(ref(this.firebaseStorage, `${details.ref_dir}/${details.fileName}.${details.ref_ext}`))
+    } catch (error) {
+      
+    }
   }
 }
 

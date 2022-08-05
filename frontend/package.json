@@ -10,6 +10,7 @@
     "@reduxjs/toolkit": "^1.8.3",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "firebase": "^9.9.1",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",

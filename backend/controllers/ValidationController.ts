@@ -22,6 +22,8 @@ MCQ_STATEMENT_MAX_LEN = 50
 MCQ_MAX_NO_OF_OPTIONS = 10
 MCQ_OPTION_MAX_LEN = 50
 MAX_MARKS_OF_QUESTION = 100
+RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT=true
+
 
 class ValidationController {
   static validateCreateExamCohortInput(userInput) {
@@ -61,6 +63,15 @@ class ValidationController {
 
   static validateMicroVivaQuestionUserInput(microVivaQuestion) {
     // console.log(microVivaQuestion);
+  }
+
+  static restrictAddingQuestionDuringAvailableTime(availableDateTime, dueDateTime){
+    const availParsed = Date.parse(new Date(availableDateTime))
+    const dueDateParsed = Date.parse(new Date(dueDateTime))
+    const timeNowParsed = Date.parse(new Date())
+    if(availParsed <= timeNowParsed && timeNowParsed <= dueDateParsed && RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT === true){
+      throw new Error("This assessment is currently available to candidates, adding question right now is prohibited!");
+    }
   }
 
   static validateAddQuestionInputs(questions, availableDatetime, dueDatetime, minutesUsed) {

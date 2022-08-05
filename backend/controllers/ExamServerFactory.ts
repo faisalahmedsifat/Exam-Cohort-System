@@ -69,12 +69,19 @@ export class ExamServerFactory {
       }
     }
 
+    // check if time now is <= than available datetime
+    if (!DateTimeController.checkIsGreaterEq(assessmentInstance.dueDateTime, new Date())) {
+      return {
+        dueDateOver: true
+      }
+    }
+
     let len = this.question.length;
     len -= 1;
     let indexSending = 0; // don't change here, try to randomize the whole question array beforehand
 
     if (this.question.length !== 0) {
-      let servingQuestion = { ...this.question[indexSending], all_answered: false, started: true }
+      let servingQuestion = { ...this.question[indexSending], all_answered: false, started: true, dueDateOver: false }
 
       // check if user was already served this question once from viewedAt at database, if not then create one
       let answerBase = await DatabaseController.getAnswerBase(this.candidateID, servingQuestion.questionID)
@@ -91,6 +98,9 @@ export class ExamServerFactory {
       // calculating updated Time limit
       const newTimeLimitSeconds = await this.getRemSecOfQues(servingQuestion.timeLimit, assessmentInstance.dueDateTime, answerBase.viewedAt, new Date())
 
+      // Calculate Seconds Until Due Datetime
+      const timeTillDueDatetime = Math.max(0,Date.parse(assessmentInstance.dueDateTime)-Date.parse(new Date()))/1000
+
       // There is no point serving this question, time limit exceeded
       if (newTimeLimitSeconds === 0) {
         // remove this question from the list of question 
@@ -99,7 +109,7 @@ export class ExamServerFactory {
         return this.getNextQuestion()
       }
 
-      servingQuestion = { ...servingQuestion, timeLimitSec: newTimeLimitSeconds }
+      servingQuestion = { ...servingQuestion, timeLimitSec: newTimeLimitSeconds, timeTillDueDatetime }
 
       if (servingQuestion.type === "MCQ") {
         // randomize the options

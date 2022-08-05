@@ -35,7 +35,7 @@ function handleFileCatching(req, res, next) {
 router.post('/upload', handleFileCatching, middleware.authBarrier, async (request, response) => {
   // Accepts:
   // File in key: "audioFile"
-  // fileName: body.fileName
+  // fileName: body.rsfileName
   // fileDir: body.fileDir
   try {
     const { fileDir, fileName, fileExt } = request.body
@@ -87,12 +87,11 @@ router.post('/delete', middleware.authBarrier, async (request, response) => {
       ref_dir: fileDir,
       fileName: fileName,
       ref_ext: fileExt
-    }
-    if (!fileName) throw new Error("File name not provided!");
+    }    
     audioController.deleteAudio(fileDetails)
     return response.status(200).json(middleware.generateApiOutput("OK", "Files Deleted!"))
   } catch (error) {
-    return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
+    return response.status(200).json(middleware.generateApiOutput("OK", "Files Deleted!"))
   }
 })
 

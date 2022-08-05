@@ -77,7 +77,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
                 </div>
               </div>
               <div className='flex-grow flex flex-col gap-y-2'>
-                <label htmlFor='duedatetime' className='text-slate-600 text-sm tracking-tight font-medium'>Available Datetime</label>
+                <label htmlFor='duedatetime' className='text-slate-600 text-sm tracking-tight font-medium'>Due Datetime</label>
                 <div className='flex flex-row gap-x-5'>
                   <input type="datetime-local"
                     className='flex-grow border w-10 rounded py-2 px-3 bg-gray-100 text-gray-700 ring-1 

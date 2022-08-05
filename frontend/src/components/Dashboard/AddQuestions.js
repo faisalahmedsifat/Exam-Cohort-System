@@ -189,14 +189,14 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
           const micCorAudioID = uuidv4()
 
           const questionAudioFileDetails = {
-            fileName: micQuesAudioID,
             fileDir: 'questions/prompt',
+            fileName: micQuesAudioID,
             fileExt: 'wav'
           }
 
           const correctAudioFileDetails = {
-            fileName: micCorAudioID,
             fileDir: 'questions/correct_answer',
+            fileName: micCorAudioID,
             fileExt: 'wav'
           }
 

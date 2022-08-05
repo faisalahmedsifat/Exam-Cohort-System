@@ -149,6 +149,7 @@ class ExamCohortController {
     let maxMinuteRemainsOfThisAssessment = await DatabaseController.getAssessmentAllocatedMinutes(assessmentID)
     let availableDatetime = await DatabaseController.getAssessmentAvailableDatetime(assessmentID)
     let dueDatetime = await DatabaseController.getAssessmentDueDatetime(assessmentID)
+    ValidationController.restrictAddingQuestionDuringAvailableTime(availableDatetime,dueDatetime)
     ValidationController.validateAddQuestionInputs(questions, availableDatetime, dueDatetime, maxMinuteRemainsOfThisAssessment)
 
     let output = []
@@ -287,9 +288,6 @@ class ExamCohortController {
     let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, null, true)
     let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
 
-    console.dir(mcqQuestionOptionData, {depth: null});
-    console.dir(answerBody.mcqQuestionDetails.mcqOptions, {depth: null});
-    
     for (const original of mcqQuestionOptionData) {
       answerBody.mcqQuestionDetails.mcqOptions.map(givenOption => {
         if(original.id === givenOption.mcqOptionID){

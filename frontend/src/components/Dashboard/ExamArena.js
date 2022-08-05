@@ -28,8 +28,8 @@ const ExamArena = () => {
   const [currentQuestion, setCurrentQuestion] = useState(null)
   const [questionBlobUrl, setQuestionBlobUrl] = useState(null)
   const defaultAnswerAudio = {
-    blobUrl: '',
-    blob: ''
+    blobUrl: URL.createObjectURL(new Blob()),
+    blob: new Blob([], {type: "audio/wav"})
   }
   const [answerAudio, setAnswerAudio] = useState(defaultAnswerAudio)
   const currentUser = useSelector(store => store.currentUser.value)
@@ -69,8 +69,8 @@ const ExamArena = () => {
         // upload the file and create appropiate body
         const micAnsAudioID = uuidv4()
         const answerAudioFileDetails = {
-          fileName: micAnsAudioID,
           fileDir: 'answers',
+          fileName: micAnsAudioID,
           fileExt: 'wav'
         }
         uploadedFilesDetails.push(answerAudioFileDetails)
@@ -91,6 +91,7 @@ const ExamArena = () => {
     } catch (e) {
       // delete any file that was uploaded 
       for (const detailsOfFiles of uploadedFilesDetails) {
+        console.log(detailsOfFiles);
         await audioUploadService.deleteAudioFile(currentUser.token, detailsOfFiles)
       }
 
@@ -122,7 +123,22 @@ const ExamArena = () => {
         </div>
       </>
     )
-  } else if (currentQuestion != null && currentQuestion.all_answered === true) {
+  }else if (currentQuestion != null && currentQuestion.dueDateOver === true) {
+    setTimeout(() => {
+      navigate('/dashboard')
+    }, 5000)
+
+    return (
+      <>
+        <div className='h-screen flex justify-center items-center'>
+          <div className='bg-white py-5 px-10 rounded flex gap-x-2'>
+            <BanIcon className='h-6 w-6 text-flat_red2' />
+            <div className='font-bold'>Assessment Due Datetime exceed, you cannot enter now! Redirecting to dashboard...</div>
+          </div>
+        </div>
+      </>
+    )
+  }else if (currentQuestion != null && currentQuestion.all_answered === true) {
     setTimeout(() => {
       navigate('/dashboard')
     }, 5000)
@@ -160,8 +176,14 @@ const ExamArena = () => {
               date={Date.now() + (1000 * (currentQuestion.timeLimitSec))}
               onComplete={handleSubmitCurrentAnswer}
             />
+          </div> 
+          <div className='flex gap-x-2'>
+            <div>Time Left till due date: </div>
+            <Countdown
+              date={Date.now() + (1000 * (currentQuestion.timeTillDueDatetime))}
+              onComplete={handleSubmitCurrentAnswer}
+            />
           </div>
-          <div>Time Left till due date: TODO</div>
         </div>
         {
           currentQuestion.type === "MCQ" && (
