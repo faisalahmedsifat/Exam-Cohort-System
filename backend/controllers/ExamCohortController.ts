@@ -272,27 +272,26 @@ class ExamCohortController {
   }
 
 
-  static async addMcqAnswerToQuestion(answerBody) {
-    const questionID = answerBody.questionID
+  static async addMcqAnswerToQuestion(answerBody) { // rename this to answerBody later
     const answer = {
       details: {
         mcqOptionsSelected: answerBody.mcqQuestionDetails.mcqOptions
       }
     }
     let selectedOptionDetails = answer.details.mcqOptionsSelected    
-    let selectedOptions = []
-    let correctAnswer = true
-    let output = {}
 
-    let question = await DatabaseController.getQuestionFromQuestionID(questionID)
+    let correctAnswer = true
+
+    let question = await DatabaseController.getQuestionFromQuestionID(answerBody.questionID)
     let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(question.mcqquestionID)
-    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, false, true)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, null, true)
     let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+
     for (let optionIndex = 0; optionIndex < mcqQuestionOptionData.length; optionIndex++) {
       if (
         (mcqQuestionOptionData[optionIndex].id === selectedOptionDetails[optionIndex].mcqOptionID)
-        && ((mcqQuestionOptionData[optionIndex].isMcqOptionCor === true && selectedOptionDetails[optionIndex].isSelectedInAnswer === 1) ||
-          (mcqQuestionOptionData[optionIndex].isMcqOptionCor === false && selectedOptionDetails[optionIndex].isSelectedInAnswer === 0))
+        && ((mcqQuestionOptionData[optionIndex].isMcqOptionCor === true && selectedOptionDetails[optionIndex].isSelectedInAnswer === true) ||
+          (mcqQuestionOptionData[optionIndex].isMcqOptionCor === false && selectedOptionDetails[optionIndex].isSelectedInAnswer === false))
       ) {
         correctAnswer = true;
       }
@@ -301,15 +300,18 @@ class ExamCohortController {
         break;
       }
     }
+
+    // Insert to database
     let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
+    let selectedOptions = []
     for (let selectedOptionIndex = 0; selectedOptionIndex < selectedOptionDetails.length; selectedOptionIndex++) {
       selectedOptions.push({ ...selectedOptionDetails[selectedOptionIndex], mcqanswerID, mcqoptionID:selectedOptionDetails[selectedOptionIndex].mcqOptionID  })
     }
     await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
-    output = {
+
+    return {
       correctAnswer, mcqanswerID
     }
-    return output
   }
 
   

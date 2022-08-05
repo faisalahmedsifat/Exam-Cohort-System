@@ -116,11 +116,13 @@ export class ExamServerFactory {
 
       // log the answer into database
       if (answer.type === "MCQ") {
+        // console.dir(answer, {depth: null});
         const result = await ExamCohortController.addMcqAnswerToQuestion(answer)
         answerBase.isCorrect = Boolean(result.correctAnswer)
         answerBase.mcqanswerID  = result.mcqanswerID
         await answerBase.save()
       } else if (answer.type === "MICROVIVA") {
+        // console.dir(answer, {depth: null});
         const result = await ExamCohortController.addMicroVivaAnswerToQuestion(answer)
         answerBase.isCorrect = Boolean(result.correctAnswer)
         answerBase.microvivaanswerID = Boolean(result.microvivaanswerID)

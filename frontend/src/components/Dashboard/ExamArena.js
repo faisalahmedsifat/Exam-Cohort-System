@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 // Countdown
@@ -18,16 +18,20 @@ import examService from '../../services/examService'
 import notification from '../../services/notificationService'
 
 const ExamArena = () => {
-  const { assessmentID } = useParams()
+  const { cohortID, assessmentID } = useParams()
+  const mcqQuestionFormRef = useRef()
   const [currentQuestion, setCurrentQuestion] = useState(null)
   const currentUser = useSelector(store => store.currentUser.value)
   const navigate = useNavigate()
 
   const fetchNextQuestion = async () => {
     try {
-      const question = await examService.getNextQuestion(currentUser.token, assessmentID)
+      let question = await examService.getNextQuestion(currentUser.token, assessmentID)
       // question.timeLimit = 0.1
       console.log(question);
+      if (question.type != null && question.type === "MCQ") {
+
+      }
       setCurrentQuestion(question)
     } catch (e) {
       notification.error(e.message, 2000)
@@ -41,11 +45,19 @@ const ExamArena = () => {
 
   const handleSubmitCurrentAnswer = async () => {
     try {
-      await examService.submitCurrentQuestion(currentUser.token, assessmentID, currentQuestion)
+      const answerBody = {...currentQuestion}
+      const formInputs = [...mcqQuestionFormRef.current.elements].filter(
+        element => element.type === "checkbox"
+      );
+      answerBody.mcqQuestionDetails.mcqOptions = answerBody.mcqQuestionDetails.mcqOptions.map((option, idx) => {
+        option["isSelectedInAnswer"] = formInputs[idx].checked
+        return option
+      })
+      await examService.submitCurrentQuestion(currentUser.token, assessmentID, answerBody)
       // redirect to the next question
       setCurrentQuestion(null)
       fetchNextQuestion()
-      // navigate(`/assignedcohorts/${cohortID}/assessments/${assessmentID}/start`)
+      navigate(`/assignedcohorts/${cohortID}/assessments/${assessmentID}/start`)
     } catch (e) {
       notification.error(e.message, 2000)
     }
@@ -105,35 +117,40 @@ const ExamArena = () => {
               onComplete={handleSubmitCurrentAnswer}
             />
           </div>
-          <div>Time Left till due date: 00:00</div>
+          <div>Time Left till due date: TODO</div>
         </div>
         {
           currentQuestion.type === "MCQ" && (
-            <div className='flex flex-col px-20 pt-20'>
-              <div className='flex flex-col bg-white rounded text-slate-700 py-5 px-6'>
-                <div className='font-medium mb-5 mt-5'>{currentQuestion.mcqQuestionDetails.mcqStatement}</div>
-                <div>
-                  {currentQuestion.mcqQuestionDetails.mcqOptions.map((option, index) => {
-                    return (
-                      <div key={index} className='flex gap-x-2 items-center'>
-                        <input type="checkbox" />
-                        <div>
-                          {option.mcqOptionText}
+            <form ref={mcqQuestionFormRef}>
+              <div className='flex flex-col px-20 pt-20'>
+                <div className='flex flex-col bg-white rounded text-slate-700 py-5 px-6'>
+                  <div className='font-medium mb-5 mt-5'>{currentQuestion.mcqQuestionDetails.mcqStatement}</div>
+                  <div>
+                    {currentQuestion.mcqQuestionDetails.mcqOptions.map((option, index) => {
+                      return (
+                        <div key={index} className='flex gap-x-2 items-center'>
+                          <input
+                            type="checkbox"
+                            name={option.mcqOptionID}
+                          />
+                          <div>
+                            {option.mcqOptionText}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className='flex flex-row-reverse'>
-                  <div
-                    onClick={handleSubmitCurrentAnswer}
-                    className='hover:cursor-pointer bg-flat_green1 hover:bg-flat_green2 font-medium text-white rounded py-2 px-3'>
-                    Save & Next
+                      )
+                    })}
                   </div>
-                </div>
+                  <div className='flex flex-row-reverse'>
+                    <div
+                      onClick={handleSubmitCurrentAnswer}
+                      className='hover:cursor-pointer bg-flat_green1 hover:bg-flat_green2 font-medium text-white rounded py-2 px-3'>
+                      Save & Next
+                    </div>
+                  </div>
 
+                </div>
               </div>
-            </div>
+            </form>
           )
         }
         {
