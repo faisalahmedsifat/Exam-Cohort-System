@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.Answer, { 
         foreignKey: {name: 'microvivaanswerID', allowNull:true}
       });
-      this.belongsTo(models.Microvivaquestion, { 
-        as: 'mvanswer',
-        foreignKey: { name: 'microvivaquestionID', allowNull:false}
-      });
     }
   }
   Microvivaanswer.init({
@@ -28,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     micAnsAudioText: {
       type: DataTypes.STRING
-    },
-    microvivaquestionID: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     }
   }, {
     sequelize,
