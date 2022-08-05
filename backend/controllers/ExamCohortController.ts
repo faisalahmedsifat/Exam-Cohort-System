@@ -249,8 +249,6 @@ class ExamCohortController {
   }
 
   static async addMicroVivaAnswerToQuestion(answerBody) {
-
-    //TODO: add microviva answer to question
     const questionID = answerBody.questionID
     const answer = {
       details: {
@@ -259,17 +257,15 @@ class ExamCohortController {
     }
 
     let micAnsAudioID = answer.details.micAnsAudioID
-    console.log(micAnsAudioID)
 
-    let correctAnswer = false;
+    let correctAnswer = null; // TODO: Add Microviva Correct Answer Checker here
     let output = {};
 
     let question = await DatabaseController.getQuestionFromQuestionID(questionID)
     let microVivaQuestion = await DatabaseController.getMicroVivaQuestionFromQuestionID(question.microvivaquestionID)
     let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(micAnsAudioID, question.microvivaquestionID)
-    console.log(microVivaAnswer.id)
     output = {
-      correctAnswer : false,
+      correctAnswer : correctAnswer,
       microvivaanswerID : microVivaAnswer.id
     }
     return output
