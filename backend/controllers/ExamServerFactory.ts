@@ -98,7 +98,6 @@ export class ExamServerFactory {
   }
   public async answerQuestion(answer) {
     let answerBase = await DatabaseController.getAnswerBase(this.candidateID, answer.questionID)
-    console.log(answerBase)
     if (answerBase.submittedAt != null) { // check if already submitted
       this.removeQuestionFromList(answer.questionID) // remove the question
     } else {
@@ -109,7 +108,6 @@ export class ExamServerFactory {
       if (newTimeLimitSeconds === 0) {
         throw new Error("Time Limit Exceeded!"); // Don't Accept The Answer, as there is a time limit exceeded case 
       }
-      console.log('check1k')
       
       // log the database submittedAt
       answerBase = await DatabaseController.getAnswerBase(this.candidateID, answer.questionID)
@@ -123,10 +121,9 @@ export class ExamServerFactory {
         answerBase.mcqanswerID  = result.mcqanswerID
         await answerBase.save()
       } else if (answer.type === "MICROVIVA") {
-        console.log(answer)
         const result = await ExamCohortController.addMicroVivaAnswerToQuestion(answer)
         answerBase.isCorrect = Boolean(result.correctAnswer)
-        answerBase.micrvovivaanswerID = Boolean(result.micrvovivaanswerID)
+        answerBase.microvivaanswerID = Boolean(result.microvivaanswerID)
         await answerBase.save()
       }
 
