@@ -1,5 +1,8 @@
 import {OAuthService, OAuthUserData} from './interfaces/OAuthService'
 
+// SETTINGS
+const AUTHORIZATION_CODES_MAXIMUM_LENGTH = 100;
+
 // Core Packages
 const config = require('../utils/config')
 const axios = require('axios')
@@ -18,9 +21,16 @@ const DatabaseController = require('./DatabaseController')
 
 export class GoogleOAuth implements OAuthService{
   constructor(){}
+  async getAccessTokenFromCallback(callback){
+    if(callback.code.length >= AUTHORIZATION_CODES_MAXIMUM_LENGTH) return callback.code;
+    else{
+      const { tokens } = await oAuth2Client.getToken(callback.code);
+      return tokens.access_token;
+    }
+  }
   async getUserDataFromCallback(callback): Promise<OAuthUserData>{
-    const { tokens } = await oAuth2Client.getToken(callback.code);
-    const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${tokens.access_token}` } })
+    const access_token = await this.getAccessTokenFromCallback(callback)
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${access_token}` } })
     return {
       firstName: data.given_name,
       lastName: data.family_name,
