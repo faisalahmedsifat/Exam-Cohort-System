@@ -16,10 +16,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.examcohortsystem.R
 import com.example.examcohortsystem.model.GoogleOAuthRequest
-import com.example.examcohortsystem.services.ExamCohortApiService
 import com.example.examcohortsystem.utils.AuthResultContract
 import com.example.examcohortsystem.utils.AuthenticateWithBackend
 import com.example.examcohortsystem.viewmodel.AuthViewModel
+import com.example.examcohortsystem.views.HomeScreen
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -44,14 +44,15 @@ fun AuthScreen(
                 val account = task?.let { AuthenticateWithBackend().getAuthenticatedAccount(it) }
 //                Log.d(TAG, "AuthScreen: $TAG")
                 Log.d(TAG, "AuthScreen: 1")
-                val oAuthRequest = GoogleOAuthRequest(account?.serverAuthCode)
-                Log.d(TAG, "AuthScreen: oAuth: ${oAuthRequest.code}")
+//                val oAuthRequest = GoogleOAuthRequest(account?.serverAuthCode)
+                val oAuthRequest = GoogleOAuthRequest(account?.idToken)
+                Log.d(TAG, "AuthScreen: oAuth: ${oAuthRequest.token}")
 //                val token = object {
 //
 //                }
 //                Log.d(TAG, "AuthScreen: $token")
 //                val jsonObject = JSONObject(account)
-                Log.d(TAG, "AuthScreen: ${account?.serverAuthCode?.length}")
+//                Log.d(TAG, "AuthScreen: ${account?.serverAuthCode?.length}")
                 if (account == null) {
                     text = "Google sign in failed "
                 } else {
@@ -77,6 +78,7 @@ fun AuthScreen(
 
     user?.let {
         HomeScreen(user = it)
+//        CohortScreen()
     }
 }
 

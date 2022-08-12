@@ -1,4 +1,4 @@
-package com.example.examcohortsystem.components
+package com.example.examcohortsystem.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
