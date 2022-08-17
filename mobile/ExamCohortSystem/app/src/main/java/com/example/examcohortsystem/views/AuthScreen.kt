@@ -78,7 +78,6 @@ fun AuthScreen(
 
     user?.let {
         HomeScreen(user = it)
-//        CohortScreen()
     }
 }
 

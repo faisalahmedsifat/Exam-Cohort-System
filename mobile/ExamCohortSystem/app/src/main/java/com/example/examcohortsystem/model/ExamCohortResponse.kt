@@ -1,6 +1,8 @@
 package com.example.examcohortsystem.model
 
+import com.google.gson.annotations.SerializedName
+
 data class ExamCohortResponse(
-    val examCohortResponseItem: List<ExamCohortResponseItem>,
-    val status: String
+    @SerializedName("response") val examCohortResponseItem: List<ExamCohortResponseItem>,
+    @SerializedName("status") val status: String
 )

@@ -1,9 +1,9 @@
 package com.example.examcohortsystem.model
 
-data class CandidateResponseItem(
+data class ProfileDetails(
+    val NoOfExamCohorts: Int,
     val emailID: String,
     val firstName: String,
-    val id: String,
     val lastName: String,
-    val userID: String
+    val registeredAt: String
 )

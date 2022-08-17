@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Exam Cohort System</string>
     <string name="server_client_id">50425638562-4atqtvva4085r2mjib5c5mfvgopqgsvm.apps.googleusercontent.com</string>
-<!--    <string name="server_client_id">309862027929-6tu0rtprai2922re9uq72vanshir5mpm.apps.googleusercontent.com</string>-->
-    <string name="jwt_token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        .eyJ1c2VySUQiOiI0ZWQxYTcyYy0zMTlhLTQxZjktYTI3ZS0xMTI1NTQ4MDQ5MDEiLCJlbWFpbElEIjoiZmFpc2FsYWhtZWQ1MzFAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiRmFpc2FsIEFobWVkIiwibGFzdE5hbWUiOiJTaWZhdCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQUZkWnVjcVRUY3JId0NfX01EMlpKTHBkYlhTRTZQOXg0R3hVYlR4ZUVVX0xRTmM9czk2LWMiLCJpYXQiOjE2NjAzMDY1NzUsImV4cCI6MTY2Mjg5ODU3NX0.JY0TYSvWG3dUQxYeqvVAZJHkZ3ffm_SPyV0OafBJNc8</string>
+    <!--    <string name="server_client_id">309862027929-6tu0rtprai2922re9uq72vanshir5mpm.apps.googleusercontent.com</string>-->
+    <string name="jwt_token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI0ZWQxYTcyYy0zMTlhLTQxZjktYTI3ZS0xMTI1NTQ4MDQ5MDEiLCJlbWFpbElEIjoiZmFpc2FsYWhtZWQ1MzFAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiRmFpc2FsIEFobWVkIiwibGFzdE5hbWUiOiJTaWZhdCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQUZkWnVjcVRUY3JId0NfX01EMlpKTHBkYlhTRTZQOXg0R3hVYlR4ZUVVX0xRTmM9czk2LWMiLCJpYXQiOjE2NjAzMDY1NzUsImV4cCI6MTY2Mjg5ODU3NX0.JY0TYSvWG3dUQxYeqvVAZJHkZ3ffm_SPyV0OafBJNc8</string>
 </resources>
