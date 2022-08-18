@@ -1,5 +1,6 @@
 package com.example.examcohortsystem.ui.theme
 
+import android.graphics.Color.rgb
 import androidx.compose.ui.graphics.Color
 
 val Purple200 = Color(0xFFBB86FC)
