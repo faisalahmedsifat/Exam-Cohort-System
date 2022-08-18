@@ -3,6 +3,7 @@ package com.example.examcohortsystem.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.examcohortsystem.model.AssessmentResponseItem
 import java.util.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Assessment(
     assessmentResponseItem: AssessmentResponseItem,
@@ -30,6 +32,7 @@ fun Assessment(
             .height(90.dp)
             .fillMaxWidth()
             .padding(10.dp),
+        onClick = onClick
     ) {
         Column() {
             assessmentResponseItem.name?.let {

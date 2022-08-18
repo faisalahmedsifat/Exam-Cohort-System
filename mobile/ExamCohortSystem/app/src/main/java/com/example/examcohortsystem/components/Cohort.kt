@@ -4,6 +4,7 @@ import android.graphics.Color.rgb
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,10 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.examcohortsystem.model.ExamCohortResponseItem
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Cohort(
     examCohortResponseItem: ExamCohortResponseItem,
-    onClick: () -> Unit,
+    onClick: () ->Unit ,
 ) {
     Card(
         shape = RoundedCornerShape(18.dp),
@@ -28,7 +30,8 @@ fun Cohort(
         modifier = Modifier
             .height(180.dp)
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(top = 8.dp, bottom = 15.dp, start = 10.dp, end = 10.dp),
+        onClick = onClick
     ) {
         Column {
             Text(
