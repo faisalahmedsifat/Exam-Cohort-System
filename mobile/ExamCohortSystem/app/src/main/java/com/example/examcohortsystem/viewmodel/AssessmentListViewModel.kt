@@ -7,17 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.examcohortsystem.model.AssessmentResponse
 import com.example.examcohortsystem.services.ExamCohortApiService
+import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import kotlinx.coroutines.launch
 
 class AssessmentListViewModel : ViewModel() {
     var assessmentResponse: MutableLiveData<AssessmentResponse> = MutableLiveData()
 
 
-    fun getAssessments() {
+    fun getAssessments(jwtToken: String) {
         val apiService = ExamCohortApiService()
 
         viewModelScope.launch {
-            val assessmentRes = apiService.getAssessments(res = {
+            val assessmentRes = apiService.getAssessments(jwtToken = jwtToken,res = {
                 assessmentResponse.value = it
                 Log.d(TAG, "getCohorts: ${assessmentResponse.value}")
 //                _cohorts.value = it

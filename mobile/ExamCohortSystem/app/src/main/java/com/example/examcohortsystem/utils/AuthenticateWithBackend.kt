@@ -2,63 +2,44 @@ package com.example.examcohortsystem.utils
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.example.examcohortsystem.model.GoogleOAuthRequest
 import com.example.examcohortsystem.model.GoogleOAuthResponse
+import com.example.examcohortsystem.model.OAuthResponseObject
 import com.example.examcohortsystem.services.ExamCohortApiService
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 
 class AuthenticateWithBackend() {
-    fun getAuthenticatedAccount(task: Task<GoogleSignInAccount>): GoogleSignInAccount? {
+    fun getAuthenticatedAccount(task: Task<GoogleSignInAccount>): OAuthResponseObject? {
         val account = task.getResult(ApiException::class.java)
         Log.d(TAG, "getAuthenticatedAccount: ${account.displayName}")
         val oAuthRequest = GoogleOAuthRequest(account.idToken)
-        val oAuthResponse = authenticate(oAuthRequest)
-//        if (oAuthResponse.response.isEmpty()) {
+        //        if (oAuthResponse.response.isEmpty()) {
 //            Log.d(TAG, "getAuthenticatedAccount: not initialized")
 //        } else {
 //            Log.d(TAG, "getAuthenticatedAccount: ${oAuthResponse.token}")
 //            return account
 //        }
-        return account
+        return authenticate(oAuthRequest)
     }
 
-    fun authenticate(value: GoogleOAuthRequest?): GoogleOAuthResponse? {
+    private fun authenticate(value: GoogleOAuthRequest?): OAuthResponseObject? {
 //        Log.d(TAG, "authenticate: ${value?.token}")
-        val code = value?.token
 
         val apiService = ExamCohortApiService()
-//        val userInfo = UserInfo(  id = null,
-//            userName = "Alex",
-//            userEmail = "alex@gmail.com",
-//            userAge = 32,
-//            userUid = "164E92FC-D37A-4946-81CB-29DE7EE4B124" )
-//        var ans: GoogleOAuthResponse = GoogleOAuthResponse("")
 
-//        Log.d(TAG, "authenticate: before calling")
-//        apiService.oauth(value!!, res = {
-//
-//            Log.d(TAG, "authenticate: called calling")
-////            Log.d(TAG, "authenticate: called calling ${value.code}")
-//            if (it?.token != null) {
-//                // it = newly added user parsed as response
-////                Log.d(TAG, "authenticate: ${it?.token}")
-//                ans = GoogleOAuthResponse(it.token)
-////                    ans = it?.token
-//                // it?.id = newly added user ID
-////                return@authenticateWithGoogle it.token
-//            } else {
-////                Timber.d("Error registering new user")
-////                Log.d(TAG, "authenticate: ${it?.token}")
-//            }
-//        })
-//
-        val t = apiService.oauth(value!!){
+        var output: OAuthResponseObject? = null
+        apiService.oauth(value!!) {
             Log.d(TAG, "authenticate: ${value.token}")
             Log.d(TAG, "authenticate: ${it?.OAuthResponseObject}")
+            output = it?.OAuthResponseObject
         }
+        Log.d(TAG, "authenticate: output $output")
 //        var answer = apiService.oauth(req = value!!, res= ans)
-        return null
+        return output
     }
 }

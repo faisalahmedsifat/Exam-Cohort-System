@@ -15,13 +15,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.examcohortsystem.R
 import com.example.examcohortsystem.model.ProfileDetails
 
 @Composable
 fun ProfileScreen(
     painter: Painter = painterResource(id = R.mipmap.demo_photo),
-    profileDetails: ProfileDetails
+    profileDetails: ProfileDetails,
+
+    navController: NavHostController,
 ) {
     Column() {
         Spacer(modifier = Modifier.height(30.dp))

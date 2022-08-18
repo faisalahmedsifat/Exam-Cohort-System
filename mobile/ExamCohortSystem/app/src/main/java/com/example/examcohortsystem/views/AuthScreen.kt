@@ -1,5 +1,6 @@
 package com.example.examcohortsystem.components
 
+import android.content.ContentValues
 import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,14 +13,19 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.navigation.NavHostController
 import com.example.examcohortsystem.R
 import com.example.examcohortsystem.model.GoogleOAuthRequest
 import com.example.examcohortsystem.utils.AuthResultContract
-import com.example.examcohortsystem.utils.AuthenticateWithBackend
+import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.AuthViewModel
-import com.example.examcohortsystem.views.HomeScreen
+import com.example.examcohortsystem.viewmodel.JwtTokenAuthenticationViewModel
+import com.example.examcohortsystem.views.Screens
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -30,38 +36,55 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 @Composable
 fun AuthScreen(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    jwtTokenAuthenticationViewModel: JwtTokenAuthenticationViewModel,
+    owner: LifecycleOwner,
+    navController: NavHostController,
 ) {
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var text by remember { mutableStateOf<String?>(null) }
-    val user by remember(authViewModel) { authViewModel.user }.collectAsState()
-    val signInRequestCode = 1
+    val dataStore = StoreJwtToken(context)
+    val getToken = dataStore.getToken.collectAsState(initial = null)
 
-    val authResultLauncher =
+    var text by remember { mutableStateOf<String?>(null) }
+    val signInRequestCode = 1
+    var token by remember {
+        mutableStateOf(jwtTokenAuthenticationViewModel.oAuthResponseObject.value?.token)
+    }
+    var observed by remember {
+        mutableStateOf(false)
+    }
+    var googleAuthRequest: GoogleOAuthRequest? by remember {
+        mutableStateOf<GoogleOAuthRequest?>(null)
+    }
+
+    var authResultLauncher =
         rememberLauncherForActivityResult(contract = AuthResultContract()) { task ->
             try {
-//                val account = task?.getResult(ApiException::class.java)
-                val account = task?.let { AuthenticateWithBackend().getAuthenticatedAccount(it) }
-//                Log.d(TAG, "AuthScreen: $TAG")
-                Log.d(TAG, "AuthScreen: 1")
-//                val oAuthRequest = GoogleOAuthRequest(account?.serverAuthCode)
-                val oAuthRequest = GoogleOAuthRequest(account?.idToken)
-                Log.d(TAG, "AuthScreen: oAuth: ${oAuthRequest.token}")
-//                val token = object {
-//
-//                }
-//                Log.d(TAG, "AuthScreen: $token")
-//                val jsonObject = JSONObject(account)
-//                Log.d(TAG, "AuthScreen: ${account?.serverAuthCode?.length}")
-                if (account == null) {
-                    text = "Google sign in failed "
-                } else {
-                    coroutineScope.launch {
-                        authViewModel.signIn(
-                            email = account.email,
-                            displayName = account.displayName,
-                        )
-                    }
+                var account = task?.getResult(ApiException::class.java)
+                Log.d(ContentValues.TAG, "getAuthenticatedAccount: ${account?.displayName}")
+
+                googleAuthRequest = GoogleOAuthRequest(account?.idToken)
+                googleAuthRequest?.let { jwtTokenAuthenticationViewModel.getAuthenticated(req = it) }
+                if (!observed) {
+                    jwtTokenAuthenticationViewModel.oAuthResponseObject.observe(owner, Observer {
+                        observed = true
+                        token = it.token
+                        Log.d(ContentValues.TAG, "onCreate observer: $token")
+                        token.let {
+                            coroutineScope.launch {
+
+                                Log.d(TAG, "AuthScreen: $token")
+                                dataStore.saveToken(token!!)
+                                Log.d(TAG, "AuthScreen: ${getToken}")
+                                Log.d(TAG, "AuthScreen: going to next screen")
+                                navController.navigate(route = Screens.AssignedCohorts.route) {
+                                    popUpTo(0)
+                                }
+                            }
+                        }
+
+                    })
                 }
             } catch (e: ApiException) {
                 text = "Google sign in failed"
@@ -73,12 +96,11 @@ fun AuthScreen(
         onClick = {
             text = null
             authResultLauncher.launch(signInRequestCode)
+
         }
     )
 
-    user?.let {
-        HomeScreen(user = it)
-    }
+
 }
 
 

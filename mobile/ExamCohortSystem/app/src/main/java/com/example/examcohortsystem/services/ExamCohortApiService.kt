@@ -32,10 +32,11 @@ class ExamCohortApiService {
 
     }
 
-    val jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI0ZWQxYTcyYy0zMTlhLTQxZjktYTI3ZS0xMTI1NTQ4MDQ5MDEiLCJlbWFpbElEIjoiZmFpc2FsYWhtZWQ1MzFAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiRmFpc2FsIEFobWVkIiwibGFzdE5hbWUiOiJTaWZhdCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQUZkWnVjcVRUY3JId0NfX01EMlpKTHBkYlhTRTZQOXg0R3hVYlR4ZUVVX0xRTmM9czk2LWMiLCJpYXQiOjE2NjAzMDY1NzUsImV4cCI6MTY2Mjg5ODU3NX0.JY0TYSvWG3dUQxYeqvVAZJHkZ3ffm_SPyV0OafBJNc8"
+//    val jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI0ZWQxYTcyYy0zMTlhLTQxZjktYTI3ZS0xMTI1NTQ4MDQ5MDEiLCJlbWFpbElEIjoiZmFpc2FsYWhtZWQ1MzFAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiRmFpc2FsIEFobWVkIiwibGFzdE5hbWUiOiJTaWZhdCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQUZkWnVjcVRUY3JId0NfX01EMlpKTHBkYlhTRTZQOXg0R3hVYlR4ZUVVX0xRTmM9czk2LWMiLCJpYXQiOjE2NjAzMDY1NzUsImV4cCI6MTY2Mjg5ODU3NX0.JY0TYSvWG3dUQxYeqvVAZJHkZ3ffm_SPyV0OafBJNc8"
 
 
-    fun getExamCohorts(res : (ExamCohortResponse?) -> Unit){
+    fun getExamCohorts(jwtToken: String,res : (ExamCohortResponse?) -> Unit){
+        Log.d(TAG, "getExamCohorts: $jwtToken")
         val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getAssignedExamCohorts("Bearer $jwtToken").enqueue(
 
@@ -59,7 +60,7 @@ class ExamCohortApiService {
     }
 
     val temporaryCohortID  = "4d6fea5a-3793-458e-b54c-e293505ee75e"
-    fun getAssessments(res : (AssessmentResponse?) -> Unit){
+    fun getAssessments(jwtToken: String, res : (AssessmentResponse?) -> Unit){
         val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getAssessments("Bearer $jwtToken", examCohortId = temporaryCohortID).enqueue(
 
@@ -82,7 +83,7 @@ class ExamCohortApiService {
     }
 
     val temporaryAssessmentID = "d3c0dd83-bd42-490c-80e1-9607c33bfd05"
-    fun getQuestions(res : (QuestionResponse?) -> Unit){
+    fun getQuestions(jwtToken: String,res : (QuestionResponse?) -> Unit){
         val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getQuestions("Bearer $jwtToken", assessmentId = temporaryAssessmentID).enqueue(
             object : Callback<QuestionResponse?> {

@@ -14,11 +14,11 @@ class AssignedExamCohortListViewModel : ViewModel() {
     var examCohortResponse: MutableLiveData<ExamCohortResponse> = MutableLiveData()
 
 
-    fun getCohorts() {
+    fun getCohorts(jwtToken: String) {
         val apiService = ExamCohortApiService()
 
         viewModelScope.launch {
-            val examRes = apiService.getExamCohorts(res = {
+            val examRes = apiService.getExamCohorts(jwtToken = jwtToken,res = {
                 examCohortResponse.value = it
                 Log.d(TAG, "getCohorts: ${examCohortResponse.value}")
 //                _cohorts.value = it
