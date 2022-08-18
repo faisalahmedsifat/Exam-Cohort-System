@@ -1,6 +1,7 @@
 package com.example.examcohortsystem.views
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,8 @@ import com.example.examcohortsystem.model.AssessmentResponseItem
 import com.example.examcohortsystem.model.ExamCohortResponseItem
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.AssessmentListViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun AssessmentScreen(
@@ -32,24 +35,39 @@ fun AssessmentScreen(
     assessmentListViewModel: AssessmentListViewModel,
     owner: LifecycleOwner,
     navController: NavHostController,
+    cohortId: String,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val dataStore = StoreJwtToken(context)
-    val jwtToken = dataStore.getToken.collectAsState(initial = "")
+    val jwtToken = dataStore.getToken.collectAsState(initial = null)
 
     var progressIsShown by remember {
         mutableStateOf(true)
     }
-    assessmentListViewModel.getAssessments(jwtToken.value!!)
     var value by remember {
         mutableStateOf(assessmentListViewModel.assessmentResponse.value?.assessmentResponseItem)
     }
-    assessmentListViewModel.assessmentResponse.observe(owner, Observer {
-        progressIsShown = false
-        value = it.assessmentResponseItem
-        Log.d(ContentValues.TAG, "onCreate observer: $value")
-    })
+
+    val doTheJob = {
+        coroutineScope.launch {
+//            delay(2000)
+            assessmentListViewModel.getAssessments(
+                jwtToken = jwtToken.value.toString(), cohortId = cohortId
+            )
+
+            assessmentListViewModel.assessmentResponse.observe(owner, Observer {
+                if (assessmentListViewModel.assessmentResponse.value != null) {
+                    progressIsShown = false
+                    value = it.assessmentResponseItem
+                }
+                Log.d(ContentValues.TAG, "onCreate observer: $value")
+            })
+        }
+
+    }
+    doTheJob()
+
 //    var examCohortList = value
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -61,9 +79,14 @@ fun AssessmentScreen(
                 LazyColumn() {
                     itemsIndexed(items = value!!) { index: Int, item:
                     AssessmentResponseItem ->
-                        Assessment(assessmentResponseItem = item) {
-
-                        }
+                        Assessment(assessmentResponseItem = item, onClick = {
+                            Log.d(TAG, "AssessmentScreen: clicked")
+                            navController.navigate(
+                                route = Screens.Question.passAssessmentId
+                                    (item.assessmentID.toString())
+                            )
+                            Log.d(TAG, "AssessmentScreen: ${item.assessmentID}")
+                        })
                     }
                 }
             }

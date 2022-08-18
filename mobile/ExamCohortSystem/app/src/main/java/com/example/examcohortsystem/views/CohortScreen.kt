@@ -32,45 +32,53 @@ fun CohortScreen(
     val dataStore = StoreJwtToken(context)
     val jwtToken = dataStore.getToken.collectAsState(initial = null)
 
-    Log.d(TAG, "CohortScreen 1 : ${jwtToken.value}")
-
     var progressIsShown by remember {
         mutableStateOf(true)
     }
     var value by remember {
         mutableStateOf(assignedExamCohortListViewModel.examCohortResponse.value?.examCohortResponseItem)
     }
+
     val doTheJob = {
         coroutineScope.launch {
-            delay(2000)
             assignedExamCohortListViewModel.getCohorts(jwtToken.value.toString())
-
+//            delay(2000)
             assignedExamCohortListViewModel.examCohortResponse.observe(owner, Observer {
-                progressIsShown = false
-                value = it.examCohortResponseItem
+                if (assignedExamCohortListViewModel.examCohortResponse.value != null) {
+                    progressIsShown = false
+                    value = it.examCohortResponseItem
+                }
                 Log.d(ContentValues.TAG, "onCreate observer: $value")
             })
+
+
         }
 
     }
     doTheJob()
+
     Column {
         TopBar()
         if (progressIsShown) CircularProgressIndicator()
         else {
-            value.let {
-                LazyColumn() {
-                    itemsIndexed(items = value!!) { index: Int, item:
-                    ExamCohortResponseItem ->
-                        Cohort(examCohortResponseItem = item, onClick = {
-                              
-                        })
+            if (value != null) {
+                value.let {
+                    LazyColumn() {
+                        itemsIndexed(items = value!!) { index: Int, item:
+                        ExamCohortResponseItem ->
+                            Cohort(examCohortResponseItem = item, onClick = {
+                                Log.d(TAG, "CohortScreen: clicked")
+                                Log.d(TAG, "CohortScreen: ${item.name}")
+                                navController.navigate(route = Screens.Assessment.passCohortId(item.cohortID))
+                            })
+                        }
                     }
+//            }
+
                 }
             }
+
         }
-
-
     }
 
 }

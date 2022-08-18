@@ -62,19 +62,19 @@ export class ExamServerFactory {
 
   public async getNextQuestion() {
     // check if time now is >= than available datetime
-    const assessmentInstance = await DatabaseController.getAssessmentFromAssessmentID(this.assessmentID)
-    if (!DateTimeController.checkIsGreaterEq(new Date(), assessmentInstance.availableDateTime)) {
-      return {
-        started: false
-      }
-    }
+    // const assessmentInstance = await DatabaseController.getAssessmentFromAssessmentID(this.assessmentID)
+    // if (!DateTimeController.checkIsGreaterEq(new Date(), assessmentInstance.availableDateTime)) {
+    //   return {
+    //     started: false
+    //   }
+    // }
 
     // check if time now is <= than available datetime
-    if (!DateTimeController.checkIsGreaterEq(assessmentInstance.dueDateTime, new Date())) {
-      return {
-        dueDateOver: true
-      }
-    }
+    // if (!DateTimeController.checkIsGreaterEq(assessmentInstance.dueDateTime, new Date())) {
+    //   return {
+    //     dueDateOver: true
+    //   }
+    // }
 
     let len = this.question.length;
     len -= 1;

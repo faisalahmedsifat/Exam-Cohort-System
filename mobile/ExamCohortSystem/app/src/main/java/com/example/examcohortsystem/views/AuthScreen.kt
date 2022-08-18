@@ -66,26 +66,31 @@ fun AuthScreen(
 
                 googleAuthRequest = GoogleOAuthRequest(account?.idToken)
                 googleAuthRequest?.let { jwtTokenAuthenticationViewModel.getAuthenticated(req = it) }
-                if (!observed) {
-                    jwtTokenAuthenticationViewModel.oAuthResponseObject.observe(owner, Observer {
-                        observed = true
-                        token = it.token
-                        Log.d(ContentValues.TAG, "onCreate observer: $token")
-                        token.let {
-                            coroutineScope.launch {
+                if (token == null) {
+                    if (!observed) {
+                        jwtTokenAuthenticationViewModel.oAuthResponseObject.observe(
+                            owner,
+                            Observer {
+                                observed = true
+                                token = it.token
+                                Log.d(ContentValues.TAG, "onCreate observer: $token")
+                                token.let {
+                                    coroutineScope.launch {
 
-                                Log.d(TAG, "AuthScreen: $token")
-                                dataStore.saveToken(token!!)
-                                Log.d(TAG, "AuthScreen: ${getToken}")
-                                Log.d(TAG, "AuthScreen: going to next screen")
-                                navController.navigate(route = Screens.AssignedCohorts.route) {
-                                    popUpTo(0)
+                                        Log.d(TAG, "AuthScreen: $token")
+                                        dataStore.saveToken(token!!)
+                                        Log.d(TAG, "AuthScreen: ${getToken}")
+                                        Log.d(TAG, "AuthScreen: going to next screen")
+                                        navController.navigate(route = Screens.AssignedCohorts.route) {
+                                            popUpTo(0)
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
-                    })
+                            })
+                    }
                 }
+
             } catch (e: ApiException) {
                 text = "Google sign in failed"
             }

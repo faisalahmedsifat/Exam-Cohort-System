@@ -1,5 +1,7 @@
 package com.example.examcohortsystem.views
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
@@ -7,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.examcohortsystem.components.AuthScreen
 import com.example.examcohortsystem.viewmodel.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,11 +40,19 @@ fun SetUpNavGraph(
                 navController = navController
             )
         }
-        composable(route = Screens.Assessment.route) {
-            AssessmentScreen(
-                assessmentListViewModel = assessmentListViewModel, owner = owner,
-                navController = navController
-            )
+        composable(
+            route = Screens.Assessment.route,
+            arguments = listOf(navArgument(DEFAULT_COHORT_ID_KEY) {
+                type = NavType.StringType
+            })
+        ) {
+            Log.d(TAG, "SetUpNavGraph: ${it.arguments?.getString(DEFAULT_COHORT_ID_KEY)}")
+            it.arguments?.getString(DEFAULT_COHORT_ID_KEY)?.let { it1 ->
+                AssessmentScreen(
+                    assessmentListViewModel = assessmentListViewModel, owner = owner,
+                    navController = navController, cohortId = it1
+                )
+            }
         }
         composable(route = Screens.AssignedCohorts.route) {
             CohortScreen(
@@ -48,19 +60,30 @@ fun SetUpNavGraph(
                 = owner, navController = navController
             )
         }
-        composable(route = Screens.Question.route) {
-            QuestionScreen(
-                owner = owner,
-                questionListViewModel = questionListViewModel,
-                navController = navController,
-                onClick = {}
-            )
+        composable(
+            route = Screens.Question.route, arguments = listOf(navArgument(
+                DEFAULT_ASSESSMENT_ID_KEY
+            ) {
+                type = NavType.StringType
+            })
+        ) {
+            Log.d(TAG, "SetUpNavGraph: ${it.arguments?.getString(DEFAULT_ASSESSMENT_ID_KEY)}")
+            it.arguments?.getString(DEFAULT_ASSESSMENT_ID_KEY)?.let { it1 ->
+                QuestionScreen(
+                    owner = owner,
+                    questionListViewModel = questionListViewModel,
+                    navController = navController,
+                    onClick = {
+                        Log.d(TAG, "SetUpNavGraph: button Clicked")
+                    },
+                    assessmentID = it1
+                )
+            }
         }
+    }
 //        composable(route = Screens.Auth.route) {
 //
 ////            AuthScreen(authViewModel = authViewModel)
 //        }
-
-    }
 
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.examcohortsystem.model.ExamCohortResponse
 import com.example.examcohortsystem.services.ExamCohortApiService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AssignedExamCohortListViewModel : ViewModel() {
@@ -14,17 +15,16 @@ class AssignedExamCohortListViewModel : ViewModel() {
     var examCohortResponse: MutableLiveData<ExamCohortResponse> = MutableLiveData()
 
 
-    fun getCohorts(jwtToken: String) {
+     fun getCohorts(jwtToken: String) {
+//        delay(2000)
         val apiService = ExamCohortApiService()
 
         viewModelScope.launch {
             val examRes = apiService.getExamCohorts(jwtToken = jwtToken,res = {
                 examCohortResponse.value = it
                 Log.d(TAG, "getCohorts: ${examCohortResponse.value}")
-//                _cohorts.value = it
             })
 
-//            examCohortResponse.value = apiService.getExamCohorts()
         }
     }
 

@@ -22,36 +22,48 @@ import com.example.examcohortsystem.components.McqQuestion
 import com.example.examcohortsystem.model.QuestionResponseItem
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun QuestionScreen(
     owner: LifecycleOwner,
     questionListViewModel: QuestionListViewModel,
-    onClick: () -> Unit,
-
     navController: NavHostController,
+    assessmentID: String,
+    onClick: () -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val dataStore = StoreJwtToken(context)
-    val jwtToken = dataStore.getToken.collectAsState(initial = "")
+    val jwtToken = dataStore.getToken.collectAsState(initial = null)
 
     var observed by remember {
         mutableStateOf(false)
     }
 
-    questionListViewModel.getQuestion(jwtToken.value!!)
     var value by remember {
         mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
     }
-    Log.d(TAG, "onCreate: $value")
-    if (!observed) {
-        questionListViewModel.questionResponse.observe(owner, Observer {
-            observed = true
-            value = it.questionResponseItem
-            Log.d(ContentValues.TAG, "onCreate observer: $value")
-        })
+    val doTheJob = {
+        coroutineScope.launch {
+            questionListViewModel.getQuestion(jwtToken.value.toString(), assessmentId = assessmentID)
+            if (questionListViewModel.questionResponse.value != null) {
+                Log.d(TAG, "onCreate: $value")
+                if (!observed) {
+                    questionListViewModel.questionResponse.observe(owner, Observer {
+                        if(questionListViewModel.questionResponse.value != null){
+                            observed = true
+                            value = it.questionResponseItem
+                        }
+                        Log.d(ContentValues.TAG, "onCreate observer: $value")
+                    })
+                }
+            }
+
+        }
     }
+    doTheJob()
 
     Column {
         if (!observed) CircularProgressIndicator()
@@ -63,7 +75,6 @@ fun QuestionScreen(
                     Log.d(TAG, "QuestionScreen: TODO")
                     TODO("Micro viva question answering is not yet implemented")
                 }
-//        Spacer(modifier = Modifier.height(15.dp))
                 Button(onClick = onClick,
                     Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                     content
