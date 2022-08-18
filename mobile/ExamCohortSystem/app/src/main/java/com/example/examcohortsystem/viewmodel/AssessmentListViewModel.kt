@@ -14,15 +14,17 @@ class AssessmentListViewModel : ViewModel() {
     var assessmentResponse: MutableLiveData<AssessmentResponse> = MutableLiveData()
 
 
-    fun getAssessments(jwtToken: String) {
+    fun getAssessments(jwtToken: String, cohortId: String) {
         val apiService = ExamCohortApiService()
 
         viewModelScope.launch {
-            val assessmentRes = apiService.getAssessments(jwtToken = jwtToken,res = {
-                assessmentResponse.value = it
-                Log.d(TAG, "getCohorts: ${assessmentResponse.value}")
+            val assessmentRes =
+                apiService.getAssessments(cohortId = cohortId, jwtToken = jwtToken, res
+                = {
+                    assessmentResponse.value = it
+                    Log.d(TAG, "getCohorts: ${assessmentResponse.value}")
 //                _cohorts.value = it
-            })
+                })
 
 //            examCohortResponse.value = apiService.getExamCohorts()
         }

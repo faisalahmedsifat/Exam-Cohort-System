@@ -59,10 +59,10 @@ class ExamCohortApiService {
         )
     }
 
-    val temporaryCohortID  = "4d6fea5a-3793-458e-b54c-e293505ee75e"
-    fun getAssessments(jwtToken: String, res : (AssessmentResponse?) -> Unit){
+//    val temporaryCohortID  = "4d6fea5a-3793-458e-b54c-e293505ee75e"
+    fun getAssessments(cohortId: String,jwtToken: String, res : (AssessmentResponse?) -> Unit){
         val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
-        response.getAssessments("Bearer $jwtToken", examCohortId = temporaryCohortID).enqueue(
+        response.getAssessments("Bearer $jwtToken", examCohortId = cohortId).enqueue(
 
             object : Callback<AssessmentResponse?> {
                 override fun onFailure(call: Call<AssessmentResponse?>, t: Throwable) {
@@ -82,10 +82,10 @@ class ExamCohortApiService {
         )
     }
 
-    val temporaryAssessmentID = "d3c0dd83-bd42-490c-80e1-9607c33bfd05"
-    fun getQuestions(jwtToken: String,res : (QuestionResponse?) -> Unit){
+//    val temporaryAssessmentID = "d3c0dd83-bd42-490c-80e1-9607c33bfd05"
+    fun getQuestions(assessmentId: String, jwtToken: String,res : (QuestionResponse?) -> Unit){
         val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
-        response.getQuestions("Bearer $jwtToken", assessmentId = temporaryAssessmentID).enqueue(
+        response.getQuestions("Bearer $jwtToken", assessmentId = assessmentId).enqueue(
             object : Callback<QuestionResponse?> {
                 override fun onFailure(call: Call<QuestionResponse?>, t: Throwable) {
                     Log.d(TAG, "onFailure: Failed")

@@ -14,11 +14,13 @@ class QuestionListViewModel : ViewModel() {
     var questionResponse: MutableLiveData<QuestionResponse> = MutableLiveData()
 
 
-    fun getQuestion(jwtToken: String) {
+    fun getQuestion(jwtToken: String, assessmentId: String) {
         val apiService = ExamCohortApiService()
 
         viewModelScope.launch {
-            val assessmentRes = apiService.getQuestions(jwtToken = jwtToken, res = {
+            val assessmentRes = apiService.getQuestions(assessmentId = assessmentId,jwtToken =
+            jwtToken, res
+            = {
                 questionResponse.value = it
                 Log.d(TAG, "getCohorts: ${questionResponse.value}")
             })
