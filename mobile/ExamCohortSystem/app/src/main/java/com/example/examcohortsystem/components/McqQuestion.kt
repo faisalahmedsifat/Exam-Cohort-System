@@ -1,6 +1,8 @@
 package com.example.examcohortsystem.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -12,14 +14,15 @@ import com.example.examcohortsystem.model.McqQuestionDetails
 
 @Composable
 fun McqQuestion(
-    mcqQuestionDetails: McqQuestionDetails
+    mcqQuestionDetails: McqQuestionDetails,
 ) {
     Column() {
+        Spacer(modifier = Modifier.height(18.dp))
         Text(
-
             text = mcqQuestionDetails.mcqStatement, style = TextStyle(
                 fontSize = MaterialTheme
-                    .typography.h6.fontSize,
+                    .typography.h5.fontSize,
+                fontWeight = MaterialTheme.typography.h5.fontWeight
             ),
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         )

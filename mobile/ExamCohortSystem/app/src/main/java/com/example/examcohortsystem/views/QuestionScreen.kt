@@ -4,13 +4,10 @@ import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,10 +16,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import com.example.examcohortsystem.components.McqQuestion
-import com.example.examcohortsystem.model.QuestionResponseItem
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,7 +26,7 @@ fun QuestionScreen(
     questionListViewModel: QuestionListViewModel,
     navController: NavHostController,
     assessmentID: String,
-    onClick: () -> Unit
+    buttonOnClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -45,24 +40,46 @@ fun QuestionScreen(
     var value by remember {
         mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
     }
+    var count by remember {
+        mutableStateOf(0)
+    }
+    var calling by remember {
+        mutableStateOf(0)
+    }
     val doTheJob = {
         coroutineScope.launch {
-            questionListViewModel.getQuestion(jwtToken.value.toString(), assessmentId = assessmentID)
-            if (questionListViewModel.questionResponse.value != null) {
-                Log.d(TAG, "onCreate: $value")
+            questionListViewModel.getQuestion(
+                jwtToken.value.toString(),
+                assessmentId = assessmentID
+            )
+            Log.d(TAG, "onCreate: $value")
+
+            if (questionListViewModel.questionResponse.value == null) {
                 if (!observed) {
                     questionListViewModel.questionResponse.observe(owner, Observer {
-                        if(questionListViewModel.questionResponse.value != null){
+                        if (questionListViewModel.questionResponse.value != null && count == 0) {
+                            Log.d(
+                                TAG,
+                                "QuestionScreen: question list ki null ${questionListViewModel.questionResponse.value}"
+                            )
+                            Log.d(TAG, "QuestionScreen: ${count++}")
                             observed = true
                             value = it.questionResponseItem
                         }
-                        Log.d(ContentValues.TAG, "onCreate observer: $value")
+                        Log.d(
+                            ContentValues.TAG, "onCreate observer barbar: ${
+                                value
+                                    ?.mcqQuestionDetails?.mcqOptions
+                            }"
+                        )
                     })
                 }
             }
 
+            Log.d(TAG, "QuestionScreen: ${questionListViewModel.questionResponse.value}")
         }
     }
+    Log.d(TAG, "QuestionScreen: koybar call hoy ${calling}")
     doTheJob()
 
     Column {
@@ -75,7 +92,7 @@ fun QuestionScreen(
                     Log.d(TAG, "QuestionScreen: TODO")
                     TODO("Micro viva question answering is not yet implemented")
                 }
-                Button(onClick = onClick,
+                Button(onClick = buttonOnClick,
                     Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                     content
                     = {

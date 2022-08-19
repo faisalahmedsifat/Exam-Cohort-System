@@ -1,5 +1,7 @@
 package com.example.examcohortsystem.components
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,9 +12,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +48,10 @@ fun McqOption(
     onClick: () -> Unit
 ) {
     val clickEnabled = remember { mutableStateOf(true) }
+//    var
+    var optionSelected by remember {
+        mutableStateOf(selected)
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -60,6 +64,11 @@ fun McqOption(
             .clip(borderShape)
             .clickable(enabled = clickEnabled.value) {
                 onClick()
+//                                                        selected = !selected
+//                Log.d(TAG, "McqOption: ${clickEnabled.value}")
+
+//                Log.d(TAG, "McqOption: ${optionSelected}")
+//                optionSelected = !optionSelected
             },
     ) {
 
@@ -100,18 +109,18 @@ fun McqOption(
 
 //    }
 
-@Preview
-@Composable
-fun McqOptionPrev() {
-    val text = "dakmska makmdkf mkask makmsm kak mskam kmakm kmak mkaksdjfijdiqwekqwjekq q alql q" +
-            " oa ma  am lal am  kad ma makm a kmak m kam ka m akm a"
-    McqOption(
-        mcqOption = com.example.examcohortsystem.model.McqOption
-            (
-            isSelectedInAnswer = true, mcqOptionText = text,
-            mcqOptionID = 69
-        ), selected = true
-    ) {
-
-    }
-}
+//@Preview
+//@Composable
+//fun McqOptionPrev() {
+//    val text = "dakmska makmdkf mkask makmsm kak mskam kmakm kmak mkaksdjfijdiqwekqwjekq q alql q" +
+//            " oa ma  am lal am  kad ma makm a kmak m kam ka m akm a"
+//    McqOption(
+//        mcqOption = com.example.examcohortsystem.model.McqOption
+//            (
+//            isSelectedInAnswer = true, mcqOptionText = text,
+//            mcqOptionID = 69
+//        ), selected = true
+//    ) {
+//
+//    }
+//}

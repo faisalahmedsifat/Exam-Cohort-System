@@ -7,7 +7,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -73,7 +72,7 @@ fun SetUpNavGraph(
                     owner = owner,
                     questionListViewModel = questionListViewModel,
                     navController = navController,
-                    onClick = {
+                    buttonOnClick = {
                         Log.d(TAG, "SetUpNavGraph: button Clicked")
                     },
                     assessmentID = it1
