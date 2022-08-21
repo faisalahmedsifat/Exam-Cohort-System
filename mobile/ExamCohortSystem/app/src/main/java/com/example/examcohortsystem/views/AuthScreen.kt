@@ -58,11 +58,16 @@ fun AuthScreen(
         mutableStateOf<GoogleOAuthRequest?>(null)
     }
 
+    var photoUrl by remember {
+        mutableStateOf("")
+    };
+
     var authResultLauncher =
         rememberLauncherForActivityResult(contract = AuthResultContract()) { task ->
             try {
                 var account = task?.getResult(ApiException::class.java)
-                Log.d(ContentValues.TAG, "getAuthenticatedAccount: ${account?.displayName}")
+                Log.d(ContentValues.TAG, "getAuthenticatedAccount: ${account?.photoUrl}")
+                photoUrl = account?.photoUrl.toString()
 
                 googleAuthRequest = GoogleOAuthRequest(account?.idToken)
                 googleAuthRequest?.let { jwtTokenAuthenticationViewModel.getAuthenticated(req = it) }

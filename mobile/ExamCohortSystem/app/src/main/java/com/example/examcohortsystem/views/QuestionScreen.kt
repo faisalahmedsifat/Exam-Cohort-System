@@ -1,6 +1,5 @@
 package com.example.examcohortsystem.views
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import com.example.examcohortsystem.components.McqQuestion
+import com.example.examcohortsystem.components.ResponseText
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
 import kotlinx.coroutines.launch
@@ -26,7 +26,6 @@ fun QuestionScreen(
     questionListViewModel: QuestionListViewModel,
     navController: NavHostController,
     assessmentID: String,
-    buttonOnClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -36,63 +35,99 @@ fun QuestionScreen(
     var observed by remember {
         mutableStateOf(false)
     }
+    var noMoreQuestions by remember {
+        mutableStateOf(false)
+    }
+    var startTheExam by remember {
+        mutableStateOf(false)
+    }
 
-    var value by remember {
+    var questionResponseItemValue by remember {
         mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
     }
-    var count by remember {
+
+    var gettingCount by remember {
         mutableStateOf(0)
     }
-    var calling by remember {
-        mutableStateOf(0)
-    }
+
+
     val doTheJob = {
         coroutineScope.launch {
             questionListViewModel.getQuestion(
                 jwtToken.value.toString(),
                 assessmentId = assessmentID
             )
-            Log.d(TAG, "onCreate: $value")
+            gettingCount = 0
 
             if (questionListViewModel.questionResponse.value == null) {
                 if (!observed) {
                     questionListViewModel.questionResponse.observe(owner, Observer {
-                        if (questionListViewModel.questionResponse.value != null && count == 0) {
-                            Log.d(
-                                TAG,
-                                "QuestionScreen: question list ki null ${questionListViewModel.questionResponse.value}"
-                            )
-                            Log.d(TAG, "QuestionScreen: ${count++}")
+                        if (questionListViewModel.questionResponse.value != null && gettingCount
+                            == 0
+                        ) {
                             observed = true
-                            value = it.questionResponseItem
+                            questionResponseItemValue = it.questionResponseItem
+                            gettingCount = 1
+                            Log.d(TAG, "QuestionScreen: $it")
+                            if (it.questionResponseItem.started ) {
+                                startTheExam = true
+                            }
+                            if (it.questionResponseItem.all_answered) {
+                                noMoreQuestions = true
+                            }
+
                         }
-                        Log.d(
-                            ContentValues.TAG, "onCreate observer barbar: ${
-                                value
-                                    ?.mcqQuestionDetails?.mcqOptions
-                            }"
-                        )
                     })
                 }
             }
 
-            Log.d(TAG, "QuestionScreen: ${questionListViewModel.questionResponse.value}")
         }
     }
-    Log.d(TAG, "QuestionScreen: koybar call hoy ${calling}")
     doTheJob()
+
+    var postingResponseValue by remember {
+        mutableStateOf(questionListViewModel.questionPostingResponse.value?.response)
+    }
+
+    var postingCount by remember {
+        mutableStateOf(0)
+    }
+
 
     Column {
         if (!observed) CircularProgressIndicator()
+        else if (!startTheExam && !noMoreQuestions) ResponseText(text = "Exam hasn't Started yet")
+        else if (noMoreQuestions) ResponseText(text = "No More Questions Available")
         else {
-            value.let {
-                if (value!!.type == "MCQ") {
-                    value!!.mcqQuestionDetails?.let { McqQuestion(mcqQuestionDetails = it) }
+            questionResponseItemValue.let {
+                if (questionResponseItemValue!!.type == "MCQ") {
+                    questionResponseItemValue!!.mcqQuestionDetails?.let {
+                        McqQuestion(
+                            mcqQuestionDetails = it
+                        )
+                    }
                 } else {
-                    Log.d(TAG, "QuestionScreen: TODO")
                     TODO("Micro viva question answering is not yet implemented")
                 }
-                Button(onClick = buttonOnClick,
+                Button(onClick = {
+                    postingCount = 0
+                    questionListViewModel.postQuestion(
+                        questionResponseItem = questionResponseItemValue!!,
+                        jwtToken.value.toString(),
+                        assessmentId = assessmentID
+                    )
+                    questionListViewModel.questionPostingResponse.observe(
+                        owner,
+                        Observer {
+                            postingCount++;
+                            postingResponseValue = it.response
+                            if (postingResponseValue == "OK") {
+                                doTheJob()
+                            }
+                        })
+
+                },
+
                     Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                     content
                     = {

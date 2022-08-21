@@ -72,9 +72,6 @@ fun SetUpNavGraph(
                     owner = owner,
                     questionListViewModel = questionListViewModel,
                     navController = navController,
-                    buttonOnClick = {
-                        Log.d(TAG, "SetUpNavGraph: button Clicked")
-                    },
                     assessmentID = it1
                 )
             }
