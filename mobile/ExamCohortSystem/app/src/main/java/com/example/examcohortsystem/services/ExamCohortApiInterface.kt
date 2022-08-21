@@ -35,4 +35,14 @@ interface ExamCohortApiInterface {
         @Path("assessmentId") assessmentId: String?,
     ): Call<QuestionResponse?>
 
+
+    @Headers("Content-Type: application/json")
+    @POST("/api/exam/{assessmentId}/submit_single")
+    fun postQuestions(
+//        @Query("id") id: String?,
+        @Body questionResponseItem: QuestionResponseItem,
+        @Header("Authorization") auth: String?,
+        @Path("assessmentId") assessmentId: String?,
+    ): Call<QuestionPostingResponse?>
+
 }
