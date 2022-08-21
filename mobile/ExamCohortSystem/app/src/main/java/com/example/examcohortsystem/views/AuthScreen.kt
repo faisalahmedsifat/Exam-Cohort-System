@@ -23,6 +23,7 @@ import com.example.examcohortsystem.R
 import com.example.examcohortsystem.model.GoogleOAuthRequest
 import com.example.examcohortsystem.utils.AuthResultContract
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
+import com.example.examcohortsystem.utils.datastore.StoreProfilePhotoUrl
 import com.example.examcohortsystem.viewmodel.AuthViewModel
 import com.example.examcohortsystem.viewmodel.JwtTokenAuthenticationViewModel
 import com.example.examcohortsystem.views.Screens
@@ -45,6 +46,9 @@ fun AuthScreen(
     val coroutineScope = rememberCoroutineScope()
     val dataStore = StoreJwtToken(context)
     val getToken = dataStore.getToken.collectAsState(initial = null)
+
+    val photoDataStore = StoreProfilePhotoUrl(context)
+//    val photoUrl = photoDataStore.getPhotoUrl.collectAsState(initial = null)
 
     var text by remember { mutableStateOf<String?>(null) }
     val signInRequestCode = 1
@@ -81,8 +85,7 @@ fun AuthScreen(
                                 Log.d(ContentValues.TAG, "onCreate observer: $token")
                                 token.let {
                                     coroutineScope.launch {
-
-                                        Log.d(TAG, "AuthScreen: $token")
+                                        photoDataStore.savePhotoUrl(photoUrl)
                                         dataStore.saveToken(token!!)
                                         Log.d(TAG, "AuthScreen: ${getToken}")
                                         Log.d(TAG, "AuthScreen: going to next screen")
