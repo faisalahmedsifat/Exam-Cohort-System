@@ -18,17 +18,19 @@ fun McqOptionContainer(
     mcqOptions: List<McqOption>,
 ) {
 
+    Log.d(TAG, "McqOptionContainer options: ${mcqOptions}")
 
-    Column(modifier = Modifier.heightIn(max = 500.dp)) {
+//    Column(modifier = Modifier.heightIn(max = 500.dp)) {
         LazyColumn() {
             itemsIndexed(items = mcqOptions) { index: Int, item:
             McqOption ->
                 val optionSelected = remember {
-                    mutableStateOf(mcqOptions[index].isSelectedInAnswer)
+                    mutableStateOf(false)
                 }
+                Log.d(TAG, "McqOptionContainer item: ${mcqOptions[index]}")
                 com.example.examcohortsystem.components.McqOption(
-                    mcqOption = item, selected =
-                    optionSelected.value,
+                    mcqOption = mcqOptions[index],
+                    selected = optionSelected.value,
                     onClick = {
                         optionSelected.value = !optionSelected.value
                         mcqOptions[index].isSelectedInAnswer = optionSelected.value
@@ -37,5 +39,5 @@ fun McqOptionContainer(
                 )
             }
         }
-    }
+//    }
 }

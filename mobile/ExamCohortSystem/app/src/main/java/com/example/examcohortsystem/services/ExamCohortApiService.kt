@@ -100,6 +100,12 @@ class ExamCohortApiService {
                     val body = response.body()
                     Log.d(TAG, "onResponse: ${response}")
                     Log.d(TAG, "onResponse body: ${response.body()}")
+//                    if(body?.questionResponseItem?.mcqQuestionDetails != null){
+//                        for (option in body.questionResponseItem.mcqQuestionDetails.mcqOptions ){
+//                            option.isSelectedInAnswer = false
+//                        }
+//
+//                    }
                     res(body)
                 }
             }

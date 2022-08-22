@@ -50,36 +50,46 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
 
-
     val doTheJob = {
         coroutineScope.launch {
             questionListViewModel.getQuestion(
                 jwtToken.value.toString(),
                 assessmentId = assessmentID
             )
-            gettingCount = 0
 
-            if (questionListViewModel.questionResponse.value == null) {
-                if (!observed) {
+//            if (questionListViewModel.questionResponse.value == null) {
+
+                if (!observed && gettingCount == 0) {
                     questionListViewModel.questionResponse.observe(owner, Observer {
+                        Log.d(
+                            TAG, "QuestionScreen: question list: ${
+                                questionListViewModel
+                                    .questionResponse.value == null
+                            } \n ${gettingCount}"
+                        )
                         if (questionListViewModel.questionResponse.value != null && gettingCount
                             == 0
                         ) {
+                            Log.d(
+                                TAG, "QuestionScreen: question list 2: ${
+                                    questionListViewModel
+                                        .questionResponse.value
+                                } \n ${gettingCount}"
+                            )
                             observed = true
                             questionResponseItemValue = it.questionResponseItem
-                            gettingCount = 1
+                            gettingCount++
                             Log.d(TAG, "QuestionScreen: $it")
-                            if (it.questionResponseItem.started ) {
-                                startTheExam = true
-                            }
                             if (it.questionResponseItem.all_answered) {
                                 noMoreQuestions = true
                             }
-
+                            if (it.questionResponseItem.started) {
+                                startTheExam = true
+                            }
                         }
                     })
                 }
-            }
+//            }
 
         }
     }
@@ -89,15 +99,14 @@ fun QuestionScreen(
         mutableStateOf(questionListViewModel.questionPostingResponse.value?.response)
     }
 
-    var postingCount by remember {
-        mutableStateOf(0)
-    }
-
-
+    Log.d(
+        TAG,
+        "QuestionScreen: start the exam: $startTheExam  \n noModeQuestion: $noMoreQuestions \n observed $observed"
+    )
     Column {
-        if (!observed) CircularProgressIndicator()
-        else if (!startTheExam && !noMoreQuestions) ResponseText(text = "Exam hasn't Started yet")
-        else if (noMoreQuestions) ResponseText(text = "No More Questions Available")
+        if (!observed && !startTheExam && !noMoreQuestions) CircularProgressIndicator()
+        else if (!startTheExam && !noMoreQuestions && observed) ResponseText(text = "Exam hasn't Started yet")
+        else if (noMoreQuestions && observed) ResponseText(text = "No More Questions Available")
         else {
             questionResponseItemValue.let {
                 if (questionResponseItemValue!!.type == "MCQ") {
@@ -110,7 +119,6 @@ fun QuestionScreen(
                     TODO("Micro viva question answering is not yet implemented")
                 }
                 Button(onClick = {
-                    postingCount = 0
                     questionListViewModel.postQuestion(
                         questionResponseItem = questionResponseItemValue!!,
                         jwtToken.value.toString(),
@@ -119,11 +127,12 @@ fun QuestionScreen(
                     questionListViewModel.questionPostingResponse.observe(
                         owner,
                         Observer {
-                            postingCount++;
                             postingResponseValue = it.response
                             if (postingResponseValue == "OK") {
+                                Log.d(TAG, "QuestionScreen: getting from backend")
                                 doTheJob()
                             }
+                            gettingCount = 0
                         })
 
                 },
