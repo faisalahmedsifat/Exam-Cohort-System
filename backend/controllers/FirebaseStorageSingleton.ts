@@ -21,6 +21,10 @@ export class FirebaseStorageSingleton implements StorageStrategy {
     this.firebaseApp = initializeApp(config.firebaseConfig);
     this.firebaseStorage = getStorage(this.firebaseApp)
   }
+  public async getDownloadUrlFromDetails(details: FileDetails){
+    const url = await getDownloadURL(ref(this.firebaseStorage, `${details.ref_dir}/${details.fileName}.${details.ref_ext}`))    
+    return url;
+  }
   public static getInstance(): FirebaseStorageSingleton {
     if (!FirebaseStorageSingleton.instance) FirebaseStorageSingleton.instance = new FirebaseStorageSingleton();
     return FirebaseStorageSingleton.instance;
@@ -35,7 +39,7 @@ export class FirebaseStorageSingleton implements StorageStrategy {
     }
   }
   public async getBlob(details: FileDetails){
-    const url = await getDownloadURL(ref(this.firebaseStorage, `${details.ref_dir}/${details.fileName}.${details.ref_ext}`))    
+    const url = await this.getDownloadUrlFromDetails(details)
     return await fetch(url).then(r => r.blob())
   }
   public async deleteRef(details: FileDetails){
