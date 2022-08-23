@@ -7,6 +7,7 @@ const middleware = require('../utils/middleware')
 // Other Controllers
 const DatabaseController = require('./DatabaseController')
 const ValidationController = require('./ValidationController')
+const EvaluateAnswer = require('./EvaluateAnswer')
 
 //Models
 const { User, ExamCohort, Assessment, Mcqquestion, } = require('../models')
@@ -250,26 +251,9 @@ class ExamCohortController {
   }
 
   static async addMicroVivaAnswerToQuestion(answerBody) {
-    const questionID = answerBody.questionID
-    const answer = {
-      details: {
-        micAnsAudioID: answerBody.micAnsAudioID,
-      }
-    }
-
-    let micAnsAudioID = answer.details.micAnsAudioID
-
-    let correctAnswer = null; // TODO: Add Microviva Correct Answer Checker here
-    let output = {};
-
-    let question = await DatabaseController.getQuestionFromQuestionID(questionID)
-    let microVivaQuestion = await DatabaseController.getMicroVivaQuestionFromQuestionID(question.microvivaquestionID)
-    let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(micAnsAudioID)
-    
-    return {
-      correctAnswer : correctAnswer,
-      microvivaanswerID : microVivaAnswer.id
-    }
+    // Add to Database Record
+    let microVivaAnswer = await DatabaseController.addMicroVivaAnswerFromQuestion(answerBody.micAnsAudioID)
+    return {microvivaanswerID : microVivaAnswer.id}
   }
 
 
