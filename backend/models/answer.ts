@@ -43,7 +43,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     isCorrect: {
-      type: DataTypes.BOOLEAN
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

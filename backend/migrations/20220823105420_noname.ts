@@ -23,7 +23,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "noname",
-  created: "2022-08-05T18:41:05.993Z",
+  created: "2022-08-23T10:54:20.206Z",
   comment: "",
 };
 
@@ -487,7 +487,11 @@ const migrationCommands = (transaction) => [
         viewedAt: { type: Sequelize.DATE, field: "viewedAt", allowNull: false },
         submittedAt: { type: Sequelize.DATE, field: "submittedAt" },
         type: { type: Sequelize.STRING, field: "type", allowNull: false },
-        isCorrect: { type: Sequelize.BOOLEAN, field: "isCorrect" },
+        isCorrect: {
+          type: Sequelize.BOOLEAN,
+          field: "isCorrect",
+          allowNull: true,
+        },
         createdAt: {
           type: Sequelize.DATE,
           field: "createdAt",
