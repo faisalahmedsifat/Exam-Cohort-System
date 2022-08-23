@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import { EvaluateAnswer } from "./EvaluateAnswer"
+
 // Middlewares
 const { randomShuffleArray } = require('../utils/middleware')
 
@@ -24,9 +26,9 @@ export class ExamServerFactory {
     this.assessmentID = assessmentID
     this.cohortID = cohortID
     this.candidateID = candidateID
-    
+
     // Randomize the questions
-    let unshuffledQuestions = question 
+    let unshuffledQuestions = question
     let shuffledQuestions = randomShuffleArray(unshuffledQuestions)
     this.question = shuffledQuestions
   }
@@ -99,7 +101,7 @@ export class ExamServerFactory {
       const newTimeLimitSeconds = await this.getRemSecOfQues(servingQuestion.timeLimit, assessmentInstance.dueDateTime, answerBase.viewedAt, new Date())
 
       // Calculate Seconds Until Due Datetime
-      const timeTillDueDatetime = Math.max(0,Date.parse(assessmentInstance.dueDateTime)-Date.parse(new Date()))/1000
+      const timeTillDueDatetime = Math.max(0, Date.parse(assessmentInstance.dueDateTime) - Date.parse(new Date())) / 1000
 
       // There is no point serving this question, time limit exceeded
       if (newTimeLimitSeconds === 0) {
@@ -150,11 +152,14 @@ export class ExamServerFactory {
         answerBase.mcqanswerID = result.mcqanswerID
         await answerBase.save()
       } else if (answer.type === "MICROVIVA") {
-        // console.dir(answer, {depth: null});
+        // console.dir(answer, { depth: null });
         const result = await ExamCohortController.addMicroVivaAnswerToQuestion(answer)
-        answerBase.isCorrect = Boolean(result.correctAnswer)
+        answerBase.isCorrect = null
         answerBase.microvivaanswerID = result.microvivaanswerID
         await answerBase.save()
+        
+        // run background system evaluator of microviva question
+        EvaluateAnswer.evaluateAnswer(answer.questionID, this.candidateID)
       }
 
       // remove the answer from questionlist
