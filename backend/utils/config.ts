@@ -42,5 +42,6 @@ module.exports = {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APPID
-  }
+  },
+  ASSEMBLYAI_API_KEY: process.env.ASSEMBLYAI_API_KEY
 }
