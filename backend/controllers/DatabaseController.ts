@@ -285,6 +285,10 @@ class DatabaseController {
   static async getCohortFromAssessmentID(assessmentID){
     return await DatabaseController.getCohortFromCohortID((await Models.Assessment.findByPk(assessmentID)).cohortID)
   }
+
+  static async getMicroVivaAnswerFromID(microvivaanswerID){
+    return await Models.Microvivaanswer.findByPk(microvivaanswerID)
+  }
 }
 
 module.exports = DatabaseController
