@@ -13,6 +13,9 @@ export class AudioController{
   constructor(storageStrategy: StorageStrategy){
     this.setStorageStrategy(storageStrategy);
   }
+  public async getDownloadUrlFromDetails(details: FileDetails){
+    return await this.storageStrategy.getDownloadUrlFromDetails(details);
+  }
   public setStorageStrategy(storageStrategy: StorageStrategy){
     this.storageStrategy = storageStrategy;
   }
