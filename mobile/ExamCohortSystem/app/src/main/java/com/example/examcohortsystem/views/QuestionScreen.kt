@@ -18,6 +18,7 @@ import com.example.examcohortsystem.components.McqQuestion
 import com.example.examcohortsystem.components.ResponseText
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,6 +36,9 @@ fun QuestionScreen(
     var observed by remember {
         mutableStateOf(false)
     }
+    var postObserved by remember {
+        mutableStateOf(false)
+    }
     var noMoreQuestions by remember {
         mutableStateOf(false)
     }
@@ -49,7 +53,9 @@ fun QuestionScreen(
     var gettingCount by remember {
         mutableStateOf(0)
     }
-
+    var postingCount by remember {
+        mutableStateOf(0)
+    }
     val doTheJob = {
         coroutineScope.launch {
             questionListViewModel.getQuestion(
@@ -59,36 +65,30 @@ fun QuestionScreen(
 
 //            if (questionListViewModel.questionResponse.value == null) {
 
-                if (!observed && gettingCount == 0) {
-                    questionListViewModel.questionResponse.observe(owner, Observer {
-                        Log.d(
-                            TAG, "QuestionScreen: question list: ${
-                                questionListViewModel
-                                    .questionResponse.value == null
-                            } \n ${gettingCount}"
-                        )
-                        if (questionListViewModel.questionResponse.value != null && gettingCount
-                            == 0
-                        ) {
-                            Log.d(
-                                TAG, "QuestionScreen: question list 2: ${
-                                    questionListViewModel
-                                        .questionResponse.value
-                                } \n ${gettingCount}"
-                            )
-                            observed = true
-                            questionResponseItemValue = it.questionResponseItem
-                            gettingCount++
-                            Log.d(TAG, "QuestionScreen: $it")
-                            if (it.questionResponseItem.all_answered) {
-                                noMoreQuestions = true
-                            }
-                            if (it.questionResponseItem.started) {
-                                startTheExam = true
-                            }
+            if (!observed && gettingCount == 0) {
+                questionListViewModel.questionResponse.observe(owner, Observer {
+                    if (questionListViewModel.questionResponse.value != null && gettingCount
+                        == 0
+                    ) {
+//                        Log.d(
+//                            TAG, "QuestionScreen: question list 2: ${
+//                                questionListViewModel
+//                                    .questionResponse.value
+//                            } \n ${gettingCount}"
+//                        )
+                        observed = true
+                        questionResponseItemValue = it.questionResponseItem
+                        gettingCount++
+                        Log.d(TAG, "QuestionScreen: $it")
+                        if (it.questionResponseItem.all_answered) {
+                            noMoreQuestions = true
                         }
-                    })
-                }
+                        if (it.questionResponseItem.started) {
+                            startTheExam = true
+                        }
+                    }
+                })
+            }
 //            }
 
         }
@@ -104,47 +104,67 @@ fun QuestionScreen(
         "QuestionScreen: start the exam: $startTheExam  \n noModeQuestion: $noMoreQuestions \n observed $observed"
     )
     Column {
-        if (!observed && !startTheExam && !noMoreQuestions) CircularProgressIndicator()
-        else if (!startTheExam && !noMoreQuestions && observed) ResponseText(text = "Exam hasn't Started yet")
-        else if (noMoreQuestions && observed) ResponseText(text = "No More Questions Available")
+        if (!observed) CircularProgressIndicator()
+        else if (!startTheExam && !noMoreQuestions) ResponseText(text = "Exam hasn't Started yet")
+        else if (noMoreQuestions) ResponseText(text = "No More Questions Available")
         else {
-            questionResponseItemValue.let {
-                if (questionResponseItemValue!!.type == "MCQ") {
-                    questionResponseItemValue!!.mcqQuestionDetails?.let {
-                        McqQuestion(
-                            mcqQuestionDetails = it
-                        )
+            if (questionResponseItemValue != null) {
+                questionResponseItemValue.let {
+                    if (questionResponseItemValue!!.type == "MCQ") {
+                        questionResponseItemValue!!.mcqQuestionDetails?.let {
+                            McqQuestion(
+                                mcqQuestionDetails = it
+                            )
+                        }
+                    } else {
+                        TODO("Micro viva question answering is not yet implemented")
                     }
-                } else {
-                    TODO("Micro viva question answering is not yet implemented")
-                }
-                Button(onClick = {
-                    questionListViewModel.postQuestion(
-                        questionResponseItem = questionResponseItemValue!!,
-                        jwtToken.value.toString(),
-                        assessmentId = assessmentID
-                    )
-                    questionListViewModel.questionPostingResponse.observe(
-                        owner,
-                        Observer {
-                            postingResponseValue = it.response
-                            if (postingResponseValue == "OK") {
-                                Log.d(TAG, "QuestionScreen: getting from backend")
-                                doTheJob()
+                    Button(onClick = {
+                        coroutineScope.launch {
+
+                            Log.d(TAG, "QuestionScreen: question response item: $questionResponseItemValue")
+                            if(questionResponseItemValue != null){
+                                questionListViewModel.postQuestion(
+                                    questionResponseItem = questionResponseItemValue!!,
+                                    jwtToken.value.toString(),
+                                    assessmentId = assessmentID
+                                )
                             }
-                            gettingCount = 0
+
+
+
+                            questionListViewModel.questionPostingResponse.observe(
+                                owner,
+                                Observer {
+                                    if (questionListViewModel.questionPostingResponse.value
+                                        != null
+                                    ) {
+                                        Log.d(TAG, "QuestionScreen: response ${it.response}")
+                                        postObserved = true;
+                                        postingResponseValue = it.response
+                                        if (postingResponseValue == "OK") {
+                                            Log.d(TAG, "QuestionScreen: getting from backend")
+                                            gettingCount = 0
+                                            doTheJob()
+                                        }
+                                    }
+
+                                })
+
+                        }
+
+
+                    },
+
+                        Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                        content
+                        = {
+                            Text(text = "Next")
                         })
-
-                },
-
-                    Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                    content
-                    = {
-                        Text(text = "Next")
-                    })
+                }
             }
-        }
 
+        }
 
     }
 

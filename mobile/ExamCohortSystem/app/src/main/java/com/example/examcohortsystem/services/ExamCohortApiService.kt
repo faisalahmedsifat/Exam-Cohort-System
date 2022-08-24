@@ -9,9 +9,10 @@ import retrofit2.Response
 
 class ExamCohortApiService {
 
+    val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
     fun oauth(req: GoogleOAuthRequest, res: (GoogleOAuthResponse?) -> Unit) {
 
-        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
+//        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.verifyServerAuthCode(req).enqueue(
 
             object : Callback<GoogleOAuthResponse?> {
@@ -37,7 +38,7 @@ class ExamCohortApiService {
 
     fun getExamCohorts(jwtToken: String, res: (ExamCohortResponse?) -> Unit) {
         Log.d(TAG, "getExamCohorts: $jwtToken")
-        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
+//        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getAssignedExamCohorts("Bearer $jwtToken").enqueue(
 
             object : Callback<ExamCohortResponse?> {
@@ -61,7 +62,7 @@ class ExamCohortApiService {
 
     //    val temporaryCohortID  = "4d6fea5a-3793-458e-b54c-e293505ee75e"
     fun getAssessments(cohortId: String, jwtToken: String, res: (AssessmentResponse?) -> Unit) {
-        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
+//        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getAssessments("Bearer $jwtToken", examCohortId = cohortId).enqueue(
 
             object : Callback<AssessmentResponse?> {
@@ -83,9 +84,9 @@ class ExamCohortApiService {
         )
     }
 
+
     //    val temporaryAssessmentID = "d3c0dd83-bd42-490c-80e1-9607c33bfd05"
     fun getQuestions(assessmentId: String, jwtToken: String, res: (QuestionResponse?) -> Unit) {
-        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
         response.getQuestions("Bearer $jwtToken", assessmentId = assessmentId).enqueue(
             object : Callback<QuestionResponse?> {
                 override fun onFailure(call: Call<QuestionResponse?>, t: Throwable) {
@@ -100,12 +101,7 @@ class ExamCohortApiService {
                     val body = response.body()
                     Log.d(TAG, "onResponse: ${response}")
                     Log.d(TAG, "onResponse body: ${response.body()}")
-//                    if(body?.questionResponseItem?.mcqQuestionDetails != null){
-//                        for (option in body.questionResponseItem.mcqQuestionDetails.mcqOptions ){
-//                            option.isSelectedInAnswer = false
-//                        }
-//
-//                    }
+
                     res(body)
                 }
             }
@@ -120,12 +116,15 @@ class ExamCohortApiService {
         res: (QuestionPostingResponse?) ->
         Unit
     ) {
-        val response = ServiceBuilder.buildService(ExamCohortApiInterface::class.java)
-        response.postQuestions(questionResponseItem = questionResponseItem,"Bearer $jwtToken", assessmentId =
-        assessmentId).enqueue(
+        Log.d(TAG, "postQuestions details: $questionResponseItem \n $assessmentId ")
+        response.postQuestions(
+            questionResponseItem = questionResponseItem, "Bearer $jwtToken", assessmentId =
+            assessmentId
+        ).enqueue(
             object : Callback<QuestionPostingResponse?> {
                 override fun onFailure(call: Call<QuestionPostingResponse?>, t: Throwable) {
-                    Log.d(TAG, "onFailure: Failed")
+                    Log.d(TAG, "onFailure: Failed ")
+                    Log.d(TAG, "onFailure: call: ${call} \n t: $t")
                     res(null)
                 }
 
