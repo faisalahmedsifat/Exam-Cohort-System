@@ -53,6 +53,11 @@ fun TopBar(
                 painter = drawerIcon, contentDescription = "menu", modifier = Modifier.clickable
                     (
                     onClick = {
+                        Toast.makeText(
+                            context,
+                            "Not Implemented Yet! looks good!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 )
             )
@@ -65,8 +70,20 @@ fun TopBar(
                 contentDescription =
                 "user " +
                         "profile photo",
-                modifier = Modifier.clip(CircleShape).size(25.dp, 25.dp)
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(25.dp, 25.dp)
+                    .clickable {
+                        Toast
+                            .makeText(
+                                context,
+                                "Not Need to See your profile here! Everything Comes From Google!",
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
+                    },
             )
+
         }
     }
 }

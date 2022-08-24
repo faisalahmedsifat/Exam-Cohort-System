@@ -41,12 +41,20 @@ fun TimerTopBar(
     restart: Boolean = false,
     postQuestion: () -> Unit
 ) {
+    val context = LocalContext.current
     var ticks by remember { mutableStateOf(remainingTime - 1) }
     if (restart) {
         ticks = remainingTime - 1
     }
 
-    if (ticks == 0) postQuestion()
+    if (ticks == 0) {
+        postQuestion()
+        Toast.makeText(
+            context,
+            "Auto Submitted!",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     Box(
         modifier = Modifier
