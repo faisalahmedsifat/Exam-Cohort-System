@@ -1,7 +1,5 @@
 package com.example.examcohortsystem.views
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -19,7 +17,6 @@ import com.example.examcohortsystem.components.ResponseText
 import com.example.examcohortsystem.components.TimerTopBar
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,10 +31,9 @@ fun QuestionScreen(
     val dataStore = StoreJwtToken(context)
     val jwtToken = dataStore.getToken.collectAsState(initial = null)
 
+
+    //remember Values
     var observed by remember {
-        mutableStateOf(false)
-    }
-    var postObserved by remember {
         mutableStateOf(false)
     }
     var noMoreQuestions by remember {
@@ -59,25 +55,27 @@ fun QuestionScreen(
         mutableStateOf(false)
     }
 
-    val doTheJob = {
+    var postingResponseValue by remember {
+        mutableStateOf(questionListViewModel.questionPostingResponse.value?.response)
+    }
+
+
+    val getQuestion = {
         coroutineScope.launch {
             questionListViewModel.getQuestion(
                 jwtToken.value.toString(),
                 assessmentId = assessmentID
             )
 
-
             if (!observed && gettingCount == 0) {
                 questionListViewModel.questionResponse.observe(owner, Observer {
                     if (questionListViewModel.questionResponse.value != null && gettingCount
                         == 0
                     ) {
-
                         observed = true
                         newValue = true
                         questionResponseItemValue = it.questionResponseItem
                         gettingCount++
-                        Log.d(TAG, "QuestionScreen: $it")
                         if (it.questionResponseItem.all_answered) {
                             noMoreQuestions = true
                         }
@@ -90,28 +88,44 @@ fun QuestionScreen(
 
         }
     }
-    doTheJob()
 
-    var postingResponseValue by remember {
-        mutableStateOf(questionListViewModel.questionPostingResponse.value?.response)
+    val postQuestion = {
+        coroutineScope.launch {
+            if (questionResponseItemValue != null) {
+                questionListViewModel.postQuestion(
+                    questionResponseItem = questionResponseItemValue!!,
+                    jwtToken.value.toString(),
+                    assessmentId = assessmentID
+                )
+            }
+            questionListViewModel.questionPostingResponse.observe(
+                owner,
+                Observer {
+                    if (questionListViewModel.questionPostingResponse.value
+                        != null
+                    ) {
+                        postingResponseValue = it.response
+                        if (postingResponseValue == "OK") {
+                            gettingCount = 0
+                            getQuestion()
+                        }
+                    }
+                })
+        }
     }
+    //Calling api to get question for the first time
+    getQuestion()
 
-    Log.d(
-        TAG,
-        "QuestionScreen: start the exam: $startTheExam  \n noModeQuestion: $noMoreQuestions \n observed $observed"
-    )
     Column {
         if (!observed) CircularProgressIndicator()
         else if (!startTheExam && !noMoreQuestions) ResponseText(text = "Exam hasn't Started yet")
         else if (noMoreQuestions) ResponseText(text = "No More Questions Available")
         else {
             if (questionResponseItemValue != null) {
-                Log.d(TAG, "QuestionScreen question Item value: ${questionResponseItemValue}")
                 TimerTopBar(
                     remainingTime = questionResponseItemValue!!.timeLimitSec, restart =
-                    newValue
+                    newValue, postQuestion = { postQuestion() }
                 )
-//                newValue = false
                 questionResponseItemValue.let {
                     if (questionResponseItemValue!!.type == "MCQ") {
                         questionResponseItemValue!!.mcqQuestionDetails?.let {
@@ -123,58 +137,19 @@ fun QuestionScreen(
                     } else {
                         TODO("Micro viva question answering is not yet implemented")
                     }
-                    Button(onClick = {
-                        coroutineScope.launch {
-
-                            Log.d(
-                                TAG,
-                                "QuestionScreen: question response item: $questionResponseItemValue"
-                            )
-                            if (questionResponseItemValue != null) {
-                                questionListViewModel.postQuestion(
-                                    questionResponseItem = questionResponseItemValue!!,
-                                    jwtToken.value.toString(),
-                                    assessmentId = assessmentID
-                                )
-                            }
-
-
-
-                            questionListViewModel.questionPostingResponse.observe(
-                                owner,
-                                Observer {
-                                    if (questionListViewModel.questionPostingResponse.value
-                                        != null
-                                    ) {
-                                        Log.d(TAG, "QuestionScreen: response ${it.response}")
-                                        postObserved = true;
-                                        postingResponseValue = it.response
-                                        if (postingResponseValue == "OK") {
-                                            Log.d(TAG, "QuestionScreen: getting from backend")
-                                            gettingCount = 0
-                                            doTheJob()
-                                        }
-                                    }
-
-                                })
-
-                        }
-
-
-                    },
-
-                        Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                    Button(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
                         content
                         = {
                             Text(text = "Next")
-                        })
+                        },
+                        onClick = {
+                            postQuestion()
+                        }
+                    )
                 }
                 newValue = false
             }
-
         }
-
     }
-
-
 }

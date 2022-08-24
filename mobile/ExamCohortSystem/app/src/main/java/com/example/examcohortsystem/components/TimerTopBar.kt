@@ -31,18 +31,22 @@ import com.example.examcohortsystem.components.DrawerIcon
 import com.example.examcohortsystem.utils.DateConverter
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.utils.datastore.StoreProfilePhotoUrl
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun TimerTopBar(
     remainingTime: Int,
-    restart: Boolean = false
+    restart: Boolean = false,
+    postQuestion: () -> Unit
 ) {
     var ticks by remember { mutableStateOf(remainingTime - 1) }
     if (restart) {
         ticks = remainingTime - 1
     }
+
+    if (ticks == 0) postQuestion()
 
     Box(
         modifier = Modifier
@@ -59,7 +63,6 @@ fun TimerTopBar(
             LaunchedEffect(Unit) {
                 while (ticks != 0) {
                     delay(1000)
-
                     ticks--
                 }
 
@@ -86,10 +89,4 @@ fun TimerTopBar(
 
         }
     }
-}
-
-@Preview
-@Composable
-fun TimerTopBarView() {
-    TimerTopBar(200)
 }
