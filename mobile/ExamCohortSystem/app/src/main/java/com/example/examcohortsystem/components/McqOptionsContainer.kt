@@ -16,6 +16,7 @@ import com.example.examcohortsystem.model.McqOption
 @Composable
 fun McqOptionContainer(
     mcqOptions: List<McqOption>,
+    newQuestion: Boolean = false
 ) {
 
     Log.d(TAG, "McqOptionContainer options: ${mcqOptions}")
@@ -27,6 +28,7 @@ fun McqOptionContainer(
                 val optionSelected = remember {
                     mutableStateOf(false)
                 }
+                if(newQuestion)optionSelected.value = false
                 Log.d(TAG, "McqOptionContainer item: ${mcqOptions[index]}")
                 com.example.examcohortsystem.components.McqOption(
                     mcqOption = mcqOptions[index],

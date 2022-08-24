@@ -17,6 +17,7 @@ import com.example.examcohortsystem.model.McqQuestionDetails
 @Composable
 fun McqQuestion(
     mcqQuestionDetails: McqQuestionDetails,
+    newQuestion:Boolean = false
 ) {
     Column() {
         Spacer(modifier = Modifier.height(18.dp))
@@ -28,6 +29,6 @@ fun McqQuestion(
             ),
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         )
-        McqOptionContainer(mcqOptions = mcqQuestionDetails.mcqOptions)
+        McqOptionContainer(mcqOptions = mcqQuestionDetails.mcqOptions, newQuestion = newQuestion)
     }
 }

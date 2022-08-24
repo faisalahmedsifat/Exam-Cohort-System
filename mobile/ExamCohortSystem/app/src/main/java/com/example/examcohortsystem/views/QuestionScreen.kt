@@ -111,12 +111,13 @@ fun QuestionScreen(
                     remainingTime = questionResponseItemValue!!.timeLimitSec, restart =
                     newValue
                 )
-                newValue = false
+//                newValue = false
                 questionResponseItemValue.let {
                     if (questionResponseItemValue!!.type == "MCQ") {
                         questionResponseItemValue!!.mcqQuestionDetails?.let {
                             McqQuestion(
-                                mcqQuestionDetails = it
+                                mcqQuestionDetails = it,
+                                newQuestion = newValue
                             )
                         }
                     } else {
@@ -168,6 +169,7 @@ fun QuestionScreen(
                             Text(text = "Next")
                         })
                 }
+                newValue = false
             }
 
         }
