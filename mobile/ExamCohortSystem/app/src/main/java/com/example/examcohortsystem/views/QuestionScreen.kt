@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import com.example.examcohortsystem.components.McqQuestion
 import com.example.examcohortsystem.components.ResponseText
+import com.example.examcohortsystem.components.TimerTopBar
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
 import kotlinx.coroutines.delay
@@ -53,9 +54,11 @@ fun QuestionScreen(
     var gettingCount by remember {
         mutableStateOf(0)
     }
-    var postingCount by remember {
-        mutableStateOf(0)
+
+    var newValue by remember {
+        mutableStateOf(false)
     }
+
     val doTheJob = {
         coroutineScope.launch {
             questionListViewModel.getQuestion(
@@ -63,20 +66,15 @@ fun QuestionScreen(
                 assessmentId = assessmentID
             )
 
-//            if (questionListViewModel.questionResponse.value == null) {
 
             if (!observed && gettingCount == 0) {
                 questionListViewModel.questionResponse.observe(owner, Observer {
                     if (questionListViewModel.questionResponse.value != null && gettingCount
                         == 0
                     ) {
-//                        Log.d(
-//                            TAG, "QuestionScreen: question list 2: ${
-//                                questionListViewModel
-//                                    .questionResponse.value
-//                            } \n ${gettingCount}"
-//                        )
+
                         observed = true
+                        newValue = true
                         questionResponseItemValue = it.questionResponseItem
                         gettingCount++
                         Log.d(TAG, "QuestionScreen: $it")
@@ -89,7 +87,6 @@ fun QuestionScreen(
                     }
                 })
             }
-//            }
 
         }
     }
@@ -109,6 +106,12 @@ fun QuestionScreen(
         else if (noMoreQuestions) ResponseText(text = "No More Questions Available")
         else {
             if (questionResponseItemValue != null) {
+                Log.d(TAG, "QuestionScreen question Item value: ${questionResponseItemValue}")
+                TimerTopBar(
+                    remainingTime = questionResponseItemValue!!.timeLimitSec, restart =
+                    newValue
+                )
+                newValue = false
                 questionResponseItemValue.let {
                     if (questionResponseItemValue!!.type == "MCQ") {
                         questionResponseItemValue!!.mcqQuestionDetails?.let {
@@ -122,8 +125,11 @@ fun QuestionScreen(
                     Button(onClick = {
                         coroutineScope.launch {
 
-                            Log.d(TAG, "QuestionScreen: question response item: $questionResponseItemValue")
-                            if(questionResponseItemValue != null){
+                            Log.d(
+                                TAG,
+                                "QuestionScreen: question response item: $questionResponseItemValue"
+                            )
+                            if (questionResponseItemValue != null) {
                                 questionListViewModel.postQuestion(
                                     questionResponseItem = questionResponseItemValue!!,
                                     jwtToken.value.toString(),
