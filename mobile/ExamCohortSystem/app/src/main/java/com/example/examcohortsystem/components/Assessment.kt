@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.examcohortsystem.model.AssessmentResponseItem
+import com.example.examcohortsystem.utils.DateConverter
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,7 +50,8 @@ fun Assessment(
             Spacer(modifier = Modifier.height(5.dp))
             assessmentResponseItem.availableDateTime?.let {
                 Text(
-                    text = (it).toString(),
+//                    text = (it).toString(),
+                    text = (DateConverter.getDayTime(it)).toString(),
                     modifier = Modifier
                         .padding(start = 20.dp)
                         .fillMaxWidth(),
