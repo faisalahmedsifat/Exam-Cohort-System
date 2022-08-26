@@ -9,6 +9,7 @@ const middleware = require('../utils/middleware')
 // Controllers
 const ExamCohortController = require('../controllers/ExamCohortController')
 const DatabaseController = require('../controllers/DatabaseController')
+const UserController = require('../controllers/UserController')
 const RoleBarrier = require('../controllers/RoleBarrier')
 const ValidationController = require('../controllers/ValidationController')
 
@@ -78,6 +79,18 @@ router.get('/:id/candidate', middleware.authBarrier, RoleBarrier.cohortsEvaluato
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
     }
+})
+
+router.get('/:id/candidate/:candidateID', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
+  const cohortID = request.params.id
+  const candidateID = request.params.candidateID
+  try {
+      const userIDFromCandidateID = await DatabaseController.getUserIDFromCandidateID(candidateID)
+      const candidate = await UserController.getUserProfileDetails(userIDFromCandidateID)
+      return response.status(201).json(middleware.generateApiOutput("OK", candidate))
+  } catch (error) {
+      return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
+  }
 })
 
 router.delete('/:id/candidate/:candidateID', middleware.authBarrier, RoleBarrier.cohortsEvaluatorRoleBarrier, async (request, response) => {
