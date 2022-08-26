@@ -48,6 +48,28 @@ class AssignedCohortController {
     return final;
   }
 
+
+  static async processSingleMCQQuestionWithCorAnsOutputPresentation(question, transactionRef = null) {
+    let questionData = DatabaseController.getDataAttributesFromInstance(question, transactionRef)
+    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(questionData.mcqquestionID, transactionRef)
+    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, transactionRef, true)
+    mcqQuestionOptions = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+    mcqQuestionOptions = mcqQuestionOptions.map(option => {
+      return {mcqOptionText: option.mcqOptionText, mcqOptionID: option.id, isSelectedInAnswer: false, isMcqOptionCor: option.isMcqOptionCor}
+    })
+    let final = {
+      questionID: questionData.questionID,
+      type: questionData.type,
+      marks: questionData.marks,
+      timeLimit: questionData.timeLimit,
+      mcqQuestionDetails: {
+        mcqStatement: mcqQuestionInstance.mcqStatement,
+        mcqOptions: [...mcqQuestionOptions]
+      }
+    }
+    return final;
+  }
+
   static async processSingleMicroVivaQuestionForNoCorAnsOutputPresentation(question, transactionRef = null) {
     let questionData = DatabaseController.getDataAttributesFromInstance(question)
     let microVivaQuestionInstance = await DatabaseController.getMicroVivaQuestionFromQuestionID(questionData.microvivaquestionID, transactionRef)
@@ -59,6 +81,23 @@ class AssignedCohortController {
       timeLimit: questionData.timeLimit,
       microVivaQuestionDetails: {
         micQuesAudioID: microVivaQuestionData.micQuesAudioID
+      }
+    }
+    return final;
+  }
+
+  static async processSingleMicroVivaQuestionWithCorAnsOutputPresentation(question, transactionRef = null) {
+    let questionData = DatabaseController.getDataAttributesFromInstance(question)
+    let microVivaQuestionInstance = await DatabaseController.getMicroVivaQuestionFromQuestionID(questionData.microvivaquestionID, transactionRef)
+    let microVivaQuestionData = DatabaseController.getDataAttributesFromInstance(microVivaQuestionInstance)
+    let final = {
+      questionID: questionData.questionID,
+      type: questionData.type,
+      marks: questionData.marks,
+      timeLimit: questionData.timeLimit,
+      microVivaQuestionDetails: {
+        micQuesAudioID: microVivaQuestionData.micQuesAudioID,
+        micCorAudioID: microVivaQuestionData.micCorAudioID
       }
     }
     return final;
