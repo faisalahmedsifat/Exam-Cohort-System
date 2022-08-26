@@ -43,8 +43,6 @@ class UserController {
     delete userProfileDetails.evaluatorcohorts
     return userProfileDetails;
   }
-
-  
 }
 
 module.exports = UserController
