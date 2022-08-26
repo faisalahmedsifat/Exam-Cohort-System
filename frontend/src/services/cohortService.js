@@ -48,6 +48,18 @@ const getCandidateList = async (token, cohortID) => {
   }
 }
 
+const getCandidateDetails = async (token, cohortID, candidateID) => {
+  try {
+    const axiosInstance = axios.create({
+      headers: { 'Authorization': 'bearer ' + token }
+    });
+    const response = await axiosInstance.get(baseUrl + `/${cohortID}/candidate/${candidateID}`)
+    return response.data.response
+  } catch (error) {
+    throw Error(error.response.data.response.error);
+  }
+}
+
 const addCandidateToCohort = async (token, cohortID, body) => {
   try {
     const response = await axios.post(baseUrl + `/${cohortID}/candidate`, body, { headers: { Authorization: `bearer ${token}` } })
@@ -153,7 +165,8 @@ const exports = {
   getSingleAssessmentDetails,
   getQuestionsList,
   addQuestionToAssessment,
-  deleteQuestion
+  deleteQuestion,
+  getCandidateDetails
 }
 
 export default exports

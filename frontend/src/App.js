@@ -31,11 +31,13 @@ import AssessmentList from './components/Dashboard/AssessmentList'
 import AddAssessment from './components/Dashboard/AddAssessment'
 import AssessmentPanel from './components/Dashboard/AssessmentPanel'
 import QuestionsList from './components/Dashboard/QuestionsList'
+import ResponseList from './components/Dashboard/ResponseList'
 import AddQuestions from './components/Dashboard/AddQuestions'
 import AssignedCohorts from './components/Dashboard/AssignedCohorts'
 import AssignedCohortsPanel from './components/Dashboard/AssignedCohortsPanel'
 import AssignedAssessmentList from './components/Dashboard/AssignedAssessmentList'
 import ExamArena from './components/Dashboard/ExamArena'
+import CandidateResponseView from './components/Dashboard/CandidateResponseView'
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -104,6 +106,8 @@ const App = () => {
               <Route path='/examcohorts/:cohortID/assessments/add' element={<AddAssessment />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID' element={<AssessmentPanel />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID/questions' element={<QuestionsList />} />
+              <Route path='/examcohorts/:cohortID/assessments/:assessmentID/responses' element={<ResponseList />} />
+              <Route path='/examcohorts/:cohortID/assessments/:assessmentID/response/:candidateID' element={<CandidateResponseView />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID/questions/add' element={<AddQuestions />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/logout' element={<Logout />} />
