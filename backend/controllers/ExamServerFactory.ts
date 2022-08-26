@@ -38,6 +38,11 @@ export class ExamServerFactory {
     const questions = await AssignedCohortController.getQuestionsOfAssessmentWithoutCorAns(assessmentID)
     return new ExamServerFactory(userID, assessmentID, cohortID, candidateID, questions);
   }
+  public static async resetCandidatesServer(userID, assessmentID){
+    let level2 = new Map();
+    level2.set(assessmentID, (await ExamServerFactory.callContructorWithAsyncData(userID, assessmentID)));
+    ExamServerFactory.instances.set(userID, level2);
+  }
   public static async getServer(userID, assessmentID) {
     if (!(ExamServerFactory.instances?.has(userID) && ExamServerFactory.instances?.get(userID)?.has(assessmentID))) {
       let level2 = new Map();
