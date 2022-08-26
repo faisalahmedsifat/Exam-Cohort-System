@@ -1,5 +1,8 @@
 // @ts-nocheck
 
+import { ReevaluateController } from "./ReevaluateController"
+
+
 const Sequelize = require('sequelize')
 const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
@@ -9,7 +12,6 @@ const Models = require('../models')
 
 // Helper Functions
 let asyncMap = async (object, callback) => await Promise.all(object.map(async elem => await callback(elem)))
-
 
 class DatabaseController {
 
@@ -288,6 +290,83 @@ class DatabaseController {
 
   static async getMicroVivaAnswerFromID(microvivaanswerID){
     return await Models.Microvivaanswer.findByPk(microvivaanswerID)
+  }
+
+  static async getQuestionIDListOfAssessment(assessmentID){
+    const questionsList = DatabaseController.getDataAttributesFromInstance(await Models.Question.findAll({
+      where: {
+        assessmentID: assessmentID
+      }
+    }))
+    const questionListOutput = []
+    for (const ques of questionsList) questionListOutput.push(ques.questionID)
+    return questionListOutput
+  }
+
+  static async getNoOfQuestionResponsesOfAssessment(assessmentID, candidateID){
+    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
+    const {count, rows} = await Models.Answer.findAndCountAll({
+      where: {
+        candidateID: candidateID,
+        questionID: {
+          [Sequelize.Op.in]: questionIDListOfAssessment
+        }
+      }
+    })
+    return count;
+  }
+  
+  static async getUserIDFromCandidateID(candidateID){    
+    const row = await Models.Candidatelist.findByPk(candidateID)
+    return row.candidateID
+  }
+
+  static async getAnswersOfAssessment(assessmentID, candidateID){
+    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
+    return await Models.Answer.findAll({
+      where: {
+        candidateID: candidateID,
+        questionID: {
+          [Sequelize.Op.in]: questionIDListOfAssessment
+        }
+      }
+    })
+  }
+
+  static async FindisSelectedInAnswer(mcqanswerID, mcqOptionID){
+    return (await Models.Mcqoptionselected.findOne({
+      where: {
+        mcqanswerID: mcqanswerID,
+        mcqoptionID: mcqOptionID
+      }
+    })).isSelectedInAnswer
+  }
+
+  static async markAnswerAs(answerID, value){
+    await Models.Answer.update({
+      isCorrect: value
+    },{
+      where: {
+        answerID:answerID
+      }
+    })
+  }
+
+  static async resetCandidateResponse(assessmentID, candidateID){
+    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
+    await Models.Answer.destroy({
+      where: {
+        candidateID: candidateID,
+        questionID: {
+          [Sequelize.Op.in]: questionIDListOfAssessment
+        }
+      }
+    })
+  }
+
+  static async findGivenAnsAudio(microvivaanswerID){
+    const row = await Models.Microvivaanswer.findByPk(microvivaanswerID)
+    return row.micAnsAudioID
   }
 }
 
