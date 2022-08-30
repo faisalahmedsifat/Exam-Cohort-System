@@ -18,10 +18,6 @@ fun McqOptionContainer(
     mcqOptions: List<McqOption>,
     newQuestion: Boolean = false
 ) {
-
-    Log.d(TAG, "McqOptionContainer options: ${mcqOptions}")
-
-//    Column(modifier = Modifier.heightIn(max = 500.dp)) {
         LazyColumn() {
             itemsIndexed(items = mcqOptions) { index: Int, item:
             McqOption ->
@@ -29,17 +25,14 @@ fun McqOptionContainer(
                     mutableStateOf(false)
                 }
                 if(newQuestion)optionSelected.value = false
-                Log.d(TAG, "McqOptionContainer item: ${mcqOptions[index]}")
                 com.example.examcohortsystem.components.McqOption(
                     mcqOption = mcqOptions[index],
                     selected = optionSelected.value,
                     onClick = {
                         optionSelected.value = !optionSelected.value
                         mcqOptions[index].isSelectedInAnswer = optionSelected.value
-                        Log.d(TAG, "McqOptionContainer: $item")
                     }
                 )
             }
         }
-//    }
 }

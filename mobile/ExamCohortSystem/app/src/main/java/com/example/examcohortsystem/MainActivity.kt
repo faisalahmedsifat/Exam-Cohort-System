@@ -7,12 +7,14 @@ import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.examcohortsystem.ui.theme.ExamCohortSystemTheme
 import com.example.examcohortsystem.viewmodel.*
 import com.example.examcohortsystem.views.SetUpNavGraph
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.util.jar.Manifest
 
 
 @ExperimentalCoroutinesApi
