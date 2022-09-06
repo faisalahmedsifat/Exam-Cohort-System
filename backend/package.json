@@ -6,10 +6,12 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node build/index.js",
     "dev": "cross-env NODE_ENV=development ts-node-dev --rs index.ts",
-    "build": "tsc",
+    "build": "rm -rf build && tsc",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit",
     "tsc": "tsc",
-    "watchAll": "jest --watchAll"
+    "watchAll": "jest --watchAll",
+    "db:make-mig": "npm run build && rm -rf migrations && mkdir migrations && sequelize-mig migration:make && rm -rf build",
+    "db:run-mig": "npm run build && sequelize db:drop && sequelize db:create && sequelize db:migrate && rm -rf build"
   },
   "author": "Md Sahadul Hasan Arian, Faisal Ahmed Sifat",
   "license": "ISC",
