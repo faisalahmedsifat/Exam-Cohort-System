@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Mcqoptionselected, {
         as: 'selectedoption',
-        foreignKey: {name: 'mcqanswerID', allowNull:true}
+        foreignKey: {name: 'mcqanswerID', allowNull:true},
+        onDelete: 'CASCADE'
       });
     }
   }

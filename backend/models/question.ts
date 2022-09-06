@@ -14,12 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Mcqquestion, {
         as: 'mcqquestion',
-        foreignKey: { name: 'mcqquestionID', allowNull: true }
+        foreignKey: { name: 'mcqquestionID', allowNull: true },
+        onDelete: 'CASCADE'
       });
 
       this.belongsTo(models.Microvivaquestion, {
         as: 'microvivaquestion',
-        foreignKey: { name: 'microvivaquestionID', allowNull: true }
+        foreignKey: { name: 'microvivaquestionID', allowNull: true },
+        onDelete: 'CASCADE'
       });
 
       this.belongsToMany(models.Candidatelist, {

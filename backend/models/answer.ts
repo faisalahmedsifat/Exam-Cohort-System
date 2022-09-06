@@ -44,6 +44,22 @@ module.exports = (sequelize, DataTypes) => {
     },
     isCorrect: {
       type: DataTypes.BOOLEAN,
+      defaultValue: null,
+      allowNull: true
+    },
+    hasAutoEvaluated: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
+    hasAdjustedManually: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
+    scoreRightNow: {
+      type: DataTypes.FLOAT,
+      defaultValue: null,
       allowNull: true
     }
   }, {

@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Question, {
         as: 'question',
-        foreignKey: { name: 'assessmentID', allowNull: false }
+        foreignKey: { name: 'assessmentID', allowNull: false },
+        onDelete: 'CASCADE'
       });
     }
   }
