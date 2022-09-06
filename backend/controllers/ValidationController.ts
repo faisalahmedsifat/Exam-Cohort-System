@@ -23,7 +23,7 @@ MCQ_MAX_NO_OF_OPTIONS = 30
 MCQ_OPTION_MAX_LEN = 100
 MAX_MARKS_OF_QUESTION = 100
 RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT=true
-
+ACCEPT_DELAY_OF_SECONDS = 120; // between available datetime and adding question
 
 class ValidationController {
   static validateCreateExamCohortInput(userInput) {
@@ -68,7 +68,7 @@ class ValidationController {
   static restrictAddingQuestionDuringAvailableTime(availableDateTime, dueDateTime){
     const availParsed = Date.parse(new Date(availableDateTime))
     const dueDateParsed = Date.parse(new Date(dueDateTime))
-    const timeNowParsed = Date.parse(new Date())
+    const timeNowParsed = Date.parse(new Date(new Date().getTime() - 1000 * ACCEPT_DELAY_OF_SECONDS))
     if(availParsed <= timeNowParsed && RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT === true){
       throw new Error("This assessment is has already started, so adding question right now is prohibited!");
     }

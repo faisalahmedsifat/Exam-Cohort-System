@@ -83,7 +83,6 @@ router.get('/:id/assessment/:assessmentID/responses/:candidateID/reset', middlew
     await DatabaseController.resetCandidateResponse(assessmentID, candidateID)
     const userIDx = await DatabaseController.getUserIDFromCandidateID(candidateID);
     await ExamServerFactory.resetCandidatesServer(userIDx,assessmentID);
-
     return response.send(middleware.generateApiOutput("OK", {success: "Reset was successfull!"}));
   } catch (error) {
     return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))

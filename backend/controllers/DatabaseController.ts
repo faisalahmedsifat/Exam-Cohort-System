@@ -120,8 +120,8 @@ class DatabaseController {
     if (transactionRef == null) return await question.createMicrovivaquestion(microvivaDetails);
     else return await question.createMicrovivaquestion(microvivaDetails, { transaction: transactionRef });
   }
-  static async addMicroVivaAnswerFromQuestion(micAnsAudioID){
-    return await Models.Microvivaanswer.create({ micAnsAudioID: micAnsAudioID})
+  static async addMicroVivaAnswerFromQuestion(micAnsAudioID) {
+    return await Models.Microvivaanswer.create({ micAnsAudioID: micAnsAudioID })
   }
 
   static async createSingleOptionFromDetails(mcqquestion, mcqOption, transactionRef = null) {
@@ -171,8 +171,11 @@ class DatabaseController {
   }
 
   static async deleteCandidateFromCohort(cohortID, candidateID, transactionRef = null) {
-    if (transactionRef == null) return await Models.Candidatelist.destroy({ where: { cohortID, id: candidateID } })
-    else return await Models.Candidatelist.destroy({ where: { cohortID, id: candidateID } }, { transaction: transactionRef })
+    if (transactionRef == null) {
+      return await Models.Candidatelist.destroy({ where: { cohortID, id: candidateID } })
+    } else {
+      return await Models.Candidatelist.destroy({ where: { cohortID, id: candidateID } }, { transaction: transactionRef })
+    }
   }
 
   static async getQuestionFromQuestionID(questionID, transactionRef = null) {
@@ -276,23 +279,23 @@ class DatabaseController {
     });
   }
 
-  static async createAnswerBase(details){
+  static async createAnswerBase(details) {
     return await Models.Answer.create(details)
   }
 
-  static async getAnswerBase(candidateID, questionID){
-    return await Models.Answer.findOne({where: {candidateID, questionID}})
+  static async getAnswerBase(candidateID, questionID) {
+    return await Models.Answer.findOne({ where: { candidateID, questionID } })
   }
 
-  static async getCohortFromAssessmentID(assessmentID){
+  static async getCohortFromAssessmentID(assessmentID) {
     return await DatabaseController.getCohortFromCohortID((await Models.Assessment.findByPk(assessmentID)).cohortID)
   }
 
-  static async getMicroVivaAnswerFromID(microvivaanswerID){
+  static async getMicroVivaAnswerFromID(microvivaanswerID) {
     return await Models.Microvivaanswer.findByPk(microvivaanswerID)
   }
 
-  static async getQuestionIDListOfAssessment(assessmentID){
+  static async getQuestionIDListOfAssessment(assessmentID) {
     const questionsList = DatabaseController.getDataAttributesFromInstance(await Models.Question.findAll({
       where: {
         assessmentID: assessmentID
@@ -303,9 +306,9 @@ class DatabaseController {
     return questionListOutput
   }
 
-  static async getNoOfQuestionResponsesOfAssessment(assessmentID, candidateID){
-    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
-    const {count, rows} = await Models.Answer.findAndCountAll({
+  static async getNoOfQuestionResponsesOfAssessment(assessmentID, candidateID) {
+    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);
+    const { count, rows } = await Models.Answer.findAndCountAll({
       where: {
         candidateID: candidateID,
         questionID: {
@@ -315,14 +318,14 @@ class DatabaseController {
     })
     return count;
   }
-  
-  static async getUserIDFromCandidateID(candidateID){    
+
+  static async getUserIDFromCandidateID(candidateID) {
     const row = await Models.Candidatelist.findByPk(candidateID)
     return row.candidateID
   }
 
-  static async getAnswersOfAssessment(assessmentID, candidateID){
-    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
+  static async getAnswersOfAssessment(assessmentID, candidateID) {
+    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);
     return await Models.Answer.findAll({
       where: {
         candidateID: candidateID,
@@ -333,7 +336,7 @@ class DatabaseController {
     })
   }
 
-  static async FindisSelectedInAnswer(mcqanswerID, mcqOptionID){
+  static async FindisSelectedInAnswer(mcqanswerID, mcqOptionID) {
     return (await Models.Mcqoptionselected.findOne({
       where: {
         mcqanswerID: mcqanswerID,
@@ -342,31 +345,80 @@ class DatabaseController {
     })).isSelectedInAnswer
   }
 
-  static async markAnswerAs(answerID, value){
+  static async markAnswerAs(answerID, value) {
     await Models.Answer.update({
       isCorrect: value
-    },{
+    }, {
       where: {
-        answerID:answerID
+        answerID: answerID
       }
     })
   }
 
-  static async resetCandidateResponse(assessmentID, candidateID){
-    const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);    
-    await Models.Answer.destroy({
-      where: {
-        candidateID: candidateID,
-        questionID: {
-          [Sequelize.Op.in]: questionIDListOfAssessment
+  static async resetCandidateResponse(assessmentID, candidateID) {
+      const questionIDListOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);
+      
+      let responseIDs = []
+      const responses = await Models.Answer.findAll({
+        where: {
+          candidateID: candidateID,
+          questionID: {
+            [Sequelize.Op.in]: questionIDListOfAssessment
+          }
+        }
+      }) 
+
+      for (const response of responses) {
+        responseIDs.push(response.answerID)
+        if (response.mcqanswerID != null) {
+          await Models.Mcqanswer.destroy({ where: { id: response.mcqanswerID } })
+        } else if (response.microvivaanswerID != null) {
+          await Models.Microvivaanswer.destroy({ where: { id: response.microvivaanswerID } })
         }
       }
-    })
+
+      await Models.Answer.destroy({
+        where: {
+          answerID: {
+            [Sequelize.Op.in]: responseIDs
+          }
+        }
+      })
+
   }
 
-  static async findGivenAnsAudio(microvivaanswerID){
+  static async findGivenAnsAudio(microvivaanswerID) {
     const row = await Models.Microvivaanswer.findByPk(microvivaanswerID)
     return row.micAnsAudioID
+  }
+
+  static async getNumberOfQuestionsOfAnAssessment(assessmentID) {
+    const questionsCount = await Models.Question.count({
+      where: { assessmentID }
+    })
+    return questionsCount;
+  }
+
+  static async deleteResponsesOfQuestion(questionID) { // deletes all response
+    // the response side needs to be deleted as well
+    const responses = await Models.Answer.findAll({ where: { questionID: questionID } })
+    for (const response of responses) {
+      if (response.mcqanswerID != null) {
+        await Models.Mcqanswer.destroy({ where: { id: response.mcqanswerID } })
+      } else if (response.microvivaanswerID != null) {
+        await Models.Microvivaanswer.destroy({ where: { id: response.microvivaanswerID } })
+      }
+    }
+  }
+
+  static async deleteChildOfQuestion(questionID) {
+    const ques = await DatabaseController.getQuestionFromQuestionID(questionID);
+    if (ques.mcqquestionID != null) {
+      await Models.Mcqquestion.destroy({ where: { id: ques.mcqquestionID } })
+    } else if (ques.microvivaquestionID != null) {
+      await Models.Mcqquestion.destroy({ where: { id: ques.microvivaquestionID } })
+    }
+    await DatabaseController.deleteResponsesOfQuestion(questionID)
   }
 }
 

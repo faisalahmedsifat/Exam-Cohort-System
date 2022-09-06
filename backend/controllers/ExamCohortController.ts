@@ -238,6 +238,11 @@ class ExamCohortController {
   }
 
   static async deleteAssessmentFromCohort(cohortID, assessmentID) {
+    // get all question list 
+    const questionsOfAssessment = await DatabaseController.getQuestionIDListOfAssessment(assessmentID)
+    for (const questionID of questionsOfAssessment) {
+      await ExamCohortController.deleteQuestionFromAssessment(assessmentID, questionID);
+    }
     await DatabaseController.deleteAssessmentFromCohort(cohortID, assessmentID)
   }
 
@@ -246,8 +251,14 @@ class ExamCohortController {
     return await ExamCohortController.loadAssessmentStat(assessment)
   }
 
-  static async deleteQuestionFromAssessment(assessmentID, questionID) {
-    await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
+  static async deleteQuestionFromAssessment(assessmentID, questionID, checkNoOfQues=false) {
+    // check number of questions
+    const noOfQuestion = await DatabaseController.getNumberOfQuestionsOfAnAssessment(assessmentID);
+    if(checkNoOfQues === true && noOfQuestion === 1) throw new Error("You must have atleast one question in this assessment!");
+    else {
+      await DatabaseController.deleteChildOfQuestion(questionID); // for removing remaining children that won't get deleted after cascading
+      await DatabaseController.deleteQuestionFromAssessment(assessmentID, questionID)
+    }
   }
 
   static async addMicroVivaAnswerToQuestion(answerBody) {

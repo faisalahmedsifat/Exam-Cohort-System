@@ -179,7 +179,7 @@ router.delete('/:id/assessment/:assessmentID/questions/:questionID', middleware.
     const assessmentID = request.params.assessmentID
     const questionID = request.params.questionID
     try {
-        await ExamCohortController.deleteQuestionFromAssessment(assessmentID, questionID)
+        await ExamCohortController.deleteQuestionFromAssessment(assessmentID, questionID, true)
         return response.status(201).json(middleware.generateApiOutput("OK", { success: "Question Deleted!" }))
     } catch (error) {
         return response.status(500).json(middleware.generateApiOutput("FAILED", { error: error.message }))
