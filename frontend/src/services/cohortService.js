@@ -99,9 +99,9 @@ const addAssessmentToCohort = async (token, cohortID, body) => {
   }
 }
 
-const deleteAssessment = async (token, cohortID, candidateID) => {
+const deleteAssessment = async (token, cohortID, assessmentID) => {
   try {
-    const response = await axios.delete(baseUrl + `/${cohortID}/assessment/${candidateID}`, { headers: { Authorization: `bearer ${token}` } })
+    const response = await axios.delete(baseUrl + `/${cohortID}/assessment/${assessmentID}`, { headers: { Authorization: `bearer ${token}` } })
     return response.data.response
   } catch (error) {
     throw Error(error.response.data.response.error);

@@ -28,7 +28,7 @@ import Examcohorts from './components/Dashboard/Examcohorts'
 import ExamcohortsPanel from './components/Dashboard/ExamcohortsPanel'
 import CandidateList from './components/Dashboard/CandidateList'
 import AssessmentList from './components/Dashboard/AssessmentList'
-import AddAssessment from './components/Dashboard/AddAssessment'
+// import AddAssessment from './components/Dashboard/AddAssessment' // only gives add assessment UI
 import AssessmentPanel from './components/Dashboard/AssessmentPanel'
 import QuestionsList from './components/Dashboard/QuestionsList'
 import ResponseList from './components/Dashboard/ResponseList'
@@ -38,6 +38,7 @@ import AssignedCohortsPanel from './components/Dashboard/AssignedCohortsPanel'
 import AssignedAssessmentList from './components/Dashboard/AssignedAssessmentList'
 import ExamArena from './components/Dashboard/ExamArena'
 import CandidateResponseView from './components/Dashboard/CandidateResponseView'
+import AddAssessmentAddQuestions from './components/Dashboard/AddAssessmentAddQuestions'
 
 // Router Navigation Manipulator 
 const NavigateSetter = () => { History.navigate = useNavigate(); return null; };
@@ -103,7 +104,7 @@ const App = () => {
               <Route path='/examcohorts/:cohortID' element={<ExamcohortsPanel />} />
               <Route path='/examcohorts/:cohortID/candidates' element={<CandidateList />} />
               <Route path='/examcohorts/:cohortID/assessments' element={<AssessmentList />} />
-              <Route path='/examcohorts/:cohortID/assessments/add' element={<AddAssessment />} />
+              <Route path='/examcohorts/:cohortID/assessments/add' element={<AddAssessmentAddQuestions />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID' element={<AssessmentPanel />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID/questions' element={<QuestionsList />} />
               <Route path='/examcohorts/:cohortID/assessments/:assessmentID/responses' element={<ResponseList />} />

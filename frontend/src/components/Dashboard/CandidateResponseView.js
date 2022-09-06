@@ -5,6 +5,9 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 // Component
+import { Oval } from 'react-loader-spinner'
+
+// Component
 import Header from '../Header'
 import SidebarForSingleAssessment from './SidebarForSingleAssessment'
 
@@ -163,7 +166,8 @@ const ResponseDisplayCard = ({ body, markAsCorrect, markAsIncorrect }) => {
 const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName, candidateName, candidateID }) => {
   const [assessmentResponses, setAssessmentResponses] = useState([])
   const currentUser = useSelector(store => store.currentUser.value)
-
+  const [loaded, setLoaded] = useState(false)
+  
   const fetchResponse = async () => {
     try {
       let responseList = await reevaluateService.getCandidateResponsesForReEvaluation(currentUser.token, cohortID, assessmentID, candidateID)
@@ -184,6 +188,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName, candi
         return question;
       })
       setAssessmentResponses(newQuestionList);
+      setLoaded(true);
     } catch (e) {
       notification.error(e.message, 2000)
     }
@@ -232,18 +237,38 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName, candi
             </div>
           </div>
         </div>
-        <div>
-          {assessmentResponses.map((response) => {
-            return (
-              <ResponseDisplayCard
-                key={response.answerID}
-                body={response}
-                markAsCorrect={markAsCorrect}
-                markAsIncorrect={markAsIncorrect}
+
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
               />
-            );
-          })}
-        </div >
+            </div>
+          )
+        }
+
+        {
+          loaded === true && (
+            <div>
+              {assessmentResponses.map((response) => {
+                return (
+                  <ResponseDisplayCard
+                    key={response.answerID}
+                    body={response}
+                    markAsCorrect={markAsCorrect}
+                    markAsIncorrect={markAsIncorrect}
+                  />
+                );
+              })}
+            </div >
+          )}
+
       </div >
     </div >
   );

@@ -15,7 +15,7 @@ import SidebarForSingleAssessment from './SidebarForSingleAssessment'
 import cohortService from '../../services/cohortService'
 import reevaluateService from '../../services/reevaluateService'
 import notification from '../../services/notificationService'
-import { ArchiveIcon } from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => {
   const [assessmentResponses, setAssessmentResponses] = useState([])
@@ -89,8 +89,8 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
                 (assessmentResponses.length === 0)
                   ? (
                     <div className='bg-white py-4 px-4 mt-10 font-bold rounded flex flex-row justify-start items-center'>
-                      <ArchiveIcon
-                        className='h-5 w-5'
+                      <InformationCircleIcon
+                        className='h-8 w-8'
                       />
                       <div className='pl-2'>
                         No Responses Yet!

@@ -81,7 +81,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
   const [assessmentsQuestions, setAssessmentsQuestions] = useState([]);
   const [loaded, setLoaded] = useState(false)
   const currentUser = useSelector(store => store.currentUser.value)
-
+  
   // Fetch Question List
   useEffect(() => {
     const fetchQuestions = async () => {

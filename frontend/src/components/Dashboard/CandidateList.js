@@ -8,7 +8,7 @@ import { Dialog } from "@headlessui/react";
 import { Oval } from 'react-loader-spinner'
 
 // Icons
-import { PlusSmIcon } from '@heroicons/react/outline';
+import { PlusSmIcon, InformationCircleIcon } from '@heroicons/react/outline';
 
 // Redux
 import { useSelector } from 'react-redux'
@@ -173,7 +173,19 @@ const Maincontent = ({ cohortID, cohortName }) => {
         }
 
         {
-          loaded === true && (
+          loaded === true && cohortCandidates.length === 0 && (
+            <div className='bg-white w-full rounded mt-5 py-4 px-3 font-medium flex flex-row items-center justify-start gap-x-2'>
+              <div>
+                <InformationCircleIcon className='h-8 w-8'></InformationCircleIcon>
+              </div>
+              <div></div>
+              No Candidates Assigned Yet!
+            </div>
+          ) 
+        }
+
+        {
+          loaded === true && cohortCandidates.length !== 0 && (
             <div className='pt-5 overflow-auto'>
               <table className='bg-white w-full rounded'>
                 <thead className='bg-gray-50 border-b-2 border-gray-200'>

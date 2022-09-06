@@ -7,6 +7,9 @@ import { useSelector } from 'react-redux'
 // Component
 import { Oval } from 'react-loader-spinner'
 
+// Icons
+import { InformationCircleIcon } from '@heroicons/react/outline';
+
 // Component
 import Header from '../Header'
 import Sidebar from './Sidebar'
@@ -99,10 +102,23 @@ const Maincontent = () => {
             </div>
           )
         }
+
+        {
+          loaded === true && examCohorts.length === 0 && (
+            <div className='bg-white w-full rounded mt-5 py-4 px-3 font-medium flex flex-row items-center justify-start gap-x-2'>
+              <div>
+                <InformationCircleIcon className='h-8 w-8'></InformationCircleIcon>
+              </div>
+              <div></div>
+              You haven't been assigned to a cohort as a candidate!
+            </div>
+          )
+        }
+
         <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
 
           {
-            loaded === true && (
+            loaded === true && examCohorts.length !== 0 &&(
               examCohorts.map((cohort, id) => {
                 return (
                   <CohortCard

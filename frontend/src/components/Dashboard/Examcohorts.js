@@ -9,7 +9,7 @@ import { Oval } from 'react-loader-spinner'
 
 
 // Icons
-import { PlusSmIcon } from '@heroicons/react/outline';
+import { PlusSmIcon,InformationCircleIcon } from '@heroicons/react/outline';
 
 // Redux
 import { useSelector } from 'react-redux'
@@ -174,7 +174,19 @@ const Maincontent = () => {
         }
 
         {
-          loaded === true && (
+          loaded === true && examCohorts.length === 0 && (
+            <div className='bg-white w-full rounded mt-5 py-4 px-3 font-medium flex flex-row items-center justify-start gap-x-2'>
+              <div>
+                <InformationCircleIcon className='h-8 w-8'></InformationCircleIcon>
+              </div>
+              <div></div>
+              No Cohorts has been created!
+            </div>
+          )
+        }
+
+        {
+          loaded === true  && examCohorts.length !== 0 && (
             <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
               {
                 examCohorts.map((cohort, id) => {

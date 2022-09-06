@@ -91,7 +91,6 @@ const ExamArena = () => {
     } catch (e) {
       // delete any file that was uploaded 
       for (const detailsOfFiles of uploadedFilesDetails) {
-        console.log(detailsOfFiles);
         await audioUploadService.deleteAudioFile(currentUser.token, detailsOfFiles)
       }
 
