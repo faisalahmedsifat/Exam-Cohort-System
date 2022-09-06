@@ -69,8 +69,8 @@ class ValidationController {
     const availParsed = Date.parse(new Date(availableDateTime))
     const dueDateParsed = Date.parse(new Date(dueDateTime))
     const timeNowParsed = Date.parse(new Date())
-    if(availParsed <= timeNowParsed && timeNowParsed <= dueDateParsed && RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT === true){
-      throw new Error("This assessment is currently available to candidates, adding question right now is prohibited!");
+    if(availParsed <= timeNowParsed && RESTRICT_ADDING_QUESTION_AT_AVAILABLE_ASSESSMENT === true){
+      throw new Error("This assessment is has already started, so adding question right now is prohibited!");
     }
   }
 
