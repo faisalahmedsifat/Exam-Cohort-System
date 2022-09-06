@@ -4,6 +4,10 @@ import { Link as RouterLink } from 'react-router-dom'
 // HeadlessUI
 import { Dialog } from "@headlessui/react";
 
+// Component
+import { Oval } from 'react-loader-spinner'
+
+
 // Icons
 import { PlusSmIcon } from '@heroicons/react/outline';
 
@@ -55,6 +59,7 @@ const CohortCard = ({ title, id, role, field1Name, field1Val, field2Name, field2
 
 const Maincontent = () => {
   const [examCohorts, setExamCohorts] = useState([]);
+  const [loaded, setLoaded] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [addCohortForm, setAddCohortForm] = useState(defaultAddCohortForm)
 
@@ -81,6 +86,7 @@ const Maincontent = () => {
         try {
           const cohortDetails = await cohortService.getEvaluatorsCohorts(currentUser.token);
           setExamCohorts(cohortDetails);
+          setLoaded(true);
         } catch (e) {
           notification.error(e.message, 2000)
         }
@@ -151,24 +157,45 @@ const Maincontent = () => {
           </Dialog>
         </div>
 
-        <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
-          {
-            examCohorts.map((cohort, id) => {
-              return (
-                <CohortCard
-                  key={cohort.cohortID}
-                  id={cohort.cohortID}
-                  title={cohort.name}
-                  role="evaluator"
-                  field1Name="# Assessments"
-                  field1Val={cohort.numOfAssessments}
-                  field2Name="# Candidates"
-                  field2Val={cohort.numOfCandidates}
-                />
-              )
-            })
-          }
-        </div>
+
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
+              />
+            </div>
+          )
+        }
+
+        {
+          loaded === true && (
+            <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
+              {
+                examCohorts.map((cohort, id) => {
+                  return (
+                    <CohortCard
+                      key={cohort.cohortID}
+                      id={cohort.cohortID}
+                      title={cohort.name}
+                      role="evaluator"
+                      field1Name="# Assessments"
+                      field1Val={cohort.numOfAssessments}
+                      field2Name="# Candidates"
+                      field2Val={cohort.numOfCandidates}
+                    />
+                  )
+                })
+              }
+            </div>
+          )
+        }
+
       </div>
     </div >
   )

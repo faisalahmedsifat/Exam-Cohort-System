@@ -5,6 +5,9 @@ import { Link as RouterLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 // Component
+import { Oval } from 'react-loader-spinner'
+
+// Component
 import Header from '../Header'
 import Sidebar from './Sidebar'
 
@@ -46,7 +49,7 @@ const CohortCard = ({ title, id, role, field1Name, field1Val, field2Name, field2
 
 const Maincontent = () => {
   const [examCohorts, setExamCohorts] = useState([]);
-  
+  const [loaded, setLoaded] = useState(false)
   const currentUser = useSelector(store => store.currentUser.value)
 
   // Fetch Users Cohorts
@@ -56,6 +59,7 @@ const Maincontent = () => {
         try {
           const cohortDetails = await assignedCohortService.getAssignedCohorts(currentUser.token);
           setExamCohorts(cohortDetails);
+          setLoaded(true);
         } catch (e) {
           notification.error(e.message, 2000)
         }
@@ -80,22 +84,40 @@ const Maincontent = () => {
             </div>
           </div>
         </div>
+
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
+              />
+            </div>
+          )
+        }
         <div className='flex flex-row flex-shrink-0 flex-wrap gap-4 pt-5'>
+
           {
-            examCohorts.map((cohort, id) => {
-              return (
-                <CohortCard
-                  key={cohort.cohortID}
-                  id={cohort.cohortID}
-                  title={cohort.name}
-                  role="candidate"
-                  field1Name="# Assessments"
-                  field1Val={cohort.numOfAssessments}
-                  field2Name="# Candidates"
-                  field2Val={cohort.numOfCandidates}
-                />
-              )
-            })
+            loaded === true && (
+              examCohorts.map((cohort, id) => {
+                return (
+                  <CohortCard
+                    key={cohort.cohortID}
+                    id={cohort.cohortID}
+                    title={cohort.name}
+                    role="candidate"
+                    field1Name="# Assessments"
+                    field1Val={cohort.numOfAssessments}
+                    field2Name="# Candidates"
+                    field2Val={cohort.numOfCandidates}
+                  />
+                )
+              })
+            )
           }
         </div>
       </div>

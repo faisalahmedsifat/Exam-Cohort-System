@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 
+// Component
+import { Oval } from 'react-loader-spinner'
+
 // Moment JS
 import moment from 'moment';
 
@@ -18,6 +21,7 @@ import notification from '../../services/notificationService'
 const Maincontent = ({ cohortID, cohortName }) => {
   const [cohortAssessments, setCohortAssessments] = useState([]);
   const currentUser = useSelector(store => store.currentUser.value)
+  const [loaded, setLoaded] = useState(false)
 
   // Fetch Assessments List
   useEffect(() => {
@@ -26,6 +30,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
         try {
           const cohortAssessmentList = await assignedCohortService.getAssignedAssessmentList(currentUser.token, cohortID);
           setCohortAssessments(cohortAssessmentList);
+          setLoaded(true);
         } catch (e) {
           notification.error(e.message, 2000)
         }
@@ -37,7 +42,6 @@ const Maincontent = ({ cohortID, cohortName }) => {
 
   return (
     <div className='grow'>
-
       <Header halfHeader={true} title={`Assessments of ${cohortName}`} />
       <div className='bg-flat_white1 p-10'>
 
@@ -50,40 +54,62 @@ const Maincontent = ({ cohortID, cohortName }) => {
           </div>
         </div>
 
-        <div className='pt-5 overflow-auto'>
-          <table className='bg-white w-full rounded'>
-            <thead className='bg-gray-50 border-b-2 border-gray-200'>
-              <tr>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Name</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>No Of Questions</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Available Datetime</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Due Datetime</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Option</th>
-              </tr>
-            </thead>
-            <tbody className='divide-y divide-gray-100'>
-              {
-                cohortAssessments.map((assessment, id) => {
-                  return (
-                    <tr key={assessment.assessmentID}>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.name}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.numOfQuestions}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.availableDateTime).format('MMMM Do YYYY, HH:mm')}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.dueDateTime).format('MMMM Do YYYY, HH:mm')}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap flex items-center gap-5'>
-                        <Link to={`/assignedcohorts/${cohortID}/assessments/${assessment.assessmentID}/start`}>
-                          <span className='bg-flat_green1 hover:bg-flat_green2 font-medium text-white
-                          py-1 px-2 rounded hover:cursor-pointer'>Start</span>
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </table>
-        </div>
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
+              />
+            </div>
+          )
+        }
+
+        {
+          loaded === true && (
+            <div className='pt-5 overflow-auto'>
+              <table className='bg-white w-full rounded'>
+                <thead className='bg-gray-50 border-b-2 border-gray-200'>
+                  <tr>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Name</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>No Of Questions</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Available Datetime</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Due Datetime</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Option</th>
+                  </tr>
+                </thead>
+                <tbody className='divide-y divide-gray-100'>
+                  {
+                    cohortAssessments.map((assessment, id) => {
+                      return (
+                        <tr key={assessment.assessmentID}>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.name}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{assessment.numOfQuestions}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.availableDateTime).format('MMMM Do YYYY, HH:mm')}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{moment(assessment.dueDateTime).format('MMMM Do YYYY, HH:mm')}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap flex items-center gap-5'>
+                            <Link to={`/assignedcohorts/${cohortID}/assessments/${assessment.assessmentID}/start`}>
+                              <span className='bg-flat_green1 hover:bg-flat_green2 font-medium text-white
+            py-1 px-2 rounded hover:cursor-pointer'>Start</span>
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+            </div>
+          )
+        }
+
+
       </div>
+
     </div >
   )
 }

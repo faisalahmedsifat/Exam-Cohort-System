@@ -8,6 +8,9 @@ import { PlusSmIcon } from '@heroicons/react/outline';
 import { useSelector } from 'react-redux'
 
 // Component
+import { Oval } from 'react-loader-spinner'
+
+// Component
 import Header from '../Header'
 import SidebarForSingleAssessment from './SidebarForSingleAssessment'
 
@@ -76,6 +79,7 @@ const QuestionDisplayCard = ({ body, handleDeleteQuestion }) => {
 
 const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => {
   const [assessmentsQuestions, setAssessmentsQuestions] = useState([]);
+  const [loaded, setLoaded] = useState(false)
   const currentUser = useSelector(store => store.currentUser.value)
 
   // Fetch Question List
@@ -97,6 +101,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
           return question;
         })
         setAssessmentsQuestions(newQuestionList);
+        setLoaded(true)
       } catch (e) {
         notification.error(e.message, 2000)
       }
@@ -145,17 +150,37 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName }) => 
             </button>
           </div>
         </div>
-        <div>
-          {assessmentsQuestions.map((question) => {
-            return (
-              <QuestionDisplayCard
-                key={question.questionID}
-                body={question}
-                handleDeleteQuestion={handleDeleteQuestion}
+
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
               />
-            );
-          })}
-        </div>
+            </div>
+          )
+        }
+
+        {
+          loaded === true && (
+            <div>
+              {assessmentsQuestions.map((question) => {
+                return (
+                  <QuestionDisplayCard
+                    key={question.questionID}
+                    body={question}
+                    handleDeleteQuestion={handleDeleteQuestion}
+                  />
+                );
+              })}
+            </div>
+          )
+        }
       </div>
     </div>
   );

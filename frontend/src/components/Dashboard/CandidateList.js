@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom'
 // HeadlessUI
 import { Dialog } from "@headlessui/react";
 
+// Component
+import { Oval } from 'react-loader-spinner'
+
 // Icons
 import { PlusSmIcon } from '@heroicons/react/outline';
 
@@ -27,7 +30,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
   const [isCancelPromptOpen, setIsCancelPromptOpen] = useState(false)
   const [selectedCandidateToDeleteID, setSelectedCandidateToDeleteID] = useState(null)
   const [addCandidateForm, setAddCandidateForm] = useState(defaultAddCandidateForm)
-
+  const [loaded, setLoaded] = useState(false)
   const currentUser = useSelector(store => store.currentUser.value)
 
   // Fetch Candidates List
@@ -37,6 +40,7 @@ const Maincontent = ({ cohortID, cohortName }) => {
         try {
           const cohortCandidateList = await cohortService.getCandidateList(currentUser.token, cohortID);
           setCohortCandidates(cohortCandidateList);
+          setLoaded(true);
         } catch (e) {
           notification.error(e.message, 2000)
         }
@@ -153,53 +157,74 @@ const Maincontent = ({ cohortID, cohortName }) => {
           </Dialog>
         </div>
 
-        <div className='pt-5 overflow-auto'>
-          <table className='bg-white w-full rounded'>
-            <thead className='bg-gray-50 border-b-2 border-gray-200'>
-              <tr>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Name</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Email</th>
-                <th className='p-3 text-sm font-semibold tracking-wide text-left'>Option</th>
-              </tr>
-            </thead>
-            <tbody className='divide-y divide-gray-100'>
-              {
-                cohortCandidates.map((candidate, id) => {
-                  return (
-                    <tr key={id}>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.firstName} {candidate.lastname}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.emailID}</td>
-                      <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
-                        <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
-                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(candidate.id)}>Delete</span>
-                      </td>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </table>
+        {
+          loaded === false && (
+            <div className="pt-20 flex justify-center items-center">
+              <Oval
+                height="70"
+                width="70"
+                radius="70"
+                color='#3498db'
+                stroke="#3498db"
+                ariaLabel='three-dots-loading'
+              />
+            </div>
+          )
+        }
 
-          <Dialog as="div"
-            className="relative z-50"
-            open={isCancelPromptOpen} onClose={() => setIsCancelPromptOpen(false)}>
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-              <div className='fixed inset-0 flex items-center justify-center'>
-                <Dialog.Panel className="mx-auto max-w-md w-full rounded bg-white">
-                  <Dialog.Title className="text-lg font-bold px-3 pt-4">Are you sure?</Dialog.Title>
-                  <Dialog.Description className="px-3 py-5 flex items-center">
-                    Do you want to delete this candidate from this cohort?
-                  </Dialog.Description>
-                  <div className='flex flex-row items-center justify-end gap-5 pb-5 pr-5'>
-                    <button className="bg-flat_red1 hover:bg-flat_red2 py-2
+        {
+          loaded === true && (
+            <div className='pt-5 overflow-auto'>
+              <table className='bg-white w-full rounded'>
+                <thead className='bg-gray-50 border-b-2 border-gray-200'>
+                  <tr>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Name</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Email</th>
+                    <th className='p-3 text-sm font-semibold tracking-wide text-left'>Option</th>
+                  </tr>
+                </thead>
+                <tbody className='divide-y divide-gray-100'>
+                  {
+                    cohortCandidates.map((candidate, id) => {
+                      return (
+                        <tr key={id}>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.firstName} {candidate.lastname}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>{candidate.emailID}</td>
+                          <td className='p-3 text-sm text-gray-700 whitespace-nowrap'>
+                            <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
+                        py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(candidate.id)}>Delete</span>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+
+              <Dialog as="div"
+                className="relative z-50"
+                open={isCancelPromptOpen} onClose={() => setIsCancelPromptOpen(false)}>
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                <div className='fixed inset-0 flex items-center justify-center'>
+                  <Dialog.Panel className="mx-auto max-w-md w-full rounded bg-white">
+                    <Dialog.Title className="text-lg font-bold px-3 pt-4">Are you sure?</Dialog.Title>
+                    <Dialog.Description className="px-3 py-5 flex items-center">
+                      Do you want to delete this candidate from this cohort?
+                    </Dialog.Description>
+                    <div className='flex flex-row items-center justify-end gap-5 pb-5 pr-5'>
+                      <button className="bg-flat_red1 hover:bg-flat_red2 py-2
                                                       text-white text-md rounded-md px-5" onClick={() => handleDeleteCandidate()}>Yes</button>
-                    <button className="bg-flat_green1 hover:bg-flat_green2 py-2
+                      <button className="bg-flat_green1 hover:bg-flat_green2 py-2
                                                       text-white text-md rounded-md px-5" onClick={() => turnOffCancelPromptFor()}>No</button>
-                  </div>
-                </Dialog.Panel>
-              </div>
-          </Dialog>
-        </div>
+                    </div>
+                  </Dialog.Panel>
+                </div>
+              </Dialog>
+            </div>
+          )
+        }
+
+
       </div>
     </div >
   )
