@@ -44,7 +44,7 @@ export class AsseblyAISTTStrategy implements SpeechToTextStrategy {
 
   async getTextFromAudioUrl(audioUrl: string): Promise<string> {
     const queueID = await this.runSTTOnUrl(audioUrl);
-    const STTReport = await this.getSTTReport(queueID);    
+    const STTReport = await this.getSTTReport(queueID);        
     return STTReport.text;
   };
 }

@@ -8,7 +8,7 @@ const SECRET = process.env.SECRET
 module.exports = {
   PORT, SECRET,
   "development": {
-    // "logging": false,
+    "logging": false,
     "username": process.env.DB_DEV_USERNAME,
     "password": process.env.DB_DEV_PASSWORD,
     "database": process.env.DB_DEV_DATABASE,
