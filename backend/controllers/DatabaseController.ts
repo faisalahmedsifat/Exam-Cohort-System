@@ -1,8 +1,5 @@
 // @ts-nocheck
 
-import { ReevaluateController } from "./ReevaluateController"
-
-
 const Sequelize = require('sequelize')
 const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
@@ -295,6 +292,14 @@ class DatabaseController {
     return await Models.Microvivaanswer.findByPk(microvivaanswerID)
   }
 
+  static async getMcqAnswerFromID(mcqanswerID) {
+    return await Models.Mcqanswer.findByPk(mcqanswerID)
+  }
+
+  static async getSelectedOptionsFromMcqAnswerID(mcqanswerID){
+    return await Models.Mcqoptionselected.findAll({where: {mcqanswerID}})
+  }
+
   static async getQuestionIDListOfAssessment(assessmentID) {
     const questionsList = DatabaseController.getDataAttributesFromInstance(await Models.Question.findAll({
       where: {
@@ -346,8 +351,18 @@ class DatabaseController {
   }
 
   static async markAnswerAs(answerID, value) {
+    const questionID = (await Models.Answer.findByPk(answerID)).questionID;
+    const fullMarks = (await DatabaseController.getQuestionFromQuestionID(questionID)).marks
+    let getNextScoreState;
+    if(value === true){
+      getNextScoreState = fullMarks;
+    }else{
+      getNextScoreState = 0;
+    }
     await Models.Answer.update({
-      isCorrect: value
+      isCorrect: value,
+      hasAdjustedManually: true,
+      scoreRightNow: getNextScoreState
     }, {
       where: {
         answerID: answerID
@@ -416,9 +431,15 @@ class DatabaseController {
     if (ques.mcqquestionID != null) {
       await Models.Mcqquestion.destroy({ where: { id: ques.mcqquestionID } })
     } else if (ques.microvivaquestionID != null) {
-      await Models.Mcqquestion.destroy({ where: { id: ques.microvivaquestionID } })
+      await Models.Microvivaquestion.destroy({ where: { id: ques.microvivaquestionID } })
     }
     await DatabaseController.deleteResponsesOfQuestion(questionID)
+  }
+
+  static async setAnsAudioText(micAnsAudioID, micAnsAudioText){
+    let x = await Models.Microvivaanswer.findOne({where:{micAnsAudioID}});
+    x.micAnsAudioText = micAnsAudioText;
+    await x.save();
   }
 }
 
