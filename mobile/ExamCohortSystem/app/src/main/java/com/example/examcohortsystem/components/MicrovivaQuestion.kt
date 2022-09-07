@@ -1,14 +1,17 @@
 package com.example.examcohortsystem.components
 
 import android.content.ContentValues.TAG
+import android.graphics.drawable.shapes.Shape
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -18,6 +21,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.examcohortsystem.model.MicroVivaQuestionDetails
 import com.example.examcohortsystem.model.QuestionResponseItem
 import com.example.examcohortsystem.services.FirebaseServices
+import com.example.examcohortsystem.ui.theme.Shapes
 import com.example.examcohortsystem.utils.AudioRecorder
 import com.example.examcohortsystem.viewmodel.QuestionAudioViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -213,7 +217,8 @@ fun MicrovivaQuestion(
                             Log.d(TAG, "MicrovivaQuestion: audio id: $audioUUID")
                             questionResponseItemValue.micAnsAudioID = audioUUID
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 ) {
                     Text(text = "Stop")
                 }
@@ -236,7 +241,7 @@ fun MicrovivaQuestion(
                     }
                 }
             ) {
-                Text(text = "Stop")
+                Text(text = "Stop Playing")
             }
         }
 

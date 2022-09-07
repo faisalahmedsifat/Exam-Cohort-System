@@ -2,6 +2,7 @@ package com.example.examcohortsystem.views
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -98,6 +99,13 @@ fun QuestionScreen(
     val postQuestion = {
         coroutineScope.launch {
             Log.d(TAG, "QuestionScreen: question response item $questionResponseItemValue")
+            Toast
+                .makeText(
+                    context,
+                    "Posted Response",
+                    Toast.LENGTH_SHORT
+                )
+                .show()
             if (questionResponseItemValue != null) {
                 questionListViewModel.postQuestion(
                     questionResponseItem = questionResponseItemValue!!,

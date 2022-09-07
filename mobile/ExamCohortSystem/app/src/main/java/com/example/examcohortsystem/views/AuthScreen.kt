@@ -3,6 +3,7 @@ package com.example.examcohortsystem.components
 import android.content.ContentValues
 import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -68,36 +69,50 @@ fun AuthScreen(
 
     var authResultLauncher =
         rememberLauncherForActivityResult(contract = AuthResultContract()) { task ->
-            try {
-                var account = task?.getResult(ApiException::class.java)
-                Log.d(ContentValues.TAG, "getAuthenticatedAccount: ${account?.photoUrl}")
-                photoUrl = account?.photoUrl.toString()
+            var account = task?.getResult(ApiException::class.java)
+            Log.d(ContentValues.TAG, "getAuthenticatedAccount: ${account?.photoUrl}")
+            photoUrl = account?.photoUrl.toString()
 
-                googleAuthRequest = GoogleOAuthRequest(account?.idToken)
-                googleAuthRequest?.let { jwtTokenAuthenticationViewModel.getAuthenticated(req = it) }
+            googleAuthRequest = GoogleOAuthRequest(account?.idToken)
+            googleAuthRequest?.let { jwtTokenAuthenticationViewModel.getAuthenticated(req = it) }
+            try {
                 if (token == null) {
                     if (!observed) {
                         jwtTokenAuthenticationViewModel.oAuthResponseObject.observe(
                             owner,
                             Observer {
-                                observed = true
-                                token = it.token
-                                Log.d(ContentValues.TAG, "onCreate observer: $token")
-                                token.let {
-                                    coroutineScope.launch {
-                                        photoDataStore.savePhotoUrl(photoUrl)
-                                        dataStore.saveToken(token!!)
-                                        Log.d(TAG, "AuthScreen: ${getToken}")
-                                        Log.d(TAG, "AuthScreen: going to next screen")
-                                        navController.navigate(route = Screens.AssignedCohorts.route) {
-                                            popUpTo(0)
+                                try {
+                                    observed = true
+                                    token = it.token
+
+                                    Log.d(ContentValues.TAG, "onCreate observer: $token")
+                                    token.let {
+                                        coroutineScope.launch {
+                                            photoDataStore.savePhotoUrl(photoUrl)
+                                            dataStore.saveToken(token!!)
+
+                                            Log.d(TAG, "AuthScreen: ${getToken}")
+                                            Log.d(TAG, "AuthScreen: going to next screen")
+                                            navController.navigate(route = Screens.AssignedCohorts.route) {
+                                                popUpTo(0)
+                                            }
+
                                         }
                                     }
+                                } catch (e: Exception) {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Internal Server Error!",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
                                 }
 
                             })
                     }
                 }
+
 
             } catch (e: ApiException) {
                 text = "Google sign in failed"
