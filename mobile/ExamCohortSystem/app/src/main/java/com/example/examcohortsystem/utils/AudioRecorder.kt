@@ -7,6 +7,7 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import com.example.examcohortsystem.services.FirebaseServices
 import okhttp3.ResponseBody
 import java.io.File
@@ -50,12 +51,33 @@ class AudioRecorder() {
     }
 
     fun playDownloadedAudio(downloadedFileUuid: String? = null, context: Context) {
-        mediaPlayer?.setDataSource(downloadedFileUuid?.let { getRecordingFilePath(it) })
-        Log.d(TAG, "playAudio: downloaded file playing $downloadedFileUuid")
-        mediaPlayer?.prepare()
-        mediaPlayer?.start()
+
+        mediaPlayer?.reset()
+        try{
+            if(downloadedFileUuid != null){
+                mediaPlayer?.setDataSource(downloadedFileUuid.let { getRecordingFilePath(it) })
+                Log.d(TAG, "playAudio: downloaded file playing $downloadedFileUuid")
+                mediaPlayer?.prepare()
+                mediaPlayer?.start()
+            }
+
+        }catch (e: Exception){
+            Toast
+                .makeText(
+                    context,
+                    "Audio File Not Downloaded Yet!",
+                    Toast.LENGTH_SHORT
+                )
+                .show()
+        }
+
     }
 
+    fun stopPlayingAudio(context: Context){
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
     fun playAudio(context: Context) {
         Log.d(TAG, "playAudio: media player is playing ${mediaPlayer?.isPlaying}")
         mediaPlayer?.reset()

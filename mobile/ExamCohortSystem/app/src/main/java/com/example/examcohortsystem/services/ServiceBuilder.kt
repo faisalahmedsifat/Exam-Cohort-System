@@ -6,9 +6,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 
-//val DEFAULT_BASE_URL = "http://10.0.2.2:3001/"
-val DEFAULT_BASE_URL = "http://exam-cohort-backend.herokuapp.com/"
+val DEFAULT_BASE_URL = "http://10.0.2.2:3001/"
+//val DEFAULT_BASE_URL = "http://exam-cohort-backend.herokuapp.com/"
 //val DEFAULT_BASE_URL = "http://192.168.43.87:3001/"
+//val DEFAULT_BASE_URL = "http://192.168.0.105:3001/"
 
 object ServiceBuilder {
     private val client = OkHttpClient.Builder().build()
