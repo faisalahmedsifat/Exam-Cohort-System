@@ -148,7 +148,8 @@ fun QuestionScreen(
                                     microVivaQuestionDetails = it1,
                                     questionAudioViewModel = questionAudioViewModel,
                                     jwtToken = it2,
-                                    owner = owner
+                                    owner = owner,
+                                    questionListViewModel = questionListViewModel
                                 )
                             }
 
