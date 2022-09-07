@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 const router = require('express').Router()
 const middleware = require('../utils/middleware')
