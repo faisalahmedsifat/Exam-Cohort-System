@@ -318,6 +318,9 @@ class DatabaseController {
         candidateID: candidateID,
         questionID: {
           [Sequelize.Op.in]: questionIDListOfAssessment
+        },
+        submittedAt: {
+          [Sequelize.Op.ne]: null
         }
       }
     })
