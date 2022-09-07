@@ -80,8 +80,8 @@ export class EvaluateAnswer {
     const similarities = smHandler.getPercentageSimilarities(textOfCorAns, textOfGivAns);
 
     await DatabaseController.setAnsAudioText(answerAudioID, textOfGivAns)
-    console.log("Correct Answer Text: ", textOfCorAns);
-    console.log("Given Answer Text: ", textOfGivAns);
+    // console.log("Correct Answer Text: ", textOfCorAns);
+    // console.log("Given Answer Text: ", textOfGivAns);
     // console.log("Similarities between texts: ", similarities);
     return similarities * 100 >= MICRO_VIVA_CORRECTNESS_THRESHOLD;
   }

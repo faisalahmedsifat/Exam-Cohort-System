@@ -85,11 +85,11 @@ export class ReevaluateController {
     const candidateResponse = DatabaseController.getDataAttributesFromInstance(await DatabaseController.getAnswersOfAssessment(assessmentID, candidateID))
     let output = []
     for (const answer of candidateResponse) {
-      if(answer.type === "MCQ") {
+      if(answer.type === "MCQ" && answer.mcqanswerID != null) {
         // process MCQ
         let mcqOutput = await ReevaluateController.processOutputOfMCQ(answer);
         output.push(mcqOutput);
-      }else if(answer.type === "MICROVIVA"){
+      }else if(answer.type === "MICROVIVA" && answer.microvivaanswerID != null ){
         // proccess MicroViva
         let microOutput = await ReevaluateController.processOutputOfMicroViva(answer);
         output.push(microOutput);
