@@ -31,7 +31,7 @@ class AudioRecorder() {
     }
 
 
-    fun recordAudio() {
+    fun recordAudio(context: Context) {
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         mediaRecorder?.setOutputFile(getRecordingFilePath(uuidAsString))
@@ -39,6 +39,13 @@ class AudioRecorder() {
         mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         mediaRecorder?.prepare()
         mediaRecorder?.start()
+        Toast
+            .makeText(
+                context,
+                "Answer Recording",
+                Toast.LENGTH_SHORT
+            )
+            .show()
 
     }
 
@@ -47,6 +54,13 @@ class AudioRecorder() {
         mediaRecorder?.release()
         mediaRecorder = null
         uploadAudioToFirebase(context = context)
+        Toast
+            .makeText(
+                context,
+                "Answer Recorded",
+                Toast.LENGTH_SHORT
+            )
+            .show()
         return uuidAsString
     }
 
@@ -59,6 +73,13 @@ class AudioRecorder() {
                 Log.d(TAG, "playAudio: downloaded file playing $downloadedFileUuid")
                 mediaPlayer?.prepare()
                 mediaPlayer?.start()
+                Toast
+                    .makeText(
+                        context,
+                        "Question Playing",
+                        Toast.LENGTH_SHORT
+                    )
+                    .show()
             }
 
         }catch (e: Exception){
@@ -77,24 +98,49 @@ class AudioRecorder() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
+        Toast
+            .makeText(
+                context,
+                "Stopped Playing Audio",
+                Toast.LENGTH_SHORT
+            )
+            .show()
     }
     fun playAudio(context: Context) {
         Log.d(TAG, "playAudio: media player is playing ${mediaPlayer?.isPlaying}")
         mediaPlayer?.reset()
-        if (path != null) {
-            playing = true
-            Log.d(TAG, "playAudio: played")
+        try{
+            if (path != null) {
+                playing = true
+                Log.d(TAG, "playAudio: played")
 //            Log.d(TAG, "playAudio: ${downloadedFileUuid}")
 //            if (downloadedFileUuid == null) {
-            mediaPlayer?.setDataSource(getRecordingFilePath(uuidAsString))
-            Log.d(TAG, "playAudio: created file playing")
+                mediaPlayer?.setDataSource(getRecordingFilePath(uuidAsString))
+                Log.d(TAG, "playAudio: created file playing")
 //            } else {
 //            downloadAudioFromFirebase(context = context, downloadedFileUuid = downloadedFileUuid)
 
 //            }
-            mediaPlayer?.prepare()
-            mediaPlayer?.start()
+                mediaPlayer?.prepare()
+                mediaPlayer?.start()
+                Toast
+                    .makeText(
+                        context,
+                        "Audio Playing",
+                        Toast.LENGTH_SHORT
+                    )
+                    .show()
+            }
+        }catch (e: Exception){
+            Toast
+                .makeText(
+                    context,
+                    "Audio File Not Saved Yet!",
+                    Toast.LENGTH_SHORT
+                )
+                .show()
         }
+
     }
 
     fun uploadAudioToFirebase(context: Context) {

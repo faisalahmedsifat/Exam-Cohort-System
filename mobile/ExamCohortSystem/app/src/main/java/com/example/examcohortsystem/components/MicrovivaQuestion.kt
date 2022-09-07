@@ -123,7 +123,7 @@ fun MicrovivaQuestion(
         if (canRecordAudio) {
             Log.d(TAG, "MicrovivaQuestion: can record audio")
 
-            audioRecorder.recordAudio()
+            audioRecorder.recordAudio(context)
         } else {
             Log.d(TAG, "MicrovivaQuestion: cannot record audio")
         }
@@ -173,6 +173,20 @@ fun MicrovivaQuestion(
             ) {
                 Text(text = "PLAY")
             }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        Log.d(
+                            TAG,
+                            "MicrovivaQuestion: ${questionResponseItemValue.microVivaQuestionDetails?.micQuesAudioID}"
+                        )
+                        audioRecorder.stopPlayingAudio(context = context)
+                    }
+                }
+            ) {
+                Text(text = "STOP")
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -213,6 +227,16 @@ fun MicrovivaQuestion(
                 }
             ) {
                 Text(text = "Play")
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        audioRecorder.stopPlayingAudio(context = context)
+                    }
+                }
+            ) {
+                Text(text = "Stop")
             }
         }
 
