@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Controllers
 const DatabaseController = require('./DatabaseController')
 const ExamCohortController = require('./ExamCohortController')
@@ -47,7 +49,7 @@ export class ReevaluateController {
       isCorrect: mcqAnswer.isCorrect,
       marks: questionOutputWithAnswer.marks,
       timeLimit: questionOutputWithAnswer.timeLimit,
-      score: ((mcqAnswer.isCorrect === true) ? questionOutputWithAnswer.marks : 0),
+      score: mcqAnswer.scoreRightNow,
       viewedAt: mcqAnswer.viewedAt,
       submittedAt: mcqAnswer.submittedAt,
       questionDetails: questionOutputWithAnswer.mcqQuestionDetails
@@ -71,7 +73,7 @@ export class ReevaluateController {
       isCorrect: microvivaAnswer.isCorrect,
       marks: questionOutputWithAnswer.marks,
       timeLimit: questionOutputWithAnswer.timeLimit,
-      score: ((microvivaAnswer.isCorrect === true) ? questionOutputWithAnswer.marks : 0),
+      score: microvivaAnswer.scoreRightNow,
       viewedAt: microvivaAnswer.viewedAt,
       submittedAt: microvivaAnswer.submittedAt,
       questionDetails: questionDetailsNew
@@ -103,6 +105,42 @@ export class ReevaluateController {
 
   static async markAsIncorrect(answerID){
     await DatabaseController.markAnswerAs(answerID, false)
+  }
+
+  // For Exporting
+  static async getDataSingleAssessment(cohortID, assessmentID) {
+    const questionIDs = await DatabaseController.getQuestionIDListOfAssessment(assessmentID);
+    const assessmentData = await DatabaseController.getAssessmentFromAssessmentID(assessmentID)
+    const responseLists = await ReevaluateController.getResponsesOfAssessment(cohortID, assessmentID);
+
+    let dataOutput = []
+    for (const candidate of responseLists) {
+      const responseOfCurCandidate = await ReevaluateController.getCandidateResponses(assessmentID, candidate.responseID)
+      let curCandidateData = {}
+      let candidateResponses = []
+
+      for (const questionID of questionIDs) {
+        for (const response of responseOfCurCandidate) {
+          if (questionID === response.questionID) {
+            candidateResponses.push({ questionID: questionID, score: response.score })
+          }
+        }
+      }
+
+      curCandidateData["CandidateName"] = candidate.candidateName
+      curCandidateData["candidateResponses"] = candidateResponses
+      dataOutput.push(curCandidateData)
+    }
+    dataOutput = {
+      assessmentStats: {
+        maxNumOfQuestion: questionIDs.length,
+        assessmentName: assessmentData.name,
+        questionIDs: questionIDs
+      },
+      assessmentResponses: dataOutput
+    }
+    // console.dir(dataOutput, { depth: null });
+    return dataOutput;
   }
 
 }

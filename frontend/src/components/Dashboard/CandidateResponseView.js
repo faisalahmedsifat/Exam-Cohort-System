@@ -148,6 +148,7 @@ const ResponseDisplayCard = ({ body, markAsCorrect, markAsIncorrect }) => {
               </div>
             </div>
             <div className='text-sm font-semibold text-slate-500'>Marks: {body.marks}</div>
+            <div className='text-sm font-semibold text-slate-500'>Score: {body.score}</div>
             <div className='text-sm font-semibold text-slate-500'>Time Limit: {body.timeLimit} Minutes</div>
           </div>
         </div>
@@ -203,6 +204,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName, candi
 
   const markAsCorrect = async (answerID) => {
     try {
+      setLoaded(false);
       const response = await reevaluateService.markAsCorrect(currentUser.token, cohortID, assessmentID, candidateID, answerID);
       fetchResponse()
       notification.success(response.success, 2000)
@@ -213,6 +215,7 @@ const Maincontent = ({ cohortID, cohortName, assessmentID, assessmentName, candi
 
   const markAsIncorrect = async (answerID) => {
     try {
+      setLoaded(false);
       const response = await reevaluateService.markAsInCorrect(currentUser.token, cohortID, assessmentID, candidateID, answerID);
       fetchResponse()
       notification.success(response.success, 2000)

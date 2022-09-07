@@ -24,7 +24,7 @@ const reevaluateRoutes = require('./routes/reevaluateRoutes')
 const assignedCohortRoutes = require('./routes/assignedCohortRoutes')
 const audioFileRoutes = require('./routes/audioFileRoutes')
 const examRoutes = require('./routes/examRoutes')
-
+const spreadsheetRoutes = require('./routes/spreadsheetRoutes')
 
 /**
  * Database Connection
@@ -66,6 +66,7 @@ app.use('/api/examcohort/', reevaluateRoutes)
 app.use('/api/assignedcohort/', assignedCohortRoutes)
 app.use('/api/audio/', audioFileRoutes)
 app.use('/api/exam/', examRoutes)
+app.use('/api/spreadsheet/', spreadsheetRoutes)
 
 /**
  * Handle the unknown endpoint, if no controller is defined for requested endpoint

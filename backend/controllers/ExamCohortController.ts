@@ -276,20 +276,20 @@ class ExamCohortController {
     }
     let selectedOptionDetails = answer.details.mcqOptionsSelected    
 
-    let correctAnswer = true
+    // let correctAnswer = true
 
-    let question = await DatabaseController.getQuestionFromQuestionID(answerBody.questionID)
-    let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(question.mcqquestionID)
-    let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, null, true)
-    let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
+    // let question = await DatabaseController.getQuestionFromQuestionID(answerBody.questionID)
+    // let mcqQuestionInstance = await DatabaseController.getMCQQuestionFromQuestionID(question.mcqquestionID)
+    // let mcqQuestionOptions = await DatabaseController.getOptionsOfMCQQuestionFromQuestionInstance(mcqQuestionInstance, null, true)
+    // let mcqQuestionOptionData = DatabaseController.getDataAttributesFromInstance(mcqQuestionOptions)
 
-    for (const original of mcqQuestionOptionData) {
-      answerBody.mcqQuestionDetails.mcqOptions.map(givenOption => {
-        if(original.id === givenOption.mcqOptionID){
-          correctAnswer &= (original.isMcqOptionCor === givenOption.isSelectedInAnswer)
-        }
-      })
-    }
+    // for (const original of mcqQuestionOptionData) {
+    //   answerBody.mcqQuestionDetails.mcqOptions.map(givenOption => {
+    //     if(original.id === givenOption.mcqOptionID){
+    //       correctAnswer &= (original.isMcqOptionCor === givenOption.isSelectedInAnswer)
+    //     }
+    //   })
+    // }
 
     // Insert to database
     let mcqanswerID = (await DatabaseController.createMcqAnswer()).id
@@ -300,7 +300,7 @@ class ExamCohortController {
     await DatabaseController.addMcqOptionSelectedFromArray(selectedOptions)
 
     return {
-      correctAnswer, mcqanswerID
+      mcqanswerID
     }
   }
 

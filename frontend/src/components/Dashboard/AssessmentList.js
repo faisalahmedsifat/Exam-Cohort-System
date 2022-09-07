@@ -23,6 +23,7 @@ import SidebarForSingleCohort from './SidebarForSingleCohort'
 // Services
 import cohortService from '../../services/cohortService'
 import notification from '../../services/notificationService'
+import spreadsheetDownloadService from "../../services/spreadsheetDownloadService";
 
 const Maincontent = ({ cohortID, cohortName }) => {
   const [cohortAssessments, setCohortAssessments] = useState([]);
@@ -63,6 +64,35 @@ const Maincontent = ({ cohortID, cohortName }) => {
   const turnOnCancelPromptFor = (assessmentID) => {
     setSelectedAssessmentToDeleteID(assessmentID);
     setIsCancelPromptOpen(true);
+  }
+
+  const saveFile = (blob, filename) => {
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = filename;
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 0)
+    }
+  }
+
+  const downloadSpreadsheet = async (assessmentID) => {
+    try {
+      let blob = await spreadsheetDownloadService.downloadSpreadsheetForAssessment(currentUser.token, cohortID, assessmentID);
+      saveFile(blob, assessmentID + '.xlsx');
+      // console.log(url);
+      // window.location.href = url;
+      notification.success("Exported Successfully!", 2000);
+    } catch (error) {
+      notification.error(error.message, 2000);
+    }
   }
 
   const turnOffCancelPromptFor = () => {
@@ -148,6 +178,8 @@ const Maincontent = ({ cohortID, cohortName }) => {
                               <span className='bg-flat_green1 hover:bg-flat_green2 font-medium text-white
                       py-1 px-2 rounded hover:cursor-pointer'>Enter</span>
                             </Link>
+                            <span className='bg-flat_blue1 hover:bg-flat_blue2 font-medium text-white
+                    py-1 px-2 rounded hover:cursor-pointer' onClick={() => downloadSpreadsheet(assessment.assessmentID)}>Export Data</span>
                             <span className='bg-flat_red1 hover:bg-flat_red2 font-medium text-white
                     py-1 px-2 rounded hover:cursor-pointer' onClick={() => turnOnCancelPromptFor(assessment.assessmentID)}>Delete</span>
                           </td>
