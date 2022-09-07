@@ -153,7 +153,7 @@ export class ExamServerFactory {
       if (answer.type === "MCQ") {
         // console.dir(answer, {depth: null});
         const result = await ExamCohortController.addMcqAnswerToQuestion(answer)
-        answerBase.isCorrect = Boolean(result.correctAnswer)
+        // answerBase.isCorrect = Boolean(result.correctAnswer)
         answerBase.mcqanswerID = result.mcqanswerID
         await answerBase.save()
       } else if (answer.type === "MICROVIVA") {
@@ -162,11 +162,11 @@ export class ExamServerFactory {
         answerBase.isCorrect = null
         answerBase.microvivaanswerID = result.microvivaanswerID
         await answerBase.save()
-        
-        // run background system evaluator of microviva question
-        EvaluateAnswer.evaluateAnswer(answer.questionID, this.candidateID)
       }
 
+      // run background system evaluator of mcq question
+      EvaluateAnswer.evaluateAnswer(answer.questionID, this.candidateID)
+        
       // remove the answer from questionlist
       this.removeQuestionFromList(answer.questionID)
     }
