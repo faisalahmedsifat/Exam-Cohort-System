@@ -13,5 +13,6 @@ data class QuestionResponseItem(
     @SerializedName("timeLimit") val timeLimit: Int,
     @SerializedName("timeLimitSec") val timeLimitSec: Int,
     @SerializedName("timeTillDueDatetime") val timeTillDueDatetime: Int,
-    @SerializedName("type") val type: String
+    @SerializedName("type") val type: String,
+    @SerializedName("micAnsAudioID")val micAnsAudioID: String?,
 )

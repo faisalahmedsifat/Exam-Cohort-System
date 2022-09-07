@@ -67,8 +67,12 @@ router.post('/get', async (request, response) => {
       fileName: fileName,
       ref_ext: fileExt
     }   
+    console.log('check 1');
+    
     let blob = await audioController.getAudioBlob(fileDetails);
+    console.log('check 2');
     response.type(blob.type);
+    console.log('check 3');
     blob.arrayBuffer().then((buf) => {
       response.send(Buffer.from(buf))
     })

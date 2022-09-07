@@ -29,7 +29,7 @@ fun SetUpNavGraph(
     assignedExamCohortListViewModel: AssignedExamCohortListViewModel,
     questionListViewModel: QuestionListViewModel,
     jwtTokenAuthenticationViewModel: JwtTokenAuthenticationViewModel,
-    //TODO: PROFILE SCREEN API
+    questionAudioViewModel: QuestionAudioViewModel,
 ) {
     NavHost(navController = navController, startDestination = Screens.Auth.route) {
         composable(route = Screens.Auth.route) {
@@ -72,7 +72,8 @@ fun SetUpNavGraph(
                     owner = owner,
                     questionListViewModel = questionListViewModel,
                     navController = navController,
-                    assessmentID = it1
+                    assessmentID = it1,
+                    questionAudioViewModel = questionAudioViewModel
                 )
             }
         }

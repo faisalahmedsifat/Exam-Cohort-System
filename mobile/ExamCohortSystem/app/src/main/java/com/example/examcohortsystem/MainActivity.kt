@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
     private val assessmentListViewModel: AssessmentListViewModel by viewModels()
     private val questionListViewModel: QuestionListViewModel by viewModels()
     private val jwtTokenAuthenticationViewModel: JwtTokenAuthenticationViewModel by viewModels()
+    private val questionAudioViewModel: QuestionAudioViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
                     assessmentListViewModel = assessmentListViewModel,
                     assignedExamCohortListViewModel = assignedExamCohortListViewModel,
                     questionListViewModel = questionListViewModel, owner = this,
-                    jwtTokenAuthenticationViewModel = jwtTokenAuthenticationViewModel
+                    jwtTokenAuthenticationViewModel = jwtTokenAuthenticationViewModel,
+                    questionAudioViewModel = questionAudioViewModel,
                 )
             }
         }

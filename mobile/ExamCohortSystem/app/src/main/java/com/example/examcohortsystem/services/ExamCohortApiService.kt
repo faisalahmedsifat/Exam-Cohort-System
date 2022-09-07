@@ -1,11 +1,18 @@
 package com.example.examcohortsystem.services
 
 import android.content.ContentValues.TAG
+import android.media.AudioRecord
+import android.os.Environment
 import android.util.Log
 import com.example.examcohortsystem.model.*
+import com.example.examcohortsystem.utils.AudioRecorder
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class ExamCohortApiService {
 
@@ -139,4 +146,40 @@ class ExamCohortApiService {
             }
         )
     }
+
+    fun getPostedAudio(
+        questionAudioRequest: QuestionAudioRequest,
+        jwtToken: String,
+    ) {
+        response.getPostedAudio(questionAudioRequest = questionAudioRequest, "Bearer $jwtToken").enqueue(
+            object : Callback<ResponseBody>{
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    Log.d(TAG, "onResponse: successfully got audio response")
+                    Log.d(TAG, "onResponse: $response")
+                    val body = response.body()
+
+                    val audioRecorder = AudioRecorder()
+//                    audioRecorder.getRecordingFilePath(questionAudioRequest.fileName)?.let { saveFile(body, it) }
+                    val path = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MUSIC
+                    ).toString()
+                    val file = File(path, "/${questionAudioRequest.fileName}.wav")
+                    Log.d(TAG, "onResponse: body: ${response.body()}")
+                    audioRecorder.saveFile(body = response.body(), pathWhereYouWantToSaveFile = file.path)
+
+                    Log.d(TAG, "onResponse: file successfully saved to disk")
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                }
+
+
+            }
+        )
+    }
+
+
 }

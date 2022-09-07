@@ -1,6 +1,7 @@
 package com.example.examcohortsystem.services
 
 import com.example.examcohortsystem.model.*
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -45,4 +46,15 @@ interface ExamCohortApiInterface {
         @Path("assessmentId") assessmentId: String?,
     ): Call<QuestionPostingResponse?>
 
+
+    @Streaming
+    @Headers("Content-Type: application/json")
+    @POST("/api/audio/get")
+    fun getPostedAudio(
+//        @Query("id") id: String?,
+//        @Body questionResponseItem: QuestionResponseItem,
+        @Body questionAudioRequest: QuestionAudioRequest,
+        @Header("Authorization") auth: String?,
+//        @Path("assessmentId") assessmentId: String?,
+    ): Call<ResponseBody>
 }

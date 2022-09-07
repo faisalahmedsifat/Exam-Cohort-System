@@ -1,15 +1,9 @@
 package com.example.examcohortsystem.components
 
-import android.Manifest
 import android.content.ContentValues.TAG
-import android.content.pm.PackageManager
-import android.media.AudioRecord
-import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Environment
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -18,34 +12,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.Observer
 import com.example.examcohortsystem.model.MicroVivaQuestionDetails
+import com.example.examcohortsystem.model.QuestionAudioRequest
 import com.example.examcohortsystem.utils.AudioRecorder
+import com.example.examcohortsystem.viewmodel.QuestionAudioViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MicrovivaQuestion(
     microVivaQuestionDetails: MicroVivaQuestionDetails,
-//    recordAudio: () -> Unit,
-//    playAudio: () -> Unit,
-//    stopAudio: () -> Unit
+    questionAudioViewModel: QuestionAudioViewModel,
+    jwtToken: String,
 ) {
 
     val coroutineScope = rememberCoroutineScope()
-    var mediaRecorder = MediaRecorder()
-    var path = Environment.getExternalStorageDirectory().toString() + "/myrecording.mp3"
-    var canRecordAudio by remember{
-     mutableStateOf(true)
+
+    var canRecordAudio by remember {
+        mutableStateOf(true)
     }
-    var audioStarted by remember{
+    var audioStarted by remember {
         mutableStateOf(false)
     }
     val permissionsState = rememberMultiplePermissionsState(
@@ -60,7 +52,7 @@ fun MicrovivaQuestion(
         key1 = lifecycleOwner,
         effect = {
             val observer = LifecycleEventObserver { _, event ->
-                if(event == Lifecycle.Event.ON_START) {
+                if (event == Lifecycle.Event.ON_START) {
                     permissionsState.launchMultiplePermissionRequest()
                 }
             }
@@ -72,69 +64,67 @@ fun MicrovivaQuestion(
         }
     )
 
-    val context = LocalContext.current
 
-
-    val playQuestionAudio = {
-
-    }
     val recordAudioPermission = {
-            permissionsState.permissions.forEach { permis ->
-                when(permis.permission)
-                {
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
-                        when {
-                            permis.hasPermission ->
-                            {
-                                Log.d(TAG, "MicrovivaQuestion: Write Storage has permission")
-                            }
-                            permis.shouldShowRationale ->
-                            {
-                            }
-                            !permis.hasPermission && !permis.shouldShowRationale ->
-                            {
-                                canRecordAudio = false
-                                Log.d(TAG, "MicrovivaQuestion: NOT Write Storage has permission")
-                            }
+        permissionsState.permissions.forEach { permis ->
+            when (permis.permission) {
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE -> {
+                    when {
+                        permis.hasPermission -> {
+                            Log.d(TAG, "MicrovivaQuestion: Write Storage has permission")
+                        }
+                        permis.shouldShowRationale -> {
+                        }
+                        !permis.hasPermission && !permis.shouldShowRationale -> {
+                            canRecordAudio = false
+                            Log.d(TAG, "MicrovivaQuestion: NOT Write Storage has permission")
                         }
                     }
-                    android.Manifest.permission.RECORD_AUDIO -> {
-                        when {
-                            permis.hasPermission ->
-                            {
-                                Log.d(TAG, "MicrovivaQuestion: Record Audio has permission")
-                            }
-                            permis.shouldShowRationale ->
-                            {
-                            }
-                            !permis.hasPermission && !permis.shouldShowRationale ->
-                            {
-                                canRecordAudio = false
-                                Log.d(TAG, "MicrovivaQuestion: NOT Record Audio has permission")
-                            }
+                }
+                android.Manifest.permission.RECORD_AUDIO -> {
+                    when {
+                        permis.hasPermission -> {
+                            Log.d(TAG, "MicrovivaQuestion: Record Audio has permission")
+                        }
+                        permis.shouldShowRationale -> {
+                        }
+                        !permis.hasPermission && !permis.shouldShowRationale -> {
+                            canRecordAudio = false
+                            Log.d(TAG, "MicrovivaQuestion: NOT Record Audio has permission")
                         }
                     }
                 }
             }
+        }
     }
     val audioRecorder by remember {
         mutableStateOf(AudioRecorder())
     }
+    var observed by remember {
+        mutableStateOf(false)
+    }
+    var gettingCount by remember {
+        mutableStateOf(0)
+    }
     val recordAudio = {
         recordAudioPermission()
-        if(canRecordAudio){
+        if (canRecordAudio) {
             Log.d(TAG, "MicrovivaQuestion: can record audio")
-//            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-//            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-//            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-//            mediaRecorder.setOutputFile(path)
-//            mediaRecorder.prepare()
-//            mediaRecorder.start()
+
             audioRecorder.recordAudio()
-        }else {
+        } else {
             Log.d(TAG, "MicrovivaQuestion: cannot record audio")
         }
     }
+
+    val questionAudioReq = QuestionAudioRequest(fileDir = "questions/prompt", fileExt = "wav", fileName = microVivaQuestionDetails.micQuesAudioID)
+
+    val getAudioQuestion = {
+        questionAudioViewModel.getQuestionAudio(jwtToken = jwtToken, questionAudioRequest = questionAudioReq)
+
+        Log.d(TAG, "MicrovivaQuestion: Downloaded file")
+    }
+    getAudioQuestion()
 
     Column(
         modifier = Modifier
@@ -145,8 +135,8 @@ fun MicrovivaQuestion(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Row{
-            if(!audioStarted){
+        Row {
+            if (!audioStarted) {
                 Button(
                     onClick = {
                         audioStarted = true
@@ -157,11 +147,11 @@ fun MicrovivaQuestion(
                 ) {
                     Text(text = "Start")
                 }
-            }else{
+            } else {
                 Button(
                     onClick = {
                         audioStarted = false
-                        coroutineScope.launch{
+                        coroutineScope.launch {
                             audioRecorder.stopAudioRecording()
                         }
                     }
@@ -192,10 +182,10 @@ fun MicrovivaQuestion(
     }
 }
 
-@Preview
-@Composable
-fun MicroVivaPreview() {
-    MicrovivaQuestion(microVivaQuestionDetails = MicroVivaQuestionDetails(
-        micQuesAudioID = "something"
-    ))
-}
+//@Preview
+//@Composable
+//fun MicroVivaPreview() {
+//    MicrovivaQuestion(microVivaQuestionDetails = MicroVivaQuestionDetails(
+//        micQuesAudioID = "something"
+//    ))
+//}
