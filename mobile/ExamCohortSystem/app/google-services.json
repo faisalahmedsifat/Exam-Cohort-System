@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "586269988590",
+    "project_id": "exam-cohort-app-development",
+    "storage_bucket": "exam-cohort-app-development.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586269988590:android:272f63493a7ce82d5105ff",
+        "android_client_info": {
+          "package_name": "com.example.examcohortsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586269988590-h9bgqnj82dgqkulv3gqjvao0b6bve0k8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLKEYCPeHRleBidmZ2-527y-5BA2WcJKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586269988590-h9bgqnj82dgqkulv3gqjvao0b6bve0k8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

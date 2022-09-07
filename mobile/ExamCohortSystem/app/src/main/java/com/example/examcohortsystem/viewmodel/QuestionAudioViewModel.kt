@@ -13,12 +13,13 @@ import kotlinx.coroutines.launch
 
 class QuestionAudioViewModel : ViewModel() {
 //    var assessmentResponse: MutableLiveData<AssessmentResponse> = MutableLiveData()
-
+    var stored: MutableLiveData<Boolean> = MutableLiveData()
 
     fun getQuestionAudio(jwtToken: String, questionAudioRequest: QuestionAudioRequest) {
         val apiService = ExamCohortApiService()
 
-//        viewModelScope.launch {
+        viewModelScope.launch {
+            stored.value = false
 //            val assessmentRes =
 //                apiService.getAssessments(cohortId = cohortId, jwtToken = jwtToken, res
 //                = {
@@ -28,9 +29,10 @@ class QuestionAudioViewModel : ViewModel() {
 //                })
 
             val questionAudioRes = apiService.getPostedAudio(questionAudioRequest = questionAudioRequest, jwtToken = jwtToken)
+            stored.value = true
 
 //            examCohortResponse.value = apiService.getExamCohorts()
-//        }
+        }
     }
 
 }

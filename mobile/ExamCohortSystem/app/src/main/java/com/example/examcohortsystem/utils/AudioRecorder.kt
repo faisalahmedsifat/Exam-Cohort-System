@@ -1,20 +1,23 @@
 package com.example.examcohortsystem.utils
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.example.examcohortsystem.services.FirebaseServices
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.*
 
-class AudioRecorder {
+class AudioRecorder() {
     var mediaRecorder: MediaRecorder? = null
     var mediaPlayer: MediaPlayer? = null
-    var path:String? = null
+    var path: String? = null
 
     var playing: Boolean = false
     val uuid: UUID = UUID.randomUUID()
@@ -27,44 +30,45 @@ class AudioRecorder {
     }
 
 
-    fun recordAudio(){
-//        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-//        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-//        mediaRecorder.setOutputFile(getRecordingFilePath())
-//        path = getRecordingFilePath()
-//        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+    fun recordAudio() {
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         mediaRecorder?.setOutputFile(getRecordingFilePath(uuidAsString))
         path = getRecordingFilePath(uuidAsString)
-        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         mediaRecorder?.prepare()
         mediaRecorder?.start()
     }
 
-    fun stopAudioRecording(){
+    fun stopAudioRecording(context: Context): String {
         mediaRecorder?.stop()
         mediaRecorder?.release()
         mediaRecorder = null
+        uploadAudioToFirebase(context = context)
+        return uuidAsString
     }
 
-    fun playAudio(){
+    fun playAudio(downloadedFileUuid: String? = null) {
         Log.d(TAG, "playAudio: media player is playing ${mediaPlayer?.isPlaying}")
         mediaPlayer?.reset()
-            if(path != null ){
-                playing = true
-                Log.d(TAG, "playAudio: played")
-
-
+        if (path != null) {
+            playing = true
+            Log.d(TAG, "playAudio: played")
+            if (downloadedFileUuid == null)
                 mediaPlayer?.setDataSource(getRecordingFilePath(uuidAsString))
-                mediaPlayer?.prepare()
-                mediaPlayer?.start()
-            }
+            else mediaPlayer?.setDataSource(getRecordingFilePath(downloadedFileUuid))
+            mediaPlayer?.prepare()
+            mediaPlayer?.start()
+        }
     }
 
-    fun storeAudio(){
+    fun uploadAudioToFirebase(context: Context) {
+        val firebaseServices = FirebaseServices(context = context)
+        val file = Uri.fromFile(getRecordingFilePath(uuidAsString)?.let { File(it) })
+        firebaseServices.uploadAudio(uuidAsString, file)
 
     }
+
     fun getRecordingFilePath(uuid: String): String? {
         path = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_MUSIC
@@ -73,8 +77,8 @@ class AudioRecorder {
         return file.path
     }
 
-    fun saveFile(body: ResponseBody?, pathWhereYouWantToSaveFile: String):String{
-        if (body==null)
+    fun saveFile(body: ResponseBody?, pathWhereYouWantToSaveFile: String): String {
+        if (body == null)
             return ""
         var input: InputStream? = null
         try {
@@ -90,10 +94,9 @@ class AudioRecorder {
                 output.flush()
             }
             return pathWhereYouWantToSaveFile
-        }catch (e:Exception){
-            Log.e("saveFile",e.toString())
-        }
-        finally {
+        } catch (e: Exception) {
+            Log.e("saveFile", e.toString())
+        } finally {
             input?.close()
         }
         return ""

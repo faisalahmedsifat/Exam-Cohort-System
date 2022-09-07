@@ -15,13 +15,16 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.example.examcohortsystem.model.MicroVivaQuestionDetails
 import com.example.examcohortsystem.model.QuestionAudioRequest
 import com.example.examcohortsystem.utils.AudioRecorder
 import com.example.examcohortsystem.viewmodel.QuestionAudioViewModel
+import com.example.examcohortsystem.viewmodel.QuestionListViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -30,16 +33,22 @@ fun MicrovivaQuestion(
     microVivaQuestionDetails: MicroVivaQuestionDetails,
     questionAudioViewModel: QuestionAudioViewModel,
     jwtToken: String,
+    owner: LifecycleOwner,
+    questionListViewModel: QuestionListViewModel
 ) {
-
+//    FirebaseApp.initializeApp(LocalContext.current);
     val coroutineScope = rememberCoroutineScope()
-
+    val context = LocalContext.current
     var canRecordAudio by remember {
         mutableStateOf(true)
     }
     var audioStarted by remember {
         mutableStateOf(false)
     }
+    var questionResponseItemValue by remember {
+        mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
+    }
+
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.RECORD_AUDIO,
@@ -47,6 +56,7 @@ fun MicrovivaQuestion(
         )
     )
     val lifecycleOwner = LocalLifecycleOwner.current
+
 
     DisposableEffect(
         key1 = lifecycleOwner,
@@ -121,10 +131,22 @@ fun MicrovivaQuestion(
 
     val getAudioQuestion = {
         questionAudioViewModel.getQuestionAudio(jwtToken = jwtToken, questionAudioRequest = questionAudioReq)
+        questionAudioViewModel.stored.observe(
+            owner,
+            Observer {
+                if (questionAudioViewModel.stored.value
+                    != null
+                ) {
+                    if(questionAudioViewModel.stored.value == true) {
+                        Log.d(TAG, "MicrovivaQuestion: downloaded audio file")
+                    }
+                }
+            })
 
         Log.d(TAG, "MicrovivaQuestion: Downloaded file")
     }
-    getAudioQuestion()
+//    getAudioQuestion()
+
 
     Column(
         modifier = Modifier
@@ -135,7 +157,30 @@ fun MicrovivaQuestion(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Row() {
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        audioRecorder.playAudio()
+                    }
+                }
+            ) {
+                Text(text = "PLAY")
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            audioRecorder.playAudio()
+                        }
+                    }
+                    ) {
+                Text(text = "Replay")
+            }
+        }
+
         Row {
+
             if (!audioStarted) {
                 Button(
                     onClick = {
@@ -145,14 +190,15 @@ fun MicrovivaQuestion(
                         }
                     }
                 ) {
-                    Text(text = "Start")
+                    Text(text = "Answer")
                 }
             } else {
                 Button(
                     onClick = {
                         audioStarted = false
                         coroutineScope.launch {
-                            audioRecorder.stopAudioRecording()
+                            val audioUUID = audioRecorder.stopAudioRecording(context = context)
+                            questionResponseItemValue?.micAnsAudioID = audioUUID
                         }
                     }
                 ) {
@@ -167,18 +213,18 @@ fun MicrovivaQuestion(
                     }
                 }
             ) {
-                Text(text = "PLAY")
+                Text(text = "Play")
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(
-            onClick = {
-                recordAudio()
-            }
-        ) {
-            Text(text = "Answer")
-        }
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Button(
+//            onClick = {
+//                recordAudio()
+//            }
+//        ) {
+//            Text(text = "Answer")
+//        }
     }
 }
 
