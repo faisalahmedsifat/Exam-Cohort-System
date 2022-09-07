@@ -18,6 +18,7 @@ import com.example.examcohortsystem.components.McqQuestion
 import com.example.examcohortsystem.components.MicrovivaQuestion
 import com.example.examcohortsystem.components.ResponseText
 import com.example.examcohortsystem.components.TimerTopBar
+import com.example.examcohortsystem.utils.AudioRecorder
 import com.example.examcohortsystem.utils.datastore.StoreJwtToken
 import com.example.examcohortsystem.viewmodel.QuestionAudioViewModel
 import com.example.examcohortsystem.viewmodel.QuestionListViewModel
@@ -104,6 +105,8 @@ fun QuestionScreen(
                     assessmentId = assessmentID
                 )
             }
+//            val audioRecorder = AudioRecorder()
+//            audioRecorder.uploadAudioToFirebase(context)
             questionListViewModel.questionPostingResponse.observe(
                 owner,
                 Observer {
@@ -149,7 +152,7 @@ fun QuestionScreen(
                                     questionAudioViewModel = questionAudioViewModel,
                                     jwtToken = it2,
                                     owner = owner,
-                                    questionListViewModel = questionListViewModel
+                                    questionResponseItemValue = questionResponseItemValue!!,
                                 )
                             }
 

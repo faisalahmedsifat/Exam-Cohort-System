@@ -1,8 +1,7 @@
 package com.example.examcohortsystem.components
 
 import android.content.ContentValues.TAG
-import android.media.MediaRecorder
-import android.os.Environment
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -16,16 +15,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.example.examcohortsystem.model.MicroVivaQuestionDetails
-import com.example.examcohortsystem.model.QuestionAudioRequest
+import com.example.examcohortsystem.model.QuestionResponseItem
+import com.example.examcohortsystem.services.FirebaseServices
 import com.example.examcohortsystem.utils.AudioRecorder
 import com.example.examcohortsystem.viewmodel.QuestionAudioViewModel
-import com.example.examcohortsystem.viewmodel.QuestionListViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -34,9 +32,15 @@ fun MicrovivaQuestion(
     questionAudioViewModel: QuestionAudioViewModel,
     jwtToken: String,
     owner: LifecycleOwner,
-    questionListViewModel: QuestionListViewModel
+//    questionListViewModel: QuestionListViewModel
+    questionResponseItemValue: QuestionResponseItem,
 ) {
 //    FirebaseApp.initializeApp(LocalContext.current);
+    var audioRecorder by remember {
+        mutableStateOf(
+            AudioRecorder()
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var canRecordAudio by remember {
@@ -45,9 +49,9 @@ fun MicrovivaQuestion(
     var audioStarted by remember {
         mutableStateOf(false)
     }
-    var questionResponseItemValue by remember {
-        mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
-    }
+//    var questionResponseItemValue by remember {
+//        mutableStateOf(questionListViewModel.questionResponse.value?.questionResponseItem)
+//    }
 
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -107,9 +111,7 @@ fun MicrovivaQuestion(
             }
         }
     }
-    val audioRecorder by remember {
-        mutableStateOf(AudioRecorder())
-    }
+
     var observed by remember {
         mutableStateOf(false)
     }
@@ -127,24 +129,21 @@ fun MicrovivaQuestion(
         }
     }
 
-    val questionAudioReq = QuestionAudioRequest(fileDir = "questions/prompt", fileExt = "wav", fileName = microVivaQuestionDetails.micQuesAudioID)
 
-    val getAudioQuestion = {
-        questionAudioViewModel.getQuestionAudio(jwtToken = jwtToken, questionAudioRequest = questionAudioReq)
-        questionAudioViewModel.stored.observe(
-            owner,
-            Observer {
-                if (questionAudioViewModel.stored.value
-                    != null
-                ) {
-                    if(questionAudioViewModel.stored.value == true) {
-                        Log.d(TAG, "MicrovivaQuestion: downloaded audio file")
-                    }
-                }
-            })
-
-        Log.d(TAG, "MicrovivaQuestion: Downloaded file")
+    val downloadAudioQuestion = {
+        observed = true
+        val audioUuid = questionResponseItemValue.microVivaQuestionDetails?.micQuesAudioID
+        val firebaseServices = FirebaseServices(context)
+//        val audioRecorder = AudioRecorder()
+        val file = Uri.fromFile(audioUuid?.let {
+            audioRecorder.getRecordingFilePath(it)?.let { File(it) }
+        })
+        if (audioUuid != null) {
+            firebaseServices.downloadAudio(file = file, fileName = audioUuid)
+        }
     }
+    if (!observed)
+        downloadAudioQuestion()
 //    getAudioQuestion()
 
 
@@ -161,24 +160,22 @@ fun MicrovivaQuestion(
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        audioRecorder.playAudio()
+                        Log.d(
+                            TAG,
+                            "MicrovivaQuestion: ${questionResponseItemValue.microVivaQuestionDetails?.micQuesAudioID}"
+                        )
+                        audioRecorder.playDownloadedAudio(
+                            context = context,
+                            downloadedFileUuid = questionResponseItemValue.microVivaQuestionDetails?.micQuesAudioID
+                        )
                     }
                 }
             ) {
                 Text(text = "PLAY")
             }
-            Spacer(modifier = Modifier.width(10.dp))
-            Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            audioRecorder.playAudio()
-                        }
-                    }
-                    ) {
-                Text(text = "Replay")
-            }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
         Row {
 
             if (!audioStarted) {
@@ -186,6 +183,7 @@ fun MicrovivaQuestion(
                     onClick = {
                         audioStarted = true
                         coroutineScope.launch {
+                            audioRecorder = AudioRecorder()
                             recordAudio()
                         }
                     }
@@ -198,7 +196,8 @@ fun MicrovivaQuestion(
                         audioStarted = false
                         coroutineScope.launch {
                             val audioUUID = audioRecorder.stopAudioRecording(context = context)
-                            questionResponseItemValue?.micAnsAudioID = audioUUID
+                            Log.d(TAG, "MicrovivaQuestion: audio id: $audioUUID")
+                            questionResponseItemValue.micAnsAudioID = audioUUID
                         }
                     }
                 ) {
@@ -209,7 +208,7 @@ fun MicrovivaQuestion(
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        audioRecorder.playAudio()
+                        audioRecorder.playAudio(context = context)
                     }
                 }
             ) {

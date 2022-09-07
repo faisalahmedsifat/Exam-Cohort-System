@@ -20,8 +20,8 @@ class AudioRecorder() {
     var path: String? = null
 
     var playing: Boolean = false
-    val uuid: UUID = UUID.randomUUID()
-    val uuidAsString: String = uuid.toString()
+    var uuid = UUID.randomUUID()
+    var uuidAsString: String = uuid.toString()
 
     init {
 
@@ -38,6 +38,7 @@ class AudioRecorder() {
         mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         mediaRecorder?.prepare()
         mediaRecorder?.start()
+
     }
 
     fun stopAudioRecording(context: Context): String {
@@ -48,15 +49,27 @@ class AudioRecorder() {
         return uuidAsString
     }
 
-    fun playAudio(downloadedFileUuid: String? = null) {
+    fun playDownloadedAudio(downloadedFileUuid: String? = null, context: Context) {
+        mediaPlayer?.setDataSource(downloadedFileUuid?.let { getRecordingFilePath(it) })
+        Log.d(TAG, "playAudio: downloaded file playing $downloadedFileUuid")
+        mediaPlayer?.prepare()
+        mediaPlayer?.start()
+    }
+
+    fun playAudio(context: Context) {
         Log.d(TAG, "playAudio: media player is playing ${mediaPlayer?.isPlaying}")
         mediaPlayer?.reset()
         if (path != null) {
             playing = true
             Log.d(TAG, "playAudio: played")
-            if (downloadedFileUuid == null)
-                mediaPlayer?.setDataSource(getRecordingFilePath(uuidAsString))
-            else mediaPlayer?.setDataSource(getRecordingFilePath(downloadedFileUuid))
+//            Log.d(TAG, "playAudio: ${downloadedFileUuid}")
+//            if (downloadedFileUuid == null) {
+            mediaPlayer?.setDataSource(getRecordingFilePath(uuidAsString))
+            Log.d(TAG, "playAudio: created file playing")
+//            } else {
+//            downloadAudioFromFirebase(context = context, downloadedFileUuid = downloadedFileUuid)
+
+//            }
             mediaPlayer?.prepare()
             mediaPlayer?.start()
         }
@@ -67,6 +80,13 @@ class AudioRecorder() {
         val file = Uri.fromFile(getRecordingFilePath(uuidAsString)?.let { File(it) })
         firebaseServices.uploadAudio(uuidAsString, file)
 
+    }
+
+    fun downloadAudioFromFirebase(context: Context, downloadedFileUuid: String) {
+        val firebaseServices = FirebaseServices(context)
+        val file = Uri.fromFile(getRecordingFilePath(downloadedFileUuid)?.let { File(it) })
+        Log.d(TAG, "downloadAudioFromFirebase: ${file}")
+        firebaseServices.downloadAudio(fileName = downloadedFileUuid, file = file)
     }
 
     fun getRecordingFilePath(uuid: String): String? {
