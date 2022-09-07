@@ -1,17 +1,22 @@
 package com.example.examcohortsystem.utils
 
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.media.AudioFormat
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.example.examcohortsystem.services.FirebaseServices
 import okhttp3.ResponseBody
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.*
 
-class AudioRecorder {
+class AudioRecorder() {
     var mediaRecorder: MediaRecorder? = null
     var mediaPlayer: MediaPlayer? = null
     var path:String? = null
@@ -34,18 +39,20 @@ class AudioRecorder {
 //        path = getRecordingFilePath()
 //        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+//        mediaRecorder?.setOutputFormat(AudioFormat.E)
         mediaRecorder?.setOutputFile(getRecordingFilePath(uuidAsString))
         path = getRecordingFilePath(uuidAsString)
-        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         mediaRecorder?.prepare()
         mediaRecorder?.start()
     }
 
-    fun stopAudioRecording(){
+    fun stopAudioRecording(context: Context){
         mediaRecorder?.stop()
         mediaRecorder?.release()
         mediaRecorder = null
+        uploadAudioToFirebase(context = context)
     }
 
     fun playAudio(){
@@ -61,9 +68,10 @@ class AudioRecorder {
                 mediaPlayer?.start()
             }
     }
-
-    fun storeAudio(){
-
+    fun uploadAudioToFirebase(context: Context){
+        val firebaseServices = FirebaseServices(context = context)
+        val file = Uri.fromFile(getRecordingFilePath(uuidAsString)?.let { File(it) })
+        firebaseServices.uploadAudio(uuidAsString, file)
     }
     fun getRecordingFilePath(uuid: String): String? {
         path = Environment.getExternalStoragePublicDirectory(
