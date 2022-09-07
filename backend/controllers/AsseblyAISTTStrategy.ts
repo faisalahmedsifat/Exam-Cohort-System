@@ -28,7 +28,15 @@ export class AsseblyAISTTStrategy implements SpeechToTextStrategy {
     return response['id'];
   }
 
+  async delay(milisec) {
+    return new Promise(resolve => {
+        setTimeout(() => { resolve('') }, milisec);
+    })
+  }
+
   async getSTTReport(queueID) : any {
+    // console.log(queueID);
+    
     const url = ASSEMBLYAI_API_URL + `/${queueID}`;
     const params = {
       headers: {
@@ -37,14 +45,22 @@ export class AsseblyAISTTStrategy implements SpeechToTextStrategy {
       },
       method: 'GET'
     };
+    // await this.delay(15*1000);
     let response = await (await fetch(url, params)).json()
-    while (response.status === "processing") response = await (await fetch(url, params)).json()
+    while (true) {
+      // console.log("waiting", " ", response.status);
+      if(response.status === "completed") break;
+      if(response.status === "error") break;
+      await this.delay(1*1000);
+      response = await (await fetch(url, params)).json()
+    }
     return response
   }
 
   async getTextFromAudioUrl(audioUrl: string): Promise<string> {
     const queueID = await this.runSTTOnUrl(audioUrl);
-    const STTReport = await this.getSTTReport(queueID);        
+    const STTReport = await this.getSTTReport(queueID);  
+    // console.log(STTReport);
     return STTReport.text;
   };
 }
