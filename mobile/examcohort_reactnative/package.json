@@ -1,0 +1,57 @@
+{
+  "name": "examcohort",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android:dev": "ENVFILE=.env.development react-native run-android",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint .",
+    "remove:bundle": "rm -rf android/app/src/main/assets",
+    "make:bundle": "npm run remove:bundle && mkdir android/app/src/main/assets && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "generate:build:staging": "npm run make:bundle && cd android && ENVFILE=.env.staging ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@react-native-google-signin/google-signin": "^8.0.0",
+    "@react-navigation/native": "^6.0.13",
+    "@react-navigation/native-stack": "^6.9.0",
+    "@reduxjs/toolkit": "^1.8.5",
+    "axios": "^0.27.2",
+    "jwt-decode": "^3.1.2",
+    "nativewind": "^2.0.10",
+    "react": "18.1.0",
+    "react-native": "0.70.1",
+    "react-native-config": "^1.4.6",
+    "react-native-heroicons": "^3.2.0",
+    "react-native-safe-area-context": "^4.3.3",
+    "react-native-screens": "^3.17.0",
+    "react-native-svg": "^13.2.0",
+    "react-redux": "^8.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/runtime": "^7.12.5",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "babel-jest": "^26.6.3",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "jest": "^26.6.3",
+    "metro-react-native-babel-preset": "^0.72.1",
+    "react-test-renderer": "18.1.0",
+    "tailwindcss": "^3.1.8"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
